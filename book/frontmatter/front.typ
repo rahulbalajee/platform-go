@@ -25,7 +25,9 @@
   *Platform Go: #book-subtitle* \
   Go 1.27 edition. Review draft, checkpoint 1 (November 2026).
 
-  Copyright © 2026 #book-author. All rights reserved.
+  Copyright © 2026 #book-author. All rights reserved. The source code in the
+  companion repository is licensed under the Apache License 2.0; the text of
+  this book is not.
 
   Companion repository: #raw(repo-url). Every listing in this book is
   extracted at build time from files in that repository, which compile and

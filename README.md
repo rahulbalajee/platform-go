@@ -34,3 +34,12 @@ make book                                 # build platform-go.pdf (Typst 0.15)
 Requirements: Go 1.27 (the `toolchain` line in `go.mod` lets older Go
 installs download it automatically), Docker and kind for the e2e test, and
 Typst 0.15 for the book.
+
+## License
+
+The code in this repository is licensed under the [Apache License 2.0](LICENSE).
+
+The book's text, figures and layout (`book/chapters`, `book/frontmatter`,
+`book/template`) are copyright © 2026 Rahul Balajee, all rights reserved.
+The fonts in `book/fonts` are distributed under the SIL Open Font License;
+see the `OFL-*` files there.
