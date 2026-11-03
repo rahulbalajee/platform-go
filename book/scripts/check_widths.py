@@ -58,7 +58,9 @@ def main() -> int:
     a = ap.parse_args()
     bad = 0
     seen = set()
-    for chapter in sorted(glob.glob("book/chapters/*.typ")):
+    sources = sorted(glob.glob("book/chapters/*.typ")) + sorted(
+        glob.glob("book/appendix/**/*.typ", recursive=True))
+    for chapter in sources:
         for m in SRC.finditer(open(chapter, encoding="utf-8").read()):
             key = (m.group(1), m.group(2))
             if key in seen:

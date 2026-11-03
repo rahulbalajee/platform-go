@@ -60,6 +60,9 @@ layout. Read at least one of them fully before writing.
   Pulling images from Docker Hub through Docker Desktop's proxy has been timing
   out on this machine, so prefer scratch images; if you try a pull, wrap it in a
   timeout and fall back.
+- Build-track code lives in `workbook/chNN/` and `solutions/chNN/` (see
+  "The build track"); those are nested modules and may use any dependencies
+  they need, with their own `go.mod`.
 - Several authors work in this repo **at the same time**. Only create or edit
   files in your own areas. Run `go test`/`golangci-lint` on your own packages
   (e.g. `go test -race ./pkg/fsx/...`). Failures in packages you did not touch
@@ -68,6 +71,91 @@ layout. Read at least one of them fully before writing.
   existing file whose `// START x OMIT` regions are used by other chapters
   (grep `book/chapters` for `#src(` first). Do not commit; the editor
   integrates and commits.
+
+## The build track (every chapter, from checkpoint 3 on)
+
+The book exists to drive a learning loop: **learn, implement, fail, come back
+to the text, fix**. A reader with only the PDF and an empty directory must be
+able to build every project, one working step at a time, know whether each
+step is right, and find their way back to the explanation when it is not.
+Readers range from people who have never programmed (they start at Chapter 0)
+to senior engineers. Assume the reader has read the earlier chapters, and no
+more.
+
+1. **Shape of a project chapter.** After the opener, a short "What we're
+   building" section shows the finished tool in action (real captured output)
+   and a step plan table: step, what it adds, Go concepts it introduces. Then
+   3 to 8 build steps, each `#step(k, N, "Title", label: <sec-..>)`. Step 1
+   is the smallest program that runs end to end, starting from `mkdir` and
+   `go mod init`. Each later step adds one idea. The explanations (why,
+   trade-offs, failure modes, `#production`, `#internals`, `#interview`)
+   live in the step where the idea first matters; a deep-dive section after
+   the build is fine for material that does not fit a step.
+2. **Every line is in the PDF.** New files are printed whole, including the
+   `package` clause and imports. For changed files, print every changed line
+   inside regions big enough to place them without guessing: whole functions
+   or types, the import block whenever it changes, and a sentence saying
+   where it goes ("replace `run` in `main.go` with:"). `go.mod` and `go.sum`
+   come from commands the text shows (`go mod init`, `go get`). The coverage
+   check enforces this mechanically.
+3. **One snapshot module per step:** `workbook/chNN/stepK/` is a complete Go
+   module with the short module path a reader would choose (`module sweep`),
+   `go 1.27.0`, only the dependencies that step needs, and its tests. It
+   passes gofmt, `go vet`, `go test -race` and `golangci-lint` with the repo
+   config. All build-step listings come from these files via `#src` regions.
+   Snapshots never import the root module.
+4. **Each step ends with `#checkpoint(step: k, of: N, title: [...])[...]`:**
+   what the reader should have now (the file tree), the commands to run and
+   their real output captured from the snapshot, and a
+   `#troubleshoot(([symptom], [cause], [fix / @sec-x]), ...)` table of 3 to 6
+   real failure modes. Produce those by breaking a copy of the snapshot in the
+   capture script (drop an import, forget `defer resp.Body.Close()`, write to
+   a nil map, leak a goroutine under goleak, use `=` for `:=`) and capturing
+   the exact compiler, vet, test or runtime output. Never invent error text.
+5. **Tests are part of each step** and printed with it. Show the reader how to
+   run them and what passing looks like.
+6. **Production code.** If a chapter's final step is the code other chapters
+   reuse (`pkg/...`, `internal/...`, `projects/...`), add `workbook/chNN/SYNC`
+   pairing each final-step file with its production file
+   (`workbook/ch04/step7/retry/retry.go = pkg/retry/retry.go`) plus
+   `@import sweep/retry = github.com/rahulbalajee/platform-go/pkg/retry`
+   rewrites. The sync check keeps both identical apart from OMIT markers and
+   import paths. Keep every region other chapters use (grep `book/chapters`).
+7. **`#goconcept(title: [...])[...]` boxes** introduce each Go language
+   feature or standard-library abstraction where the chapter first uses it:
+   interfaces and implicit satisfaction, `io.Reader`/`io.Writer`,
+   `io.ReadAll`, `defer`, errors as values, pointers versus values, slices
+   and maps, structs and methods, goroutines and channels, `context`,
+   generics, struct tags, and so on. Write for someone new to Go: what it is,
+   the smallest example, the common mistake, and (briefly) how it compares to
+   Python, Java or JavaScript when that helps. Chapter 0 teaches the language
+   in full; elsewhere keep boxes to 5-15 lines and point to Chapter 0 in plain
+   text.
+8. **Concept-heavy chapters** (toolchain, testing, parts of the OS chapter)
+   use **labs** instead of one project: the same `#step` and `#checkpoint`
+   machinery, titled "Lab k: ...", where the reader performs tasks and checks
+   real expected output. Any code a lab asks the reader to write follows the
+   snapshot and coverage rules.
+9. **Exercises** use `#exercise-set(N, (tier: "warm-up" | "core" | "stretch",
+   title: [...], body: [...], hint: [...], tests: "workbook/chNN/exercises/exK"), ...)`,
+   with 5 to 8 per chapter: at least two warm-up, two core, one stretch.
+   Code exercises ship acceptance tests in `workbook/chNN/exercises/exK/`
+   (test files only, plus a `BASE` file naming the step dir if not the last
+   step) that **fail** on the base step, and a full solution module in
+   `solutions/chNN/exK/` containing identical copies of those tests.
+   Design or analysis exercises get a written solution only. Every exercise
+   gets a worked solution in `book/appendix/solutions/chNN.typ`: begin with
+   `#solutions-for(N, "Chapter title")`, then one
+   `#solution(N, K, title: [...], code: "solutions/chNN/exK")[...]` per
+   exercise that explains the approach, the alternatives and the traps, with
+   listings via `#src` from the solution module.
+10. **Verify before reporting:**
+    `python3 book/scripts/check_workbook.py --chapter NN --race` reports
+    0 failures (coverage, modules, exercises, sync), `check_widths.py`
+    reports 0, the harness compiles, and visual QA is clean.
+
+The old `#exercises(...)` helper remains only until every chapter is
+converted; new and retrofitted chapters use `#exercise-set`.
 
 ## Typst template API (`book/template/book.typ`)
 
@@ -100,7 +188,11 @@ Start the chapter file with `#import "../template/book.typ": *`, then:
 - Tables: plain `#table(columns: ..., table.header(...), ...)`; the template
   styles them.
 - `#kbd("Ctrl-C")` for keys. End every chapter with `#takeaways(...)` and
-  `#exercises(...)` (4–6 substantial exercises).
+  `#exercise-set(...)` (see the build track).
+- Build track: `#step(k, N, "Title", label: <sec-x>)`, `#checkpoint(step: k, of: N, title: [...])[...]`,
+  `#troubleshoot(([symptom], [cause], [fix]), ...)`, `#goconcept(title: [...])[...]`,
+  and in `book/appendix/solutions/chNN.typ`: `#solutions-for(N, "Title")`,
+  `#solution(N, K, title: [...], code: "solutions/chNN/exK")[...]`.
 - Cross-references: use labels only within your own chapter. Refer to other
   chapters in plain text ("Chapter 6"), not `@labels`, because other chapters
   are being written concurrently. Chapter 4 and 20 exist and may be mentioned

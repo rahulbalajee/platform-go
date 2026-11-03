@@ -99,8 +99,8 @@
   #v(9pt)
   #text(font: fonts.sans, size: 7.6pt, weight: "bold", fill: c.go, tracking: 0.15em)[APPENDICES]
   #v(3pt)
-  #for (l, title) in appendices {
-    toc-line(l, title, none)
+  #for (l, title, target) in appendices {
+    toc-line(l, title, target)
     v(1.5pt)
   }
 ]

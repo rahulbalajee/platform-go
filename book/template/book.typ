@@ -213,12 +213,13 @@
   interview: (c.interview, "Interview lens"),
   internals: (c.internals, "Under the hood"),
   new: (c.new, "New in Go"),
+  goconcept: (c.godark, "Go concept"),
 )
 
-#let callout(kind, body, title: none) = {
+#let callout(kind, body, title: none, breakable: false) = {
   let (accent, label) = _callout-kinds.at(kind)
   block(
-    width: 100%, breakable: false, above: 1.2em, below: 1.2em,
+    width: 100%, breakable: breakable, above: 1.2em, below: 1.2em,
     fill: accent.lighten(94%), stroke: (left: 2.6pt + accent),
     inset: (left: 13pt, right: 12pt, top: 9pt, bottom: 10pt), radius: (right: 4pt),
   )[
@@ -239,6 +240,9 @@
 #let production(body, title: none) = callout("production", body, title: title)
 #let interview(body, title: none) = callout("interview", body, title: title)
 #let internals(body, title: none) = callout("internals", body, title: title)
+// goconcept: teaches a Go language feature at its first use, for readers who
+// program well but are new to Go. Breakable, because these can be long.
+#let goconcept(body, title: none) = callout("goconcept", body, title: title, breakable: true)
 #let newingo(version, body, title: none) = {
   let (accent, _) = _callout-kinds.new
   block(
@@ -320,12 +324,130 @@
   for (i, it) in items.pos().enumerate() [+ #it]
 }
 
+// ---- Build track: steps, checkpoints, troubleshooting -------------------------------
+// See book/AUTHORING.md, "The build track".
+#let step-state = state("build-step", none)
+#let appendix-state = state("appendix", none)
+
+// step: a numbered section that is one build step ("BUILD STEP 2 OF 5").
+#let step(n, total, title, label: none) = {
+  step-state.update((n, total))
+  [#heading(level: 2, title) #if label != none { label }]
+  step-state.update(none)
+}
+
+// checkpoint: closes a build step. Say what the reader should have now,
+// the command to run and its real expected output, then a troubleshoot table.
+#let checkpoint(body, step: none, of: none, title: none) = block(
+  width: 100%, breakable: true, above: 1.5em, below: 1.5em,
+  stroke: 0.9pt + c.tip, radius: 5pt,
+)[
+  #block(width: 100%, fill: c.tip, inset: (x: 11pt, y: 5.5pt), radius: (top: 4pt), below: 0pt)[
+    #text(font: fonts.sans, size: 7.4pt, weight: "bold", fill: white, tracking: 0.1em)[CHECKPOINT#if step != none [ · STEP #step#if of != none [ OF #of]]]
+    #if title != none { h(6pt); text(font: fonts.sans, size: 8.6pt, weight: "semibold", fill: white)[#title] }
+  ]
+  #block(width: 100%, inset: (x: 12pt, top: 9pt, bottom: 10pt), above: 0pt)[
+    #set text(size: 9.6pt)
+    #set par(spacing: 0.85em)
+    #body
+  ]
+]
+
+// troubleshoot: symptom -> cause -> fix rows; pass triples of content.
+#let troubleshoot(..rows) = {
+  set text(size: 8.4pt)
+  table(
+    columns: (1.25fr, 1.2fr, 1fr),
+    table.header([If you see], [It usually means], [Fix, or re-read]),
+    ..rows.pos().flatten(),
+  )
+}
+
+// ---- Exercises and solutions ---------------------------------------------------
+#let _tiers = (
+  "warm-up": (c.tip, "WARM-UP"),
+  "core": (c.go, "CORE"),
+  "stretch": (c.warn, "STRETCH"),
+)
+#let _badge(tier) = {
+  let (col, txt) = _tiers.at(tier)
+  box(fill: col, radius: 2pt, inset: (x: 4pt, y: 2pt), baseline: 1.5pt,
+    text(font: fonts.sans, size: 6.4pt, weight: "bold", fill: white, tracking: 0.06em, txt))
+}
+#let _page-of(loc) = {
+  let fmt = if loc.page-numbering() != none { loc.page-numbering() } else { "1" }
+  numbering(fmt, ..counter(page).at(loc))
+}
+
+// exercise-set: the chapter's exercises. Each item is a dictionary:
+//   (tier: "warm-up" | "core" | "stretch", title: [...], body: [...],
+//    hint: [...] (optional), tests: "workbook/chNN/exercises/exK" (optional))
+// Exercise K of chapter N gets label <ex-N-K> and links to <sol-N-K>.
+#let exercise-set(chapter, ..items) = {
+  heading(level: 2, numbering: none, outlined: true)[Exercises]
+  for (i, ex) in items.pos().enumerate() {
+    let k = i + 1
+    let id = str(chapter) + "." + str(k)
+    [#block(above: 1.2em, below: 1.2em, breakable: true)[
+      #text(font: fonts.sans, size: 9pt, weight: "bold", fill: c.godark)[Exercise #id]
+      #h(5pt) #_badge(ex.tier) #h(5pt)
+      #text(font: fonts.sans, size: 9pt, weight: "semibold", fill: c.ink)[#ex.title]
+      #v(-2pt)
+      #block(above: 0.6em)[#ex.body]
+      #if ex.at("hint", default: none) != none {
+        block(above: 0.5em, text(size: 9pt, fill: c.muted)[_Hint:_ #ex.hint])
+      }
+      #set text(font: fonts.sans, size: 7.8pt, fill: c.muted)
+      #if ex.at("tests", default: none) != none [Acceptance tests: #raw(ex.tests). #h(4pt)]
+      #context {
+        let q = query(label("sol-" + str(chapter) + "-" + str(k)))
+        if q.len() > 0 {
+          link(q.first().location())[Solution: page #_page-of(q.first().location()) →]
+        } else [Solution: Appendix D.]
+      }
+    ] #label("ex-" + str(chapter) + "-" + str(k))]
+  }
+}
+
+// solutions-for: opens one chapter's section in Appendix D.
+#let solutions-for(chapter, title) = heading(level: 2, numbering: none)[Chapter #chapter: #title]
+
+// solution: the worked solution to exercise N.K, placed in Appendix D.
+#let solution(chapter, k, body, title: none, code: none) = {
+  let id = str(chapter) + "." + str(k)
+  [#block(above: 1.4em, below: 0.6em, sticky: true)[
+    #text(font: fonts.sans, size: 9.6pt, weight: "bold", fill: c.navy)[Exercise #id]
+    #if title != none { h(4pt); text(font: fonts.sans, size: 9.6pt, weight: "semibold")[#title] }
+    #h(1fr)
+    #context {
+      let q = query(label("ex-" + str(chapter) + "-" + str(k)))
+      if q.len() > 0 {
+        text(font: fonts.sans, size: 7.6pt)[#link(q.first().location())[← exercise, page #_page-of(q.first().location())]]
+      }
+    }
+  ] #label("sol-" + str(chapter) + "-" + str(k))]
+  if code != none [#text(font: fonts.sans, size: 7.8pt, fill: c.muted)[Full solution in the repository: #raw(code)]]
+  body
+}
+
+// appendix: opener for a lettered appendix ("APPENDIX D").
+#let appendix(letter, title, label: none) = {
+  pagebreak(weak: true)
+  appendix-state.update(letter)
+  counter(figure.where(kind: image)).update(0)
+  counter(figure.where(kind: table)).update(0)
+  [#heading(level: 1, numbering: none, title) #if label != none { label }]
+}
+
 // ---- Chapter & part openers -----------------------------------------------------
 #let chapter-meta = state("chapter-meta", none)
 
 #let chapter(number, title, label: none, abstract: none, learn: (), build: none) = {
   pagebreak(weak: true)
-  counter(heading).update(number - 1)
+  // The heading counter runs one ahead of the printed chapter number so
+  // that Chapter 0 exists; every display below subtracts one.
+  appendix-state.update(none)
+  counter(heading).update(number)
   counter(figure.where(kind: image)).update(0)
   counter(figure.where(kind: table)).update(0)
   [#heading(level: 1, title) #if label != none { label }]
@@ -462,7 +584,7 @@
       let sec = if on-page.len() > 0 { on-page.first() } else if secs.len() > 0 { secs.last() } else { none }
       if sec != none and sec.location().page() > p { sec = none }
       set text(font: fonts.sans, size: 7.4pt, fill: c.faint)
-      let num = if ch.numbering != none { numbering("1", ..counter(heading).at(ch.location()).slice(0, 1)) } else { none }
+      let num = if ch.numbering != none { str(counter(heading).at(ch.location()).first() - 1) } else { none }
       grid(columns: (1fr, auto),
         [#if num != none [#text(weight: "bold", fill: c.godark)[#num] #h(5pt)] #ch.body],
         [#if sec != none and chs.last().location().page() <= sec.location().page() { sec.body }],
@@ -497,6 +619,7 @@
   // Headings
   set heading(numbering: (..n) => {
     let n = n.pos()
+    n.at(0) = n.at(0) - 1 // see chapter(): the counter runs one ahead
     if n.len() == 1 { str(n.at(0)) } else { n.map(str).join(".") }
   })
   show heading: set text(font: fonts.sans, fill: c.navy, hyphenate: false)
@@ -505,8 +628,16 @@
     block(width: 100%, above: 0pt, below: 14pt)[
       #v(0.35in)
       #if it.numbering != none {
-        text(font: fonts.sans, size: 10pt, weight: "bold", fill: c.go, tracking: 0.25em)[CHAPTER #counter(heading).display("1")]
+        text(font: fonts.sans, size: 10pt, weight: "bold", fill: c.go, tracking: 0.25em)[CHAPTER #counter(heading).display(it.numbering)]
         v(4pt)
+      } else {
+        context {
+          let a = appendix-state.get()
+          if a != none {
+            text(font: fonts.sans, size: 10pt, weight: "bold", fill: c.go, tracking: 0.25em)[APPENDIX #a]
+            v(4pt)
+          }
+        }
       }
       #text(size: 25pt, weight: "bold", tracking: -0.01em)[#it.body]
       #v(8pt)
@@ -515,9 +646,16 @@
   }
   show heading.where(level: 2): it => {
     block(above: 2em, below: 1em, sticky: true)[
+      #context {
+        let s = step-state.get()
+        if s != none {
+          block(below: 5pt, text(font: fonts.sans, size: 7.4pt, weight: "bold", fill: c.tip,
+            tracking: 0.12em)[BUILD STEP #s.at(0) OF #s.at(1)])
+        }
+      }
       #set text(size: 14pt, weight: "bold")
       #if it.numbering != none {
-        text(fill: c.go)[#counter(heading).display()]
+        text(fill: c.go)[#counter(heading).display(it.numbering)]
         h(8pt)
       }
       #it.body
@@ -534,7 +672,7 @@
     [#text(weight: "bold", fill: c.navy2)[#it.supplement #context it.counter.display(it.numbering)] #h(3pt) #it.body]
   }
   set figure(numbering: n => {
-    let ch = counter(heading).get().first()
+    let ch = counter(heading).get().first() - 1
     str(ch) + "." + str(n)
   })
   set table(stroke: none, inset: (x: 7pt, y: 5.5pt))

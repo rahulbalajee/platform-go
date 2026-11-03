@@ -26,3 +26,5 @@
 #part("IV", "Kubernetes and the Cloud",
   blurb: [Programming the platforms themselves: cloud SDKs without lock-in, the Kubernetes API from first principles, and operators built to production standards.])
 #include "chapters/20-operators.typ"
+
+#include "appendix/d-solutions.typ"
