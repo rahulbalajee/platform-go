@@ -1,1 +1,1 @@
-ok  	tools/rollout	1.006s
+ok  	tools/rollout	0.435s

@@ -1,4 +1,4 @@
-18:24:38.523358 fake deploy API on http://127.0.0.1:8787
-18:24:40.540613 POST "/v1/deploy/us-east-1"
-18:24:40.642411 POST "/v1/deploy/us-west-2"
-18:24:40.743515 POST "/v1/deploy/eu-west-1"
+22:40:44.529196 fake deploy API on http://127.0.0.1:8787
+22:40:45.423358 POST "/v1/deploy/us-east-1"
+22:40:45.525807 POST "/v1/deploy/us-west-2"
+22:40:45.626719 POST "/v1/deploy/eu-west-1"

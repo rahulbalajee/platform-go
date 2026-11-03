@@ -1,1 +1,1 @@
-ok      deployctl/pkg/clierr    0.204s
+ok      deployctl/pkg/clierr    0.177s

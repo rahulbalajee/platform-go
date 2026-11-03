@@ -1,11 +1,11 @@
---- PASS: TestExitCodes (2.17s)
-    --- PASS: TestExitCodes/help (1.17s)
+--- PASS: TestExitCodes (1.19s)
+    --- PASS: TestExitCodes/help (0.21s)
     --- PASS: TestExitCodes/bad_flag (0.01s)
     --- PASS: TestExitCodes/unknown_command (0.01s)
     --- PASS: TestExitCodes/missing_config (0.01s)
     --- PASS: TestExitCodes/no_token (0.01s)
     --- PASS: TestExitCodes/bad_token (0.01s)
     --- PASS: TestExitCodes/partial (0.52s)
-    --- PASS: TestExitCodes/timeout (0.31s)
-    --- PASS: TestExitCodes/ok (0.11s)
-ok      deployctl/cmd/deployctl 3.362s
+    --- PASS: TestExitCodes/timeout (0.32s)
+    --- PASS: TestExitCodes/ok (0.12s)
+ok      deployctl/cmd/deployctl 1.974s

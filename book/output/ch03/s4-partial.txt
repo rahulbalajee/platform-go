@@ -1,7 +1,7 @@
 deploying checkout v1.4.2 to 4 targets
   sa-east-1   failed   0s
-  us-east-1   deployed 110ms
-  us-west-2   deployed 110ms
+  us-east-1   deployed 100ms
+  us-west-2   deployed 100ms
   eu-west-1   failed   310ms
 deployctl: deploy of v1.4.2 failed on 2 of 4 targets [DPL-PARTIAL]
   - sa-east-1: deploy already in progress, started by ci-bot (HTTP 409)

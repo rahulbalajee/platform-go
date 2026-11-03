@@ -1,5 +1,5 @@
---- FAIL: TestExitCodes (1.99s)
-    --- FAIL: TestExitCodes/missing_config (0.02s)
+--- FAIL: TestExitCodes (1.50s)
+    --- FAIL: TestExitCodes/missing_config (0.01s)
         main_test.go:147: stderr differs from testdata/noconfig.golden (-update to accept):
             got:
             deployctl: no config file at deployctl.json [DPL-CONFIG]
@@ -11,5 +11,5 @@
               hint: run "deployctl init" to create one, or pass -config FILE
               docs: https://github.com/rahulbalajee/platform-go/tree/main/examples/ch03#dpl-config
 FAIL
-FAIL    deployctl/cmd/deployctl 5.611s
+FAIL    deployctl/cmd/deployctl 4.112s
 FAIL

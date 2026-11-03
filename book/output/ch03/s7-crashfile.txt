@@ -1,11 +1,11 @@
 deployctl crash report
 
-module:       deployctl@v0.0.0-20261103125623-7d166e1c5528
+module:       deployctl@v0.0.0-20261103171150-811510005636
 go:           go1.27.3
 GOARCH:       arm64
 GOOS:         darwin
-vcs.revision: 7d166e1c55282d80b2cfec50e5569a93fd1ee2f2
-vcs.time:     2026-11-03T12:56:23Z
+vcs.revision: 811510005636f4e0257a9d5ee16a9f33b168d372
+vcs.time:     2026-11-03T17:11:50Z
 vcs.modified: false
 panic:        runtime error: invalid memory address or nil pointer dereference
 

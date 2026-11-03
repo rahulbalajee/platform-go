@@ -2,7 +2,7 @@ panic: test timed out after 10s
         running tests:
                 TestDeployAllTargets (10s)
 
-goroutine 29 [running]:
+goroutine 28 [running]:
 testing.(*M).startAlarm.func1()
         $GOROOT/src/testing/testing.go:2961 +0x2c4
 created by time.goFunc
@@ -22,7 +22,7 @@ testing.(*M).Run(0x…)
 main.main()
         _testmain.go:62 +0x80
 
-goroutine 20 [chan receive]:
+goroutine 35 [chan receive]:
 deployctl/cmd/deployctl.rollout({0x…, 0x…}, 0x…, {0x…, 0x8}, {0x…, 0x6}, {0x…, 0x2, 0x2}, ...)
         ~/broken/cmd/deployctl/deploy.go:83 +0x1f4
 deployctl/cmd/deployctl.deploy({0x…, 0x…}, {{0x…?, 0x…?}}, {0x…, 0x1, 0x1}, 0x…, {0x…, 0x…})
@@ -38,7 +38,7 @@ testing.tRunner(0x…, 0x…)
 created by testing.(*T).Run in goroutine 1
         $GOROOT/src/testing/testing.go:2260 +0x3b8
 
-goroutine 21 [IO wait]:
+goroutine 36 [IO wait]:
 internal/poll.runtime_pollWait(0x…, 0x72)
         $GOROOT/src/runtime/netpoll.go:351 +0xa0
 internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
@@ -57,34 +57,10 @@ net/http.(*Server).Serve(0x…, {0x…, 0x…})
         $GOROOT/src/net/http/server.go:3574 +0x2a8
 net/http/httptest.(*Server).goServe.func1()
         $GOROOT/src/net/http/httptest/server.go:586 +0x54
-created by net/http/httptest.(*Server).goServe in goroutine 20
+created by net/http/httptest.(*Server).goServe in goroutine 35
         $GOROOT/src/net/http/httptest/server.go:584 +0x8c
 
-goroutine 23 [IO wait]:
-internal/poll.runtime_pollWait(0x…, 0x72)
-        $GOROOT/src/runtime/netpoll.go:351 +0xa0
-internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
-        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
-internal/poll.(*pollDesc).waitRead(...)
-        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
-internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
-        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
-net.(*netFD).Read(0x…, {0x…?, 0x…?, 0x…?})
-        $GOROOT/src/net/fd_posix.go:68 +0x28
-net.(*conn).Read(0x…, {0x…?, 0x…?, 0x0?})
-        $GOROOT/src/net/net.go:196 +0x34
-net/http.(*connReader).Read(0x…, {0x…, 0x1000, 0x1000})
-        $GOROOT/src/net/http/server.go:856 +0x228
-bufio.(*Reader).fill(0x…)
-        $GOROOT/src/bufio/bufio.go:113 +0xdc
-bufio.(*Reader).Peek(0x…, 0x4)
-        $GOROOT/src/bufio/bufio.go:152 +0x58
-net/http.(*conn).serve(0x…, {0x…, 0x…})
-        $GOROOT/src/net/http/server.go:2193 +0x6cc
-created by net/http.(*Server).Serve in goroutine 21
-        $GOROOT/src/net/http/server.go:3604 +0x3e8
-
-goroutine 24 [IO wait]:
+goroutine 38 [IO wait]:
 internal/poll.runtime_pollWait(0x…, 0x72)
         $GOROOT/src/runtime/netpoll.go:351 +0xa0
 internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
@@ -105,16 +81,16 @@ bufio.(*Reader).Peek(0x…, 0x1)
         $GOROOT/src/bufio/bufio.go:152 +0x58
 net/http.(*persistConn).readLoop(0x…)
         $GOROOT/src/net/http/transport.go:2493 +0x120
-created by net/http.(*Transport).dialConn in goroutine 22
+created by net/http.(*Transport).dialConn in goroutine 37
         $GOROOT/src/net/http/transport.go:2123 +0x14d8
 
-goroutine 25 [select]:
+goroutine 39 [select]:
 net/http.(*persistConn).writeLoop(0x…)
         $GOROOT/src/net/http/transport.go:2833 +0x98
-created by net/http.(*Transport).dialConn in goroutine 22
+created by net/http.(*Transport).dialConn in goroutine 37
         $GOROOT/src/net/http/transport.go:2124 +0x1528
 
-goroutine 11 [IO wait]:
+goroutine 3 [IO wait]:
 internal/poll.runtime_pollWait(0x…, 0x72)
         $GOROOT/src/runtime/netpoll.go:351 +0xa0
 internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
@@ -135,10 +111,10 @@ bufio.(*Reader).Peek(0x…, 0x4)
         $GOROOT/src/bufio/bufio.go:152 +0x58
 net/http.(*conn).serve(0x…, {0x…, 0x…})
         $GOROOT/src/net/http/server.go:2193 +0x6cc
-created by net/http.(*Server).Serve in goroutine 21
+created by net/http.(*Server).Serve in goroutine 36
         $GOROOT/src/net/http/server.go:3604 +0x3e8
 
-goroutine 12 [IO wait]:
+goroutine 25 [IO wait]:
 internal/poll.runtime_pollWait(0x…, 0x72)
         $GOROOT/src/runtime/netpoll.go:351 +0xa0
 internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
@@ -159,13 +135,37 @@ bufio.(*Reader).Peek(0x…, 0x1)
         $GOROOT/src/bufio/bufio.go:152 +0x58
 net/http.(*persistConn).readLoop(0x…)
         $GOROOT/src/net/http/transport.go:2493 +0x120
-created by net/http.(*Transport).dialConn in goroutine 9
+created by net/http.(*Transport).dialConn in goroutine 24
         $GOROOT/src/net/http/transport.go:2123 +0x14d8
 
-goroutine 13 [select]:
+goroutine 26 [select]:
 net/http.(*persistConn).writeLoop(0x…)
         $GOROOT/src/net/http/transport.go:2833 +0x98
-created by net/http.(*Transport).dialConn in goroutine 9
+created by net/http.(*Transport).dialConn in goroutine 24
         $GOROOT/src/net/http/transport.go:2124 +0x1528
-FAIL    deployctl/cmd/deployctl 10.480s
+
+goroutine 50 [IO wait]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*connReader).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/net/http/server.go:856 +0x228
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x4)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2193 +0x6cc
+created by net/http.(*Server).Serve in goroutine 36
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+FAIL    deployctl/cmd/deployctl 10.564s
 FAIL

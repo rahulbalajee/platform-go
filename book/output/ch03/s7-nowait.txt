@@ -1,5 +1,5 @@
 --- FAIL: TestSafeCarriesPanicsAcrossGoroutines (0.00s)
     clierr_test.go:231: err = <nil>, want a *PanicError in the tree
 FAIL
-FAIL    deployctl/pkg/clierr    0.501s
+FAIL    deployctl/pkg/clierr    0.509s
 FAIL

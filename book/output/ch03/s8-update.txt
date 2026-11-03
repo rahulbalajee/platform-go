@@ -1,1 +1,1 @@
-ok      deployctl/cmd/deployctl 4.259s
+ok      deployctl/cmd/deployctl 3.453s

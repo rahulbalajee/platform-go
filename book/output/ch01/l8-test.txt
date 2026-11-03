@@ -1,2 +1,2 @@
-ok  	stamp/buildinfo	0.558s
+ok  	stamp/buildinfo	0.581s
 ok  	stamp/cmd/stamp	(cached)

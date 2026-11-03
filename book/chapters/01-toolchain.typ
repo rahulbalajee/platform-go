@@ -89,8 +89,9 @@ empty cache, so the first build also compiles the standard library:
   ("time GOCACHE=\"$LAB/gocache\" go build -o /dev/null ./cmd/sweep", "ch01/build-warm.txt"),
 )
 
-The cold build, standard library included, used about half a minute of CPU
-time spread over all cores. The warm one needed well under a second of CPU,
+The cold build, standard library included, kept every core busy: its CPU
+time (user plus sys) is several times its wall time. The warm one needed
+well under a second of CPU,
 because everything came from the cache; its wall time depends mostly on how
 busy the machine is. CI pipelines that run `go vet`, a linter and
 the race detector across a whole repository on every push stay inside the

@@ -1,5 +1,5 @@
 --- FAIL: TestSecretNeverPrints (0.00s)
     clierr_test.go:211: secret leaked: [REDACTED] [REDACTED] "[REDACTED]" 5b52454441435445445d "ghp_live_0123456789" [REDACTED]
 FAIL
-FAIL    deployctl/pkg/clierr    0.600s
+FAIL    deployctl/pkg/clierr    0.430s
 FAIL

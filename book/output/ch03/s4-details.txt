@@ -11,5 +11,5 @@
               - sa-east-1: deploy already in progress
               hint: re-run with -only eu-west-1,sa-east-1
 FAIL
-FAIL    deployctl/pkg/clierr    0.605s
+FAIL    deployctl/pkg/clierr    0.436s
 FAIL

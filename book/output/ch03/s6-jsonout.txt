@@ -1,4 +1,4 @@
 {"target":"sa-east-1","status":"failed","took":"0s","error":"sa-east-1: deploy already in progress, started by ci-bot (HTTP 409)"}
-{"target":"us-east-1","status":"deployed","took":"100ms"}
 {"target":"us-west-2","status":"deployed","took":"100ms"}
+{"target":"us-east-1","status":"deployed","took":"100ms"}
 {"target":"eu-west-1","status":"failed","took":"300ms","error":"eu-west-1: health check failing on 3/3 replicas (HTTP 503, 3 attempts)"}

@@ -1,4 +1,4 @@
 deployctl: the deploy API rejected your token (HTTP 401) [DPL-AUTH]
-  hint: export a fresh DEPLOYCTL_TOKEN; quote req-MN76QEINWH if you ask for help
+  hint: export a fresh DEPLOYCTL_TOKEN; quote req-VGPY54GIOI if you ask for help
   docs: https://github.com/rahulbalajee/platform-go/tree/main/examples/ch03#dpl-auth
 exit status 77

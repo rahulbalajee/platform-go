@@ -15,5 +15,5 @@
     phase_test.go:38: marshal = {"phase":"PhaseRolledBack"}
     phase_test.go:43: unmarshal = PhasePending, rollout: unknown phase "canary"
 FAIL
-FAIL	tools/rollout	0.435s
+FAIL	tools/rollout	0.889s
 FAIL

@@ -1,5 +1,5 @@
 WARNING: DATA RACE
-Read at 0x… by goroutine 95:
+Read at 0x… by goroutine 18:
       ~/broken/cmd/deployctl/deploy.go:79 +0x10c
-Previous write at 0x… by goroutine 93:
+Previous write at 0x… by goroutine 17:
       ~/broken/cmd/deployctl/deploy.go:79 +0x11c

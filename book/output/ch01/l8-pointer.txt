@@ -1,6 +1,6 @@
-ok  	stamp/buildinfo	0.455s
+ok  	stamp/buildinfo	0.449s
 --- FAIL: TestRunVersion (0.00s)
     main_test.go:40: stdout = "{stamp.test devel  0001-01-01 00:00:00 +0000 UTC false stamp go1.27.3 darwin/arm64}\n"
 FAIL
-FAIL	stamp/cmd/stamp	0.901s
+FAIL	stamp/cmd/stamp	0.914s
 FAIL

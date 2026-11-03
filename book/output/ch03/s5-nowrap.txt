@@ -1,7 +1,7 @@
 --- FAIL: TestTimeoutComesFromTheCause (0.20s)
     run_test.go:210: CodeOf = failure, want tempfail
-    run_test.go:213: errors.Is(err, DeadlineExceeded) = false for deploy of v1.4.2 interrupted; 1 of 2 targets not updated: ap-south-1: stopped before the API answered: Post "http://127.0.0.1:61850/v1/deploy/ap-south-1": deploy did not finish within 200ms
+    run_test.go:213: errors.Is(err, DeadlineExceeded) = false for deploy of v1.4.2 interrupted; 1 of 2 targets not updated: ap-south-1: stopped before the API answered: Post "http://127.0.0.1:61576/v1/deploy/ap-south-1": deploy did not finish within 200ms
     run_test.go:216: message = "deploy of v1.4.2 interrupted; 1 of 2 targets not updated"
 FAIL
-FAIL    deployctl/cmd/deployctl 2.338s
+FAIL    deployctl/cmd/deployctl 2.130s
 FAIL
