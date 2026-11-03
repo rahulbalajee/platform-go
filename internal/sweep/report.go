@@ -1,3 +1,5 @@
+// START head OMIT
+
 package sweep
 
 import (
@@ -19,6 +21,9 @@ type Reporter interface {
 	Close(Summary) error
 }
 
+// END head OMIT
+
+// START summary OMIT
 // Summary describes a finished (or interrupted) run.
 type Summary struct {
 	Total       int           `json:"total"`
@@ -31,7 +36,9 @@ type Summary struct {
 }
 
 // Healthy reports whether every target was checked and found up.
-func (s Summary) Healthy() bool { return !s.Interrupted && s.Checked == s.Total && s.Down == 0 }
+func (s Summary) Healthy() bool {
+	return !s.Interrupted && s.Checked == s.Total && s.Down == 0
+}
 
 // Tally updates the summary with one result.
 func (s *Summary) Tally(r Result) {
@@ -58,6 +65,9 @@ func (s Summary) String() string {
 	return msg
 }
 
+// END summary OMIT
+
+// START new OMIT
 // NewReporter returns a reporter for format "table", "wide", "json" or
 // "jsonl". "table" truncates long details to keep rows on one line; "wide"
 // prints them in full, like kubectl's -o wide.
@@ -72,9 +82,13 @@ func NewReporter(format string, w io.Writer) (Reporter, error) {
 	case "jsonl":
 		return &jsonlReporter{enc: json.NewEncoder(w)}, nil
 	}
-	return nil, fmt.Errorf("unknown output format %q (want table, wide, json, jsonl)", format)
+	return nil, fmt.Errorf("unknown output format %q (want table, wide, json, jsonl)",
+		format)
 }
 
+// END new OMIT
+
+// START table OMIT
 // tableReporter buffers results and prints them in input order, because a
 // human scanning a table expects it to match the inventory file.
 type tableReporter struct {
@@ -83,10 +97,13 @@ type tableReporter struct {
 	results   []Result
 }
 
-func (t *tableReporter) Add(r Result) error { t.results = append(t.results, r); return nil }
+func (t *tableReporter) Add(r Result) error {
+	t.results = append(t.results, r)
+	return nil
+}
 
 func (t *tableReporter) Close(Summary) error {
-	slices.SortFunc(t.results, func(a, b Result) int { return cmp.Compare(a.Index, b.Index) })
+	slices.SortFunc(t.results, byIndex)
 	tw := tabwriter.NewWriter(t.w, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(tw, "STATUS\tTARGET\tLATENCY\tTRIES\tDETAIL")
 	for _, r := range t.results {
@@ -95,10 +112,14 @@ func (t *tableReporter) Close(Summary) error {
 			detail = r.Error
 		}
 		fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\n", symbol(r.Status), r.Target,
-			r.Latency.Round(time.Millisecond), r.Attempts, truncate(detail, t.maxDetail))
+			r.Latency.Round(time.Millisecond), r.Attempts,
+			truncate(detail, t.maxDetail))
 	}
 	return tw.Flush()
 }
+
+// byIndex orders results as the inventory listed their targets.
+func byIndex(a, b Result) int { return cmp.Compare(a.Index, b.Index) }
 
 // truncate shortens s to at most n runes, marking the cut with an ellipsis.
 func truncate(s string, n int) string {
@@ -119,6 +140,9 @@ func symbol(s Status) string {
 	}
 }
 
+// END table OMIT
+
+// START json OMIT
 // jsonlReporter streams one JSON object per line as results complete:
 // ideal for piping into jq or a log shipper while the sweep is running.
 type jsonlReporter struct{ enc *json.Encoder }
@@ -133,10 +157,13 @@ type jsonReporter struct {
 	results []Result
 }
 
-func (j *jsonReporter) Add(r Result) error { j.results = append(j.results, r); return nil }
+func (j *jsonReporter) Add(r Result) error {
+	j.results = append(j.results, r)
+	return nil
+}
 
 func (j *jsonReporter) Close(s Summary) error {
-	slices.SortFunc(j.results, func(a, b Result) int { return cmp.Compare(a.Index, b.Index) })
+	slices.SortFunc(j.results, byIndex)
 	enc := json.NewEncoder(j.w)
 	enc.SetIndent("", "  ")
 	return enc.Encode(struct {
@@ -144,3 +171,5 @@ func (j *jsonReporter) Close(s Summary) error {
 		Results []Result `json:"results"`
 	}{s, j.results})
 }
+
+// END json OMIT

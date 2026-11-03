@@ -1,0 +1,5 @@
+STATUS  TARGET                         LATENCY  TRIES  DETAIL
+UP      http://127.0.0.1:8099/ok       2ms      1      200 OK
+DOWN    http://127.0.0.1:8099/missing  2ms      1      unhealthy status 404 Not Found
+checked 2/5 targets in 3ms: 1 up, 1 down (stopped at first failure)
+exit status 1

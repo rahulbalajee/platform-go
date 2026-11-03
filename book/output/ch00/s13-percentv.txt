@@ -1,0 +1,8 @@
+$ go build -o logq . && ./logq -strict app.log > /dev/null
+logq: app.log:11: bad time "this"
+$ golangci-lint run ./...
+scan.go:49:48: non-wrapping format verb for fmt.Errorf. Use `%w` to format errors (errorlint)
+			err = fmt.Errorf("%s:%d: %v", name, lineNo, err)
+			                                            ^
+1 issues:
+* errorlint: 1

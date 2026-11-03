@@ -1,318 +1,422 @@
 #import "../template/book.typ": *
+#import "04-lib.typ": ts, needspace
 
-== Shared state: mutexes, atomics, and ownership <sec-shared>
+#step(6, 7, "Reports", label: <sec-shared>)
 
-"Don't communicate by sharing memory; share memory by communicating" is the
-Go proverb everyone quotes. The standard library itself uses far more mutexes
-than channels, and that is not a contradiction. Channels are for transferring
-_ownership_ of data and for _coordination_ (start, stop, done, here is the
-next item). Mutexes are for _protecting state_ that several goroutines touch.
-Use the one that matches what you are doing:
+So far `sweep` prints one line per result, in whatever order the checks
+finish. That's fine for a person watching a terminal and wrong for everything
+else. Someone scanning a table expects it to follow the inventory file. A CI
+job wants a JSON document it can parse. A log shipper or `jq` wants one JSON
+object per line, written the moment each result exists. This step adds four
+output formats behind one interface, and a summary type that replaces the
+counting `run` does by hand.
+
+=== Who owns the output?
+
+The reporter receives results from dozens of concurrent checks, so the first
+question is how to keep its state safe. "Don't communicate by sharing memory;
+share memory by communicating" is the Go proverb everyone quotes. The standard
+library uses far more mutexes than channels, and that isn't a contradiction.
+Channels are for transferring _ownership_ of data and for _coordination_
+(start, stop, done, here is the next item). Mutexes are for _protecting state_
+that several goroutines touch. Pick the tool that matches what you're doing:
 
 #table(
   columns: (auto, 1fr),
   table.header([Tool], [Reach for it when]),
-  [Ownership], [One goroutine owns the data and everyone else talks to it. No locks at all. `sweep`'s reporter is owned by the `range` loop, which is the only code that touches it.],
+  [Ownership], [One goroutine owns the data and everyone else talks to it. No locks at all. `sweep`'s reporter is owned by the `range` loop, the only code that touches it.],
   [Channel], [Handing work or results between goroutines, signalling completion or cancellation, bounding concurrency (as a semaphore).],
-  [`sync.Mutex`], [Several goroutines read and write a small piece of state: a map, a cache, a counter with invariants. Keep critical sections tiny and never block (I/O, channel sends, network calls) while holding the lock.],
-  [`sync.RWMutex`], [Reads vastly outnumber writes _and_ the critical section is long enough to matter. Otherwise a plain mutex is as fast and simpler. Never acquire a read lock recursively: a waiting writer blocks new readers, so a nested `RLock` can deadlock.],
+  [`sync.Mutex`], [Several goroutines read and write a small piece of state: a map, a cache, a counter with invariants. Keep critical sections tiny and never block while holding the lock.],
+  [`sync.RWMutex`], [Reads vastly outnumber writes _and_ the critical section is long enough to matter. Otherwise a plain mutex is as fast and simpler. Never take a read lock recursively: a waiting writer blocks new readers, so a nested `RLock` can deadlock.],
   [`sync/atomic` types], [Independent counters, gauges and flags: `atomic.Int64`, `atomic.Bool`, `atomic.Pointer[T]`. The typed API (Go 1.19) prevents mixing atomic and plain access to the same word, and Go 1.27's `go fix` includes an `atomictypes` modernizer that migrates the old function-style calls.],
   [`sync.OnceValue`], [Lazy, concurrency-safe initialisation of an expensive value, such as a parsed config or an SDK client (Go 1.21).],
   [`sync.Map`], [Mostly append-only caches, or goroutines working on disjoint keys. For anything else, a map plus a mutex is clearer and usually faster.],
 )
 
-The pattern to prefer whenever you can is the first row. Look at how `sweep`
-consumes results:
+Prefer the first row whenever you can. `Stream` hands each result across a
+channel to the caller's loop, and that loop runs on one goroutine. If the
+summary and the reporter are touched only inside the loop, dozens of workers
+produce results concurrently and there is still no lock anywhere in the
+reporting path. When you find yourself adding a mutex to an output formatter,
+ask whether one goroutine could own it instead.
 
-#src("cmd/sweep/main.go", region: "run")
+#goconcept(title: [Struct tags and `encoding/json`])[
+  A struct field can carry a _tag_, a string literal after its type that
+  libraries read at run time:
+  #raw("Latency time.Duration `json:\"latency_ns\"`").
+  `encoding/json` uses the tag as the key name; `omitempty` leaves the field
+  out when it holds its zero value, and `json:"-"` skips it. Only exported
+  (capitalized) fields are encoded. The tag syntax is strict: `key:"value"`
+  with no spaces around the colon, and `go vet` reports malformed tags. Keys in
+  snake_case are the convention for tools that other teams script against.
+  `json.NewEncoder(w).Encode(v)` writes `v` plus a newline, which makes JSON
+  Lines trivial.
+]
 
-The summary and the reporter are mutated only inside the `for res := range`
-loop, which runs on one goroutine. Dozens of workers produce results
-concurrently, yet there is no lock anywhere in the reporting path, because the
-iterator hands results across a channel and the consumer owns everything after
-that. When you find yourself adding a mutex to an output formatter, ask
-whether one goroutine could own it instead.
+=== The report package
 
-== Graceful shutdown in two stages <sec-shutdown>
+Results become JSON, so `Result` gets tags. Replace it in `runner.go`:
+
+#src("workbook/ch04/step6/internal/sweep/runner.go", region: "result")
+
+`Latency` is a `time.Duration`, which encodes as an integer number of
+nanoseconds; the key name says so, because a consumer guessing the unit wrong
+is a classic dashboard bug. Create `internal/sweep/report.go`, starting with
+the interface every format implements:
+
+#src("workbook/ch04/step6/internal/sweep/report.go", region: "head")
+
+The summary used to be three local variables in `run`. It becomes a type with
+a `Tally` method for the loop, a `Healthy` method for the exit status, and a
+`String` method for the last line on standard error:
+
+#src("workbook/ch04/step6/internal/sweep/report.go", region: "summary")
+
+`Tally` has a pointer receiver, `(s *Summary)`, because it changes the
+summary. With a value receiver it would increment a copy, the caller would
+never see the counts, and the program would still compile. The troubleshooting
+table shows how that looks. The constructor picks a format by name:
+
+#src("workbook/ch04/step6/internal/sweep/report.go", region: "new")
+
+The table formats buffer results and sort them back into inventory order,
+because a human scanning a table expects it to match the file.
+`text/tabwriter` aligns the columns:
+
+#src("workbook/ch04/step6/internal/sweep/report.go", region: "table")
+
+`Close` returns `tw.Flush()`. The tabwriter buffers everything until it is
+flushed, and the flush is also where a write error to a closed pipe finally
+shows up. Last, the two JSON formats:
+
+#src("workbook/ch04/step6/internal/sweep/report.go", region: "json")
+
+`jsonl` is the only format that writes during the sweep: each result goes out
+the moment it arrives, so `jq` downstream sees it at once. `json` waits and
+writes one document with the summary and every result in input order, for
+tools that want a single blob to parse.
+
+=== `run` with a reporter
+
+In `main.go`, `strings` is no longer needed. Replace the imports:
+
+#src("workbook/ch04/step6/cmd/sweep/main.go", region: "imports")
+
+Add the `-o` flag:
+
+#src("workbook/ch04/step6/cmd/sweep/main.go", region: "flags")
+
+Replace `run`, and delete `printResult`, which the reporters replace:
+
+#src("workbook/ch04/step6/cmd/sweep/main.go", region: "run")
+
+The reporter is created before the runner, so `-o yaml` is rejected before a
+single target is contacted. The loop is the single owner of `sum` and
+`reporter`. A failed write stops the sweep with status 2: if `stdout` is a pipe
+whose reader has gone away (`sweep -o jsonl | head -3`), there is no point in
+checking the remaining targets. Breaking out of the loop is safe, because
+`Stream` cancels and waits for its workers before the loop statement ends.
+
+=== Tests
+
+Create `internal/sweep/summary_test.go`. The first test pins down the summary
+line, including a target that never got checked:
+
+#src("workbook/ch04/step6/internal/sweep/summary_test.go", region: "head")
+#src("workbook/ch04/step6/internal/sweep/summary_test.go", region: "summary")
+
+The JSON Lines test proves that a result is written _before_ `Close`, which
+is the whole point of the format. It also pins every key name, because those
+names are an API other people's scripts depend on:
+
+#src("workbook/ch04/step6/internal/sweep/summary_test.go", region: "jsonl")
+
+The table test feeds results in completion order and expects input order:
+
+#src("workbook/ch04/step6/internal/sweep/summary_test.go", region: "table")
+
+The end-to-end test in `cmd/sweep/main_test.go` switches to `-o json` and
+decodes the output instead of searching it for words. It adds a TCP target on
+a closed port, so the sweep covers two kinds. Replace the imports and the
+test:
+
+#src("workbook/ch04/step6/cmd/sweep/main_test.go", region: "imports")
+#src("workbook/ch04/step6/cmd/sweep/main_test.go", region: "e2e")
+
+Add a case for an unknown format to the usage test, and the `closedPort`
+helper at the end of the file:
+
+#src("workbook/ch04/step6/cmd/sweep/main_test.go", region: "usage")
+#src("workbook/ch04/step6/cmd/sweep/main_test.go", region: "closedport")
+
+#needspace(12em)
+#checkpoint(step: 6, of: 7, title: [Reports])[
+  #output("ch04/s6-tree.txt", cmd: "find . -name '*.go' | sort")
+  #output("ch04/s6-test.txt", cmd: "go vet ./... && go test ./...")
+  Restart the fleet before each of the next three runs, so `/flaky` behaves
+  the same way every time. The default table is in inventory order:
+  #output("ch04/s6-table.txt", cmd: "go run ./cmd/sweep -timeout 1s retry.txt", size: 6.6pt)
+  The JSON document starts with the summary:
+  #output("ch04/s6-json.txt", cmd: "go run ./cmd/sweep -o json -timeout 1s retry.txt 2>/dev/null | head -22")
+  JSON Lines composes with `jq`, here keeping only the targets that are down:
+  #output("ch04/s6-jq.txt", cmd: "go run ./cmd/sweep -o jsonl -timeout 1s retry.txt 2>/dev/null | jq -c 'select(.status==\"down\") | {target, attempts, error}'", size: 6.2pt)
+  An unknown format is a usage error, reported before any work starts:
+  #output("ch04/s6-format.txt", cmd: "go run ./cmd/sweep -o yaml retry.txt")
+  #troubleshoot(
+    ([#ts("s6-tag.txt")], [A malformed struct tag: the value must be quoted, `json:"latency_ns"`.], [Fix the tag. `go vet` checks every tag.]),
+    ([#ts("s6-receiver.txt")], [`Tally` has a value receiver, so it counts on a copy.], [Methods that modify their receiver need `*Summary`.]),
+    ([#ts("s6-receiver-lint.txt")], [The same mistake, as staticcheck reports it.], [As above.]),
+    ([#ts("s6-flush.txt")], [`Close` returned without flushing the tabwriter, so nothing was printed.], [`return tw.Flush()`.]),
+  )
+]
+
+#step(7, 7, "Shutdown in two stages", label: <sec-shutdown>)
 
 Every long-running tool is eventually interrupted. A developer presses
 #kbd("Ctrl-C") because they spotted a typo in the inventory. Kubernetes sends
 `SIGTERM` to a pod and starts the `terminationGracePeriodSeconds` clock (30
 seconds by default) before it sends `SIGKILL`. A CI system cancels a job and
 sends `SIGINT`, then escalates to `SIGTERM` and `SIGKILL` a few seconds later.
-Each of these is a request to stop _soon_, and a well-behaved tool does three
-things in response:
+Each is a request to stop _soon_, and a well-behaved tool does three things:
 
 + Stop starting new work.
 + Cancel or finish in-flight work within a bounded time, and report what
   happened, including partial results.
-+ Exit with a status that tells the caller it was interrupted (130 for
-  `SIGINT`, by convention 128 + the signal number), not "success" and not a
-  generic failure.
++ Exit with a status that says it was interrupted (130 for `SIGINT`), not
+  "success" and not a generic failure.
 
-There is a fourth requirement that people forget until they have been burned
-by it. If graceful shutdown itself hangs (a stuck write, a dependency that
-never answers), the user must be able to force the issue. The convention
-across Docker, kubectl, Terraform and most well-behaved CLIs is the same: the
-first #kbd("Ctrl-C") asks politely, the second one means it.
+Step 2 already does all three. There is a fourth requirement that people
+forget until they've been burned by it. If shutdown itself hangs (a stuck
+write, a dependency that never answers), the user must be able to force the
+issue. The convention across Docker, kubectl, Terraform and most well-behaved
+CLIs is the same: the first #kbd("Ctrl-C") asks politely, the second one means
+it. `signal.NotifyContext` can't do that: after the first signal it cancels
+its context and quietly swallows every later one until `stop` is called, so a
+second #kbd("Ctrl-C") does nothing at all. This step replaces it with a
+package of our own, and adds two flags every production tool ends up with.
 
-#src("pkg/lifecycle/lifecycle.go", region: "notify")
+=== Package `lifecycle`
+
+Create `lifecycle/lifecycle.go`:
+
+#src("workbook/ch04/step7/lifecycle/lifecycle.go", region: "head")
+#src("workbook/ch04/step7/lifecycle/lifecycle.go", region: "notify")
 
 The details that make this production-grade:
 
-- The signal channel is buffered. `signal.Notify` never blocks when delivering
-  a signal; if the channel is full, the signal is dropped. With a buffer of
-  two, a fast double-tap is never lost.
+- The signal channel is buffered. `signal.Notify` never blocks when it
+  delivers a signal; if the channel is full, the signal is dropped. With a
+  buffer of two, a fast double-tap is never lost.
 - The cancellation cause is a typed `*SignalError`, so callers can tell
-  "interrupted by the user" from "deadline exceeded" with
-  `errors.AsType`. That is how `sweep` decides between exit status 130 and 1.
-- `Exit` and `Stderr` are injectable, so the two-stage behaviour has a real
-  test (@sec-testing), not a manual check.
-- `stop` is idempotent, unregisters the handler (restoring the default
-  "kill the process" behaviour for later signals), waits for the helper
-  goroutine, and cancels the context. Rule zero again.
+  "interrupted by the user" from "deadline exceeded" with `errors.AsType`.
+  That is how `sweep` chooses between exit status 130 and 1.
+- `Exit` and `Stderr` can be replaced, so the two-stage behaviour has a real
+  test, not a manual check.
+- `stop` is idempotent, unregisters the handler (restoring the default "kill
+  the process" behaviour for later signals), waits for the helper goroutine,
+  and cancels the context. Rule zero again.
 
-`main` stays tiny, and that is deliberate:
+The test sends real signals to the test process. It uses `SIGUSR1`, because a
+`SIGINT` would also reach `go test` itself. The build constraint keeps it off
+Windows, which has no `SIGUSR1`. Create `lifecycle/lifecycle_test.go`:
 
-#src("cmd/sweep/main.go", region: "main")
+#src("workbook/ch04/step7/lifecycle/lifecycle_test.go", region: "head")
+#src("workbook/ch04/step7/lifecycle/lifecycle_test.go", region: "test")
 
-`os.Exit` skips deferred functions, so `main` calls `stop()` explicitly before
-exiting, and everything interesting lives in `run`, which returns an exit code
-instead of calling `os.Exit`. Chapter 7 develops this pattern into a full
-CLI architecture.
+`syncBuffer` exists because the helper goroutine writes to `Stderr` while the
+test goroutine reads it; a plain `strings.Builder` would be a data race, and
+`-race` would say so.
+
+=== The final `main`
+
+Replace the imports of `main.go`: `lifecycle` replaces `os/signal` and
+`syscall`.
+
+#src("workbook/ch04/step7/cmd/sweep/main.go", region: "imports")
+
+Delete the `exitInterrupted` constant, since `lifecycle.ExitInterrupted` has
+the same value, and replace `main`:
+
+#src("workbook/ch04/step7/cmd/sweep/main.go", region: "main")
+
+`main` stays tiny, and the order of its last three lines matters. `os.Exit`
+ends the process without running deferred calls, so `stop()` is called by
+hand first; `defer stop()` followed by `os.Exit` would leave the signal
+handler registered and its goroutine running until the process died. Two new
+flags complete the tool:
+
+#src("workbook/ch04/step7/cmd/sweep/main.go", region: "flags")
+
+`-deadline` bounds the whole sweep, which a CI job needs when a step has a
+time budget. `-version` prints the version variable that release builds stamp
+with `-ldflags`. Replace `run`:
+
+#src("workbook/ch04/step7/cmd/sweep/main.go", region: "run")
+
+The deadline is one more layer in the context tree (@fig-context-tree), with
+its own cause, so cancelled results say "sweep deadline of 1.5s exceeded"
+instead of "context deadline exceeded". `isSignal` reads the cause to pick
+the exit status: a run cut short by #kbd("Ctrl-C") exits 130, while a run cut
+short by its own deadline exits 1, because a sweep that didn't finish in time
+didn't prove the fleet healthy.
+
+The interrupted test now cancels with a `SignalError`, as the real handler
+does. Replace the imports of `cmd/sweep/main_test.go` and the test:
+
+#src("workbook/ch04/step7/cmd/sweep/main_test.go", region: "imports")
+#src("workbook/ch04/step7/cmd/sweep/main_test.go", region: "interrupted")
 
 #production(title: [Shutdown in Kubernetes is a race])[
   When a pod is deleted, the kubelet sends `SIGTERM` _at the same time_ as the
   endpoints controller starts removing the pod from Service endpoints. For a
   few seconds your process is shutting down while load balancers and
   kube-proxy may still route new requests to it. Servers (Chapter 13) handle
-  this by failing their readiness probe first, sleeping briefly in a
-  `preStop` hook or in code, and only then draining. For batch-style tools
-  like `sweep`, the lesson is simpler: make the grace period you need explicit
-  in the Job spec, and make sure your shutdown path finishes well inside it.
+  this by failing their readiness probe first, waiting briefly in a `preStop`
+  hook or in code, and only then draining. For batch-style tools like
+  `sweep`, the lesson is simpler: make the grace period you need explicit in
+  the Job spec, and make sure your shutdown path finishes well inside it.
 ]
 
-== Assembling `sweep` <sec-sweep>
+=== What the tests now guarantee <sec-testing>
 
-Every piece is now in place. @fig-sweep shows how they fit together, and the
-rest of this section walks the request path from the top.
+`sweep` is done, and its tests are worth a second look as a set, because they
+show how to test concurrent code without flakiness:
 
-#fig(placement: auto, caption: [The `sweep` architecture. Limits are applied in a fixed order: global concurrency, per-host slot, then a rate-limit token per attempt.])[
-  #diagram(
-    spacing: (34pt, 9pt),
-    dnode((0, 0), [inventory file / stdin], kind: "muted"),
-    dnode((0, 1), [`ParseTargets` · all errors, with line numbers], kind: "default"),
-    dnode((0, 2), [`conc.Stream` · ≤ `-c` checks in flight], kind: "dark"),
-    dnode((0, 3), [`KeyedSemaphore` · ≤ `--per-host` per host:port], kind: "accent"),
-    dnode((0, 4), [`retry.Policy.Do` · full jitter, Permanent, After], kind: "accent"),
-    dnode((0, 5), [`rate.Limiter.Wait` · every attempt], kind: "accent"),
-    dnode((0, 6), [attempt context · `--timeout`, `errAttemptTimeout`], kind: "default"),
-    dnode((0, 7), [Prober: HTTP · TCP · TLS · DNS], kind: "default"),
-    dnode((1, 2), [`range` loop (single owner)\ → Summary + Reporter], kind: "dark"),
-    dnode((1, 3), [stdout: table · wide · json · jsonl\ stderr: summary · exit code], kind: "muted"),
-    dnode((1, 7), [`CachingResolver`\ TTL + singleflight], kind: "good"),
-    dnode((1, 8), [network], kind: "muted"),
-    dedge((0, 0), (0, 1), "-|>"),
-    dedge((0, 1), (0, 2), "-|>"),
-    dedge((0, 2), (0, 3), "-|>"),
-    dedge((0, 3), (0, 4), "-|>"),
-    dedge((0, 4), (0, 5), "-|>"),
-    dedge((0, 5), (0, 6), "-|>"),
-    dedge((0, 6), (0, 7), "-|>"),
-    dedge((0, 2), (1, 2), "--|>", label: [results]),
-    dedge((1, 2), (1, 3), "-|>"),
-    dedge((0, 7), (1, 7), "-|>", label: [lookups]),
-    dedge((1, 7), (1, 8), "-|>"),
-  )
-] <fig-sweep>
-
-=== The checker
-
-`Runner.Run` is a single line: a `conc.Stream` over the targets. The real work
-is the per-target `check`, which applies the limits in order and turns every
-outcome into a `Result`:
-
-#src("internal/sweep/runner.go", region: "check")
-
-A few choices are worth calling out. The attempt timeout uses
-`WithTimeoutCause`, so a slow target reads "attempt timed out after 5s" in the
-report, while a cancelled run reads `cancelled`. Latency and detail are
-recorded for every attempt, so a target that eventually fails shows the
-latency of its _last_ try, which is usually what you want when you
-investigate. And the function never returns an error: whatever happens
-becomes data in the `Result`.
-
-=== The probers
-
-Probers implement a one-method interface, which keeps the runner ignorant of
-protocols and makes testing trivial. A `ProberFunc` adapter lets tests inject
-behaviour without declaring a type, in the same style as `http.HandlerFunc`:
-
-#src("internal/sweep/probe.go", region: "prober")
-
-The HTTP prober is where error classification lives:
-
-#src("internal/sweep/probe.go", region: "http")
-
-Read the switch as a policy table. Success is anything below 400, so redirects
-count as healthy (the client follows up to five). 429 and 503 are retryable and
-honour `Retry-After`. Other 5xx are retryable. Remaining 4xx are permanent.
-Certificate verification failures are permanent too: an expired certificate
-won't renew itself between attempts.
-
-The response body is read up to 64 KiB before closing. HTTP/1.1 can only reuse
-a connection whose body was fully consumed, and connection reuse matters when
-you are checking 300 endpoints on one load balancer. Go 1.27 drains unread
-bodies on `Close` automatically, up to a conservative limit. Draining
-explicitly keeps the behaviour identical on older toolchains and makes the
-intent visible.
-
-=== Wiring
-
-#src("cmd/sweep/main.go", region: "probers")
-
-The HTTP client deliberately sets no `Client.Timeout`. Deadlines come from the
-context, per attempt, and a second, competing timeout would only produce
-confusing errors. The transport is cloned from `http.DefaultTransport`, which
-keeps its sensible defaults (proxy from the environment, HTTP/2, idle
-timeouts), and gets the caching dialer and a per-host idle pool sized to
-match `--per-host`.
-
-=== Running it
-
-The repository ships a sample inventory of public endpoints chosen to exercise
-every outcome: healthy sites, an endpoint that always returns 503, a 404, an
-expired certificate (courtesy of `badssl.com`), a closed TCP port, and a name
-that doesn't exist.
-
-#output("sweep-table.txt", cmd: "sweep -timeout 3s fleet.txt")
-#output("sweep-table.err", title: "stderr")
-
-Read the `TRIES` column against the classification rules. The 503 was tried
-three times. The 404, the bad certificate, and `NXDOMAIN` were tried once,
-because retrying them would be pointless. The closed port was retried, since
-"connection refused" is often a service mid-restart. In this run the expired
-certificate on the HTTPS target took three attempts: the first two attempts
-timed out (`badssl.com` is a shared public service and is sometimes slow),
-which is retryable, and the third reached the server and got a definitive
-certificate error. The output also shows why per-attempt timeouts and
-error-specific retry rules both matter. The whole sweep took roughly as long as
-its slowest target, not the sum of all of them, and the process exited with
-status 1, so a CI step running `sweep` fails the pipeline.
-
-For automation, `-o jsonl` streams one JSON object per result as soon as it
-completes, which composes with `jq`:
-
-#output("sweep-jq.txt", cmd: "sweep -o jsonl fleet.txt | jq -c 'select(.status==\"down\") | {target, attempts, error}'")
-
-Exercise 3 at the end of the chapter turns `sweep` into a deploy gate for the
-`ship` CLI in Chapter 23.
-
-== Testing concurrent code deterministically <sec-testing>
-
-Concurrent code earns its reputation for flaky tests in two ways: tests that
-depend on timing (`time.Sleep(100 * time.Millisecond)` and hope), and tests
-that pass while hiding races and leaks. Go now has good answers to both.
-
-=== Always: `-race` and leak checks
-
-The race detector instruments memory accesses and reports conflicting
-unsynchronized accesses that actually happen during the run. It typically
-costs several times more CPU and memory, so it doesn't belong in production
-builds, but `go test -race ./...` belongs in CI for every module in this book.
-It only finds races your tests exercise, so concurrent tests should really run
-things concurrently.
-
-Leaks need a separate check. `go.uber.org/goleak` compares the goroutines
-alive at the end of a test, or of the whole package, with those alive at the
-start, and fails if anything new is still running:
-
-#code(file: "pkg/conc/conc_test.go")[```go
-// TestMain fails the package if any test leaves a goroutine behind.
-func TestMain(m *testing.M) { goleak.VerifyTestMain(m) }
-```]
-
-In `pkg/conc` this one line turns rule zero from a convention into an
-enforced property.
-
-=== Virtual time with `testing/synctest`
-
-The retry policy sleeps between attempts, and the runner enforces timeouts of
-several seconds. Testing them with real time is slow, and testing them with
-short real timeouts is flaky. The traditional fix was to inject a fake clock
-interface through every layer of the code, which is invasive and easy to get
-wrong.
-
-Go 1.25 made `testing/synctest` generally available, and it removes the need
-for clock injection. `synctest.Test` runs a function in an isolated _bubble_.
-Inside the bubble, the `time` package uses a fake clock that starts at
-midnight UTC on 2000-01-01, and that clock only advances when every goroutine
-in the bubble is _durably blocked_: waiting on a channel, timer, `select`,
-`sync.Cond`, or `WaitGroup` that belongs to the bubble. Time then jumps
-straight to the next timer that would unblock something. Production code
-needs no changes at all.
-
-#src("pkg/retry/retry_test.go", region: "test")
-
-That test exercises three backoff sleeps and finishes in microseconds of real
-time, with exact, deterministic timing assertions. `synctest.Wait()` blocks
-until every other goroutine in the bubble is durably blocked, which is how
-the keyed semaphore test asserts that a third `Acquire` really _is_ waiting
-without sleeping and hoping.
-
-#newingo("1.27", title: [In-memory networks for synctest])[
-  Real sockets are not durably blocking, because a packet from outside the
-  bubble could wake them, so `synctest` alone can't virtualize an HTTP
-  round trip. Go 1.27 adds `httptest.NewTestServer`, which creates a test
-  server on an in-memory fake network suitable for bubbles. Its `Client()`
-  talks to that network. Server handlers that sleep for ten seconds, clients
-  that time out after two, and retries with backoff all run in virtual time.
-  Go 1.27 also adds `synctest.Sleep(d)`, shorthand for `time.Sleep(d)`
-  followed by `synctest.Wait()`.
-]
-
-Here is the fixture for the runner's test: one fake service with a path per
-behaviour.
-
-#src("internal/sweep/runner_test.go", region: "fixture")
-
-And the test that checks the classification rules end to end, with a
-three-attempt timeout sequence that would take six real seconds:
-
-#src("internal/sweep/runner_test.go", region: "test")
-
-#output("synctest-run.txt", cmd: "go test -v -run 'TestRunnerOutcomes|TestDoRetriesUntilSuccess' ./internal/sweep ./pkg/retry")
-
-`TestRunnerOutcomes` reports 0.00s. The six seconds of timeouts happened in
-virtual time. The test asserts that the sweep took between 6 and 6.3 seconds
-_of bubble time_, which is a precise statement about the retry and timeout
-behaviour that no real-time test could make reliably.
+- *Every package runs under `-race` in CI.* The race detector only finds races
+  that happen during the run, so concurrent tests must really run things
+  concurrently, as the fleet and limit tests do.
+- *goleak guards `conc` and `internal/sweep`.* A test that leaves a goroutine
+  behind fails, even if all its assertions passed.
+- *Timing is virtual.* The runner, retry and semaphore tests use `synctest`
+  bubbles and the in-memory network, so a test with three two-second timeouts
+  and jittered backoff finishes in microseconds and asserts exact durations.
+- *Real sockets stay outside bubbles.* The TLS certificate test, the TCP
+  test, the end-to-end CLI test and the signal test use the real clock and the
+  real network, and keep their timeouts generous.
 
 #warning(title: [What synctest can't see])[
   Locking a `sync.Mutex`, blocking on real I/O, and system calls are _not_
   durably blocking, because something outside the bubble could unblock them.
   A goroutine stuck on a mutex inside a bubble stops the fake clock from
-  advancing, and the test deadlocks. Keep mutex critical sections short (good
-  advice anyway), use the in-memory network, and keep real sockets, files and
-  subprocesses out of bubbles. Test those with the real clock, as
-  `TestUntrustedCertificateIsNotRetried` and the end-to-end CLI test do.
+  advancing, and a real socket inside a bubble can hang the test outright, as
+  the troubleshooting table below shows. Keep mutex critical sections short
+  (good advice anyway), use the in-memory network, and keep real sockets,
+  files and subprocesses out of bubbles.
 ]
 
-=== Testing the binary's behaviour
+#needspace(12em)
+#checkpoint(step: 7, of: 7, title: [Shutdown in two stages])[
+  This is the finished tool. Its files and tests match the repository's
+  `pkg/conc`, `pkg/retry`, `pkg/lifecycle`, `internal/sweep` and `cmd/sweep`.
+  #output("ch04/s7-tree.txt", cmd: "find . -name '*.go' | sort")
+  #output("ch04/s7-test.txt", cmd: "go vet ./... && go test -race ./...")
+  The bubbles at work: six seconds of timeouts and three backoff sleeps, in
+  no measurable time.
+  #output("ch04/s7-synctest.txt", cmd: "go test -v -run 'TestRunnerOutcomes|TestDoRetriesUntilSuccess' ./internal/sweep ./retry 2>&1 | grep -E '^(=== RUN|--- |ok)'", size: 6.6pt)
+  Build the binary and look at its interface:
+  #session(
+    ("go build -o sweep ./cmd/sweep", "ch04/s7-build.txt"),
+    ("./sweep -version", "ch04/s7-version.txt"),
+    ("./sweep -h", "ch04/s7-help.txt"),
+  )
+  With the fleet running, sweep the eight slow targets two at a time and
+  press #kbd("Ctrl-C") after about a second:
+  #session(
+    ("./sweep -c 2 many.txt", "ch04/s7-ctrlc.txt"),
+    ("echo $?", "ch04/s7-ctrlc-status.txt"),
+  )
+  The two checks in flight were cancelled and reported, the six that never
+  started are counted, and the status is 130. A deadline instead of a signal
+  gives status 1, and each cancelled result names the deadline:
+  #output("ch04/s7-deadline.txt", cmd: "./sweep -deadline 1500ms fleet.txt; echo \"exit status $?\"", size: 6.6pt)
+  #troubleshoot(
+    ([#ts("s7-unbuffered.txt")], [`make(chan os.Signal)` without a buffer: `signal.Notify` drops signals it can't deliver at once.], [Buffer the channel; two slots for a double-tap.]),
+    ([#ts("s7-lostcancel.txt")], [The `cancel` from `WithTimeoutCause` was discarded, so its timer lives until the deadline.], [Keep `cancel` and `defer cancel()`.]),
+    ([#ts("s7-exitdefer.txt")], [`defer stop()` followed by `os.Exit`: the deferred call never runs.], [Call `stop()` before `os.Exit`, as `main` does.]),
+    ([#ts("s7-realnet.txt")], [`httptest.NewServer` (real sockets) inside a `synctest` bubble: the fake clock waits for I/O that it can't see, and the test hangs.], [Use `httptest.NewTestServer` in bubbles.]),
+  )
+]
 
-The `run` function makes the CLI testable without building a binary:
+== How Go runs your goroutines <sec-scheduler>
 
-#src("cmd/sweep/main_test.go", region: "e2e")
+You can write correct concurrent Go without knowing how the runtime schedules
+goroutines. Knowing it helps you predict performance, explain what you see in
+a profile, and answer the interview question that comes up in almost every
+senior Go loop.
 
-That test uses real sockets, a real temporary file and real retries, so it
-also runs under `-race`. Usage errors and the interrupted path (exit 130) get
-their own small tests. The two-stage signal handling is tested by sending a
-real signal to the test process. It uses `SIGUSR1`, because a `SIGINT` would
-reach `go test` itself:
+The runtime multiplexes many goroutines (*G*) onto a few OS threads (*M*,
+for machine) through a fixed number of logical processors (*P*). A thread
+must hold a P to run Go code, and the number of Ps is `GOMAXPROCS`. Each P
+owns a local run queue of runnable goroutines. An idle P steals half of
+another P's queue, and there is a global queue for overflow and fairness.
 
-#src("pkg/lifecycle/lifecycle_test.go", region: "test")
+#fig(caption: [The G-M-P scheduler. Goroutines blocked on the network don't hold a thread; goroutines in a blocking syscall do, so the runtime hands their P to another thread.])[
+  #diagram(
+    spacing: (22pt, 16pt),
+    dnode((0, 0), [global run queue\ overflow & fairness], kind: "muted"),
+    dnode((0, 1), [*P0* · local queue\ G4 G5 G6], kind: "accent"),
+    dnode((1, 1), [*M0* · OS thread\ running G1], kind: "dark"),
+    dnode((2, 1), [CPU core], kind: "muted"),
+    dnode((0, 2), [*P1* · local queue\ G7], kind: "accent"),
+    dnode((1, 2), [*M1* · OS thread\ running G2], kind: "dark"),
+    dnode((2, 2), [CPU core], kind: "muted"),
+    dnode((0, 3), [netpoller\ G8 G9 parked on sockets], kind: "good"),
+    dnode((1, 3), [*M2* · blocked in a syscall with G3\ (its P was handed to another M)], kind: "warn"),
+    dedge((0, 0), (0, 1), "--|>"),
+    dedge((0, 1), (1, 1), "-"),
+    dedge((1, 1), (2, 1), "-|>"),
+    dedge((0, 2), (1, 2), "-"),
+    dedge((1, 2), (2, 2), "-|>"),
+    dedge((0, 3), (0, 2), "--|>", label: text(size: 6.5pt)[ready], label-side: left),
+    dedge((0, 2), (0, 1), "--|>", label: text(size: 6.5pt)[steal], label-side: left, bend: 60deg),
+  )
+] <fig-gmp>
 
-#output("test-all.txt", cmd: "go test -race ./...")
+Three properties of this design matter for tool authors.
+
+*Network waits are nearly free.* When a goroutine reads from a socket that has
+no data, the runtime parks it and registers the file descriptor with the OS
+poller (epoll on Linux, kqueue on macOS). No thread is blocked. When data
+arrives, the goroutine goes back on a run queue. This is why ten thousand
+goroutines each waiting on an HTTP response is unremarkable: they cost memory
+(stacks start at a few kilobytes and grow on demand), not threads. It is also
+why `sweep`'s limits are about the _targets_, not about Go.
+
+*Blocking syscalls and cgo are not free.* A goroutine making a blocking system
+call, such as a read from a slow NFS mount or a cgo call into a C library,
+holds its thread. The runtime notices and hands the P to another thread so
+other goroutines keep running, but the stuck thread still exists. Thousands of
+goroutines blocked in syscalls means thousands of OS threads. The runtime
+aborts the program at 10,000 threads by default (`debug.SetMaxThreads`).
+
+*Goroutines are preempted.* Since Go 1.14 the scheduler can interrupt a
+goroutine in a tight loop with an asynchronous signal, so one CPU-bound
+goroutine can't starve the others. You don't need `runtime.Gosched` calls
+sprinkled through loops.
+
+#newingo("1.25", title: [`GOMAXPROCS` respects container CPU limits])[
+  Before Go 1.25, `GOMAXPROCS` defaulted to the number of CPUs on the _node_.
+  A pod limited to 2 CPUs on a 64-core node ran with 64 Ps, burned its CFS
+  quota in a fraction of each period, and got throttled, which showed up as
+  mysterious latency spikes. Teams imported `go.uber.org/automaxprocs` to
+  fix it. Since Go 1.25 the runtime reads the cgroup CPU _limit_ on Linux and
+  updates `GOMAXPROCS` if the limit changes. It does not consider CPU
+  _requests_, so a pod with requests but no limit still sees every core. You
+  can opt out with `GODEBUG=containermaxprocs=0`, and setting `GOMAXPROCS`
+  explicitly disables both behaviours.
+]
+
+#interview(title: [“How are goroutines different from threads?”])[
+  Give the mechanism, not the slogan. Goroutines are scheduled by the Go
+  runtime onto a small pool of OS threads (M:N scheduling) through
+  `GOMAXPROCS` logical processors. They start with small, growable stacks, so
+  creating one costs about as much as a small allocation. Network I/O parks
+  goroutines on the netpoller without holding a thread, while blocking
+  syscalls do hold one, which is why a program doing slow file I/O can still
+  grow its thread count. Then close with the practical point: goroutines are
+  cheap, but the resources they hold (connections, file descriptors, memory,
+  load on a downstream service) are not. That is why you bound them.
+]
 
 == Diagnosing concurrency in production <sec-diagnosing>
 
@@ -323,41 +427,57 @@ for those nights.
 *Goroutine dumps.* Send `SIGQUIT` (`kill -QUIT <pid>`, or #kbd("Ctrl-\\") in a
 terminal) and the runtime prints every goroutine's stack and exits.
 `GOTRACEBACK=all` (or `system`, `crash`) controls how much detail appears.
-Since Go 1.27, tracebacks include the goroutine's `runtime/pprof` labels in the
-header line, so tag goroutines with labels such as the target or the request
-ID and the dump shows which goroutine was doing what. A dump with 4,000
+Since Go 1.27, tracebacks include the goroutine's `runtime/pprof` labels in
+the header line, so tag goroutines with labels such as the target or the
+request ID and the dump shows which goroutine was doing what. A dump with 4,000
 goroutines all parked on the same line is the classic signature of a leak.
+You have already read several of these: every `synctest` deadlock and test
+timeout in this chapter's troubleshooting tables printed one.
 
-*The goroutine profile.* In daemons, expose `net/http/pprof` on a localhost-only
-admin port, never on the public listener, and fetch
+*The goroutine profile.* In daemons, expose `net/http/pprof` on a
+localhost-only admin port, never on the public listener, and fetch
 `/debug/pprof/goroutine?debug=2` without killing the process. It aggregates
 identical stacks, so you see the count for each blocked line.
 
-*The goroutine leak profile.* Go 1.26 introduced a `goroutineleak` profile as
-an experiment, and Go 1.27 made it generally available in `runtime/pprof` and
-as `/debug/pprof/goroutineleak`. It uses the garbage collector to find
-goroutines blocked on a channel, mutex or condition variable that is no longer
-reachable from any goroutine that could unblock it. Those goroutines are
-provably stuck forever. Running the leaky example from @sec-ownership shows it
-pinpointing the bug:
+*The goroutine leak profile.* The most common goroutine leak in production Go
+looks innocent. Here it is, reduced to its essence in
+`examples/ch04/leak/main.go`:
 
-#output("leak.txt", cmd: "go run ./examples/ch04/leak")
+#src("examples/ch04/leak/main.go", region: "leak")
 
-The profile reports three leaked goroutines, all at `main.go:20`: the send
-inside the closure, after `checkAll` returned on the first error. The
-detection relies on reachability, so leaks through channels held in global
-variables or by runnable goroutines can escape it. It still catches a large
-and common class of bugs with no false positives, which is exactly what you
-want from a profile you check during an incident.
+When the first error arrives, the function returns and nobody will ever read
+from `errc` again. Every goroutine that hasn't sent yet blocks forever,
+holding its stack and anything it references. It is step 2's leak without the
+test that caught it. Run it a thousand times in a long-lived process and you
+have a slow memory leak that no heap profile explains. The fixes are a buffered
+channel sized to the number of senders, or a context that senders `select`
+on, or `conc.Map`.
 
-*The execution trace flight recorder.* Some problems are about _timing_:
-a reconcile loop that stalls for two seconds once an hour, or GC pauses that
+Go 1.26 introduced a `goroutineleak` profile as an experiment, and Go 1.27
+made it generally available in `runtime/pprof` and as
+`/debug/pprof/goroutineleak`. It uses the garbage collector to find goroutines
+blocked on a channel, mutex or condition variable that is no longer reachable
+from any goroutine that could unblock it. Those goroutines are provably stuck
+forever. The example's `main` calls `checkAll`, waits, and prints the profile.
+Copy it into a directory of its own with a `go.mod` and run it:
+
+#output("ch04/leak.txt", cmd: "go run .")
+
+The profile reports three leaked goroutines, all on line 20: the send inside
+the closure, after `checkAll` returned on the first error. Detection relies on
+reachability, so leaks through channels held in global variables or by
+runnable goroutines can escape it. It still catches a large and common class
+of bugs with no false positives, which is exactly what you want from a
+profile you check during an incident.
+
+*The execution trace flight recorder.* Some problems are about _timing_: a
+reconcile loop that stalls for two seconds once an hour, or GC pauses that
 line up with timeouts. `runtime/trace.FlightRecorder` (Go 1.25) keeps the
 last few seconds of execution trace in a ring buffer at low overhead, and
 `WriteTo` snapshots it when your code notices something wrong, for instance a
-request that exceeded its latency SLO. You get a trace of the moments _before_
-the anomaly, which is what you need. Chapter 30 uses it alongside CPU and
-heap profiles and PGO.
+request that exceeded its latency objective. You get a trace of the moments
+_before_ the anomaly, which is what you need. Chapter 30 uses it alongside
+CPU and heap profiles and PGO.
 
 For dashboards, `runtime/metrics` exposes scheduler metrics (Go 1.26 added
 counts of goroutines by state under `/sched/goroutines`, OS thread counts, and
@@ -366,19 +486,112 @@ Prometheus alongside the application's own metrics.
 
 #takeaways(
   [Goroutines are cheap; what they hold is not. Bound concurrency according to what the _downstream_ tolerates, and make the bound a flag.],
-  [Rule zero: a function that starts goroutines doesn't return until they finish. `WaitGroup.Go`, `errgroup`, and iterators that wait before returning make this easy to keep.],
-  [Contexts form a tree. Derive, don't replace; always call `cancel`; use causes so users and exit codes can tell #kbd("Ctrl-C") from a deadline from a slow target.],
+  [Rule zero: a function that starts goroutines doesn't return until they finish. `WaitGroup.Go`, `errgroup`, and iterators that wait before returning make this easy to keep; goleak makes it a test.],
+  [Contexts form a tree. Derive, don't replace; always call `cancel`; use causes so users and exit statuses can tell #kbd("Ctrl-C") from a deadline from a slow target.],
   [Pick failure semantics deliberately: fail-fast (`conc.Map`) when one error invalidates the result, collect-all (`conc.Stream`) when failures are data.],
   [Retries need classification, exponential backoff with full jitter, a cap, a total deadline, `Retry-After`, and a shared rate budget. Anything less can amplify an outage.],
   [Shared lookups via singleflight must not inherit one caller's cancellation: detach with `WithoutCancel`, bound with a timeout, and let callers wait on their own contexts.],
-  [Graceful shutdown has two stages: the first signal cancels and reports, the second exits immediately with status 130.],
+  [Prefer ownership to locks: one goroutine that owns the reporter needs no mutex.],
+  [Graceful shutdown has two stages: the first signal cancels and reports, the second exits at once with status 130.],
   [`-race`, goleak and `testing/synctest` (plus Go 1.27's `httptest.NewTestServer`) make concurrent tests fast and deterministic. The `goroutineleak` profile finds what tests miss.],
 )
 
-#exercises(
-  [*Ordered streaming.* Add `--ordered` to `sweep` so that `jsonl` output is in input order while still streaming. Implement a reorder buffer that emits result _i_ as soon as results 0 to _i_ have arrived, and bound its memory. What happens to the buffer if target 0 is the slowest? Write a `synctest` test that proves the bound holds.],
-  [*Adaptive concurrency.* Replace the fixed per-host limit with an AIMD limiter (additive increase, multiplicative decrease, the TCP congestion-control rule): raise a host's limit by one after each success, and halve it on a timeout or 503. Compare total sweep time against fixed limits using a fake fleet in a `synctest` bubble.],
-  [*A deploy gate.* Add `--require` flags (for example `--require 'up>=99%'` and `--require 'p95<800ms'`) that set the exit status from aggregate thresholds instead of "any target down". This is the health gate that the `ship` CLI in Chapter 23 calls between promotion stages.],
-  [*Retry budget.* Implement a retry budget in `pkg/retry`: a token bucket shared by all callers that permits retries only up to 10% of recent first attempts. Show with a `synctest` simulation of 500 failing targets that the total attempt count stays bounded.],
-  [*Find the leak.* Introduce a deliberate bug into `conc.Stream` (remove the `consumerGone` case from the worker's `select`). Which test catches it, and how? Then compile the leak example with Go 1.26 and Go 1.27 and compare what you need to do to get the `goroutineleak` profile.],
+#exercise-set(4,
+  (
+    tier: "warm-up",
+    title: [Count the retries],
+    body: [
+      A target that needed three attempts to come up is healthy today and a
+      problem next week. Add a `Retried` field to `Summary` (JSON key
+      `retried`) that counts results with more than one attempt, whatever
+      their status, and make `String` append `, N retried` after the down
+      count when N is above zero. With no retries the line must not change.
+    ],
+    hint: [Everything happens in `report.go`. Which method sees every result?],
+    tests: "workbook/ch04/exercises/ex1",
+  ),
+  (
+    tier: "warm-up",
+    title: [Collect every error],
+    body: [
+      `conc.Map` stops at the first error. Write `conc.MapAll`, with the same
+      signature, that runs every call (at most `limit` at once), returns all
+      results in input order, and returns the failures joined with
+      `errors.Join` in input order, or `nil` if there were none. A failure
+      must not cancel the other calls. The result of a failed item is `R`'s
+      zero value.
+    ],
+    hint: [Start from the semaphore shape in @sec-bounded, not from `Map`: `errgroup.WithContext` is exactly the behaviour you don't want.],
+    tests: "workbook/ch04/exercises/ex2",
+  ),
+  (
+    tier: "warm-up",
+    title: [Which limit binds?],
+    body: [
+      `sweep` has three limits: `-c` (default 32), `-per-host` (4) and `-rate`
+      (50 attempts per second, burst 5). For each inventory, predict how long
+      the sweep takes and which limit decides it, assuming every target
+      answers successfully: (a) 300 targets spread evenly over 3 hosts, each
+      answering in 100 ms, default flags; (b) the same with `-rate 0`; (c) 300
+      targets on 300 different hosts, 100 ms each, `-rate 0`; (d) 200 targets
+      on one host that answers instantly, default flags. Then check (d)
+      against the fake fleet with and without `-rate 0`.
+    ],
+    hint: [Work out each limit's ceiling in checks per second; the lowest one wins.],
+  ),
+  (
+    tier: "core",
+    title: [Fail fast],
+    body: [
+      A deploy gate doesn't need to know about every broken target; one is
+      enough to stop the promotion. Add `-fail-fast` to `sweep`: stop at the
+      first result that is down, cancel the checks in flight, print the
+      results seen so far, and end the summary line with
+      `(stopped at first failure)`. The exit status is 1. Without the flag,
+      nothing changes.
+    ],
+    hint: [The change is a few lines in `run`. What does `Stream` do when the loop body executes `break`?],
+    tests: "workbook/ch04/exercises/ex4",
+  ),
+  (
+    tier: "core",
+    title: [A time budget for retries],
+    body: [
+      `MaxAttempts` bounds how many times `Do` tries, but not how long it
+      takes when each attempt is slow. Add `MaxElapsed time.Duration` to
+      `retry.Policy`. When it is positive, `Do` must not start a sleep that
+      would end more than `MaxElapsed` after the first attempt began; it
+      returns an `*ExhaustedError` for the attempts made so far instead, at
+      once, without sleeping first. Zero means no limit.
+    ],
+    hint: [You know the delay before you sleep. Test in a bubble, where "returned without sleeping" can be checked exactly.],
+    tests: "workbook/ch04/exercises/ex5",
+  ),
+  (
+    tier: "core",
+    title: [Why `consumerGone`?],
+    body: [
+      Delete the `case <-consumerGone:` line from the worker's `select` in
+      `conc.Stream` and run the package's tests. Which test fails, how, and
+      why? Explain which goroutines are stuck and on what, and why the parent
+      context's cancellation doesn't free them. Then explain why the fix is
+      a separate channel instead of `ctx.Done()`.
+    ],
+    hint: [Read the goroutine states in the panic: `chan send` and `sync.WaitGroup.Wait`. Who would receive?],
+  ),
+  (
+    tier: "stretch",
+    title: [Ordered streaming],
+    body: [
+      Write `conc.StreamOrdered`, with `Stream`'s signature and behaviour
+      except that results come out in input order: each one as soon as every
+      result before it has been yielded, while calls still run concurrently.
+      Memory must stay bounded: at most `limit` calls may be running or
+      finished but not yet yielded, so one slow first item makes the stream
+      wait rather than buffer the whole input. Early `break` and parent
+      cancellation behave as for `Stream`.
+    ],
+    hint: [Give each call its own one-slot result channel, and queue those channels in input order. When is a slot really free?],
+    tests: "workbook/ch04/exercises/ex7",
+  ),
 )

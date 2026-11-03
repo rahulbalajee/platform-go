@@ -1,0 +1,7 @@
+DOWN http://127.0.0.1:8099/missing unhealthy status 404 Not Found
+DOWN http://127.0.0.1:8099/down    unhealthy status 503 Service Unavailable
+UP   http://127.0.0.1:8099/ok      200 OK
+DOWN http://127.0.0.1:8099/slow?a  attempt timed out after 2s
+DOWN http://127.0.0.1:8099/slow?b  attempt timed out after 2s
+checked 5/5 targets in 2.001s: 1 up, 4 down
+exit status 1

@@ -1,0 +1,5 @@
+internal/sweep/probe.go:32:26: response body must be closed (bodyclose)
+        resp, err := p.Client.Do(req)
+                                ^
+1 issues:
+* bodyclose: 1

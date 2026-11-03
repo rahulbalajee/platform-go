@@ -1,0 +1,6 @@
+http://127.0.0.1:8099/ok
+tcp://localhost:8099
+tcp://127.0.0.1:9
+tls://go.dev:443
+dns://go.dev
+dns://does-not-exist.invalid

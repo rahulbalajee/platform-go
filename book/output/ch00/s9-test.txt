@@ -1,0 +1,3 @@
+$ go test ./...
+?   	logq	[no test files]
+ok  	logq/logline	0.393s

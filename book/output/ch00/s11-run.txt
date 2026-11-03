@@ -1,0 +1,17 @@
+$ go build -o logq .
+$ ./logq -count -level warn -grep timeout app.log edge.log
+app.log:11: bad time "this"
+query: level>=WARN and message contains "timeout"
+DEBUG  0
+INFO   0
+WARN   1
+ERROR  3
+bad    1
+errors: 75.0% of 4 entries
+from 09:01:30 to 09:04:44 (3m14s)
+$ ./logq -regexp 'job [0-9]+ (done|failed)' app.log
+2026-11-03T09:03:00Z INFO worker job 1182 done in 3.2s
+app.log:11: bad time "this"
+2026-11-03T09:04:02Z ERROR worker job 1190 failed: timeout after 30s
+$ ./logq -regexp 'job [0-9+' app.log
+logq: error parsing regexp: missing closing ]: `[0-9+`

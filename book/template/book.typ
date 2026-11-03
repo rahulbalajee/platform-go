@@ -223,7 +223,7 @@
     fill: accent.lighten(94%), stroke: (left: 2.6pt + accent),
     inset: (left: 13pt, right: 12pt, top: 9pt, bottom: 10pt), radius: (right: 4pt),
   )[
-    #block(below: 6pt)[
+    #block(below: 6pt, sticky: true)[
       #text(font: fonts.sans, size: 7.4pt, weight: "bold", fill: accent, tracking: 0.08em)[#upper(label)]
       #if title != none {
         h(4pt); text(font: fonts.sans, size: 8.6pt, weight: "semibold", fill: c.ink)[#title]
@@ -342,7 +342,8 @@
   width: 100%, breakable: true, above: 1.5em, below: 1.5em,
   stroke: 0.9pt + c.tip, radius: 5pt,
 )[
-  #block(width: 100%, fill: c.tip, inset: (x: 11pt, y: 5.5pt), radius: (top: 4pt), below: 0pt)[
+  #block(width: 100%, fill: c.tip, inset: (x: 11pt, y: 5.5pt), radius: (top: 4pt), below: 0pt,
+    sticky: true)[
     #text(font: fonts.sans, size: 7.4pt, weight: "bold", fill: white, tracking: 0.1em)[CHECKPOINT#if step != none [ · STEP #step#if of != none [ OF #of]]]
     #if title != none { h(6pt); text(font: fonts.sans, size: 8.6pt, weight: "semibold", fill: white)[#title] }
   ]
@@ -352,6 +353,23 @@
     #body
   ]
 ]
+
+// quote-output: the key lines of a real failure, read from a file the capture
+// script wrote by breaking a copy of a step (book/output/chNN/ts/...). Use it
+// for the "If you see" cell of troubleshoot rows, so error text is never typed.
+#let quote-output(path) = {
+  show raw: set text(size: 6.5pt)
+  set par(justify: false, leading: 0.42em)
+  block(breakable: false, raw(read("/book/output/" + path).trim(), block: true))
+}
+
+// needspace: start a new page unless h of vertical space is left (e.g. before
+// a checkpoint whose first block is tall). An empty unbreakable block either
+// fits or moves to the next page; the negative space then gives the room back.
+#let needspace(h) = {
+  block(height: h, breakable: false, above: 0pt, below: 0pt)
+  v(-h)
+}
 
 // troubleshoot: symptom -> cause -> fix rows; pass triples of content.
 #let troubleshoot(..rows) = {
@@ -389,10 +407,11 @@
     let k = i + 1
     let id = str(chapter) + "." + str(k)
     [#block(above: 1.2em, below: 1.2em, breakable: true)[
-      #text(font: fonts.sans, size: 9pt, weight: "bold", fill: c.godark)[Exercise #id]
-      #h(5pt) #_badge(ex.tier) #h(5pt)
-      #text(font: fonts.sans, size: 9pt, weight: "semibold", fill: c.ink)[#ex.title]
-      #v(-2pt)
+      #block(below: 0pt, sticky: true)[
+        #text(font: fonts.sans, size: 9pt, weight: "bold", fill: c.godark)[Exercise #id]
+        #h(5pt) #_badge(ex.tier) #h(5pt)
+        #text(font: fonts.sans, size: 9pt, weight: "semibold", fill: c.ink)[#ex.title]
+      ]
       #block(above: 0.6em)[#ex.body]
       #if ex.at("hint", default: none) != none {
         block(above: 0.5em, text(size: 9pt, fill: c.muted)[_Hint:_ #ex.hint])

@@ -1,0 +1,2 @@
+$ go build .
+main.go:13:2: found packages logline (logline.go) and main (stats.go) in /Users/you/logq/logline

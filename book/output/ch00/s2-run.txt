@@ -1,0 +1,8 @@
+$ go run .
+lines in sample: 7
+error on line 3 -> 2026-11-03T09:02:40Z ERROR api GET /orders 500 timeout
+error on line 4 -> 2026-11-03T09:02:41Z ERROR db connection reset by peer
+skipping line 5 because it is too short
+skipping line 7 because it is too short
+debug: 1 info: 1 warn: 1 error: 2 skipped: 2
+status: errors found

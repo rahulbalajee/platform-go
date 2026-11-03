@@ -1,0 +1,7 @@
+$ go vet ./...
+$ golangci-lint run ./...
+scan.go:61:14: Error return value of `enc.Encode` is not checked (errcheck)
+			enc.Encode(e)
+			          ^
+1 issues:
+* errcheck: 1

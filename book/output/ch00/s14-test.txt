@@ -1,0 +1,5 @@
+$ go test -race ./...
+ok  	logq	3.041s
+ok  	logq/logline	3.468s
+ok  	logq/match	4.525s
+ok  	logq/rank	4.012s

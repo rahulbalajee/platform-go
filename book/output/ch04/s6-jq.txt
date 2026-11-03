@@ -1,0 +1,4 @@
+{"target":"http://127.0.0.1:8099/missing","attempts":1,"error":"unhealthy status 404 Not Found"}
+{"target":"http://127.0.0.1:8099/down","attempts":3,"error":"unhealthy status 503 Service Unavailable (after 3 attempts)"}
+{"target":"http://127.0.0.1:8099/busy","attempts":3,"error":"unhealthy status 429 Too Many Requests (after 3 attempts)"}
+{"target":"http://127.0.0.1:8099/slow","attempts":3,"error":"attempt timed out after 1s (after 3 attempts)"}

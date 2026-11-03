@@ -1,0 +1,9 @@
+$ go build -o logq .
+$ ./logq -h
+usage: logq [flags] [file ...]
+  -count
+    	print counts by level instead of entries
+  -grep text
+    	show entries whose message contains text
+  -level level
+    	show entries at this level or above (default "debug")

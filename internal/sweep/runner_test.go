@@ -17,10 +17,10 @@ import (
 // START fixture OMIT
 // fleet is a fake service with one path per behaviour we care about. It
 // runs on httptest.NewTestServer's in-memory network (Go 1.27), so inside a
-// synctest bubble every sleep and timeout happens in virtual time.
-func fleet(t *testing.T, inFlight, peak *atomic.Int64) *httptest.Server {
-	var flakyCalls atomic.Int64
-	mux := http.NewServeMux()
+// synctest bubble every sleep and timeout happens in virtual time. peak
+// records the most requests the fleet ever served at once.
+func fleet(t *testing.T, peak *atomic.Int64) *httptest.Server {
+	var inFlight, flakyCalls atomic.Int64
 	track := func(h http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			n := inFlight.Add(1)
@@ -33,6 +33,7 @@ func fleet(t *testing.T, inFlight, peak *atomic.Int64) *httptest.Server {
 			h(w, r)
 		}
 	}
+	mux := http.NewServeMux()
 	mux.HandleFunc("/ok", track(func(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(50 * time.Millisecond)
 	}))
@@ -53,6 +54,28 @@ func fleet(t *testing.T, inFlight, peak *atomic.Int64) *httptest.Server {
 
 // END fixture OMIT
 
+// START helpers OMIT
+// newRunner builds a Runner whose HTTP checks go to srv. Tests set the
+// knobs they care about; the others get roomy defaults.
+func newRunner(t *testing.T, srv *httptest.Server, cfg sweep.Config) *sweep.Runner {
+	t.Helper()
+	if cfg.Concurrency == 0 {
+		cfg.Concurrency = 8
+	}
+	if cfg.PerHost == 0 {
+		cfg.PerHost = cfg.Concurrency
+	}
+	cfg.Probers = map[sweep.Kind]sweep.Prober{
+		sweep.KindHTTP: sweep.HTTPProber{Client: srv.Client()},
+	}
+	runner, err := sweep.NewRunner(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return runner
+}
+
+// targets parses one target per path on base, as an inventory would list them.
 func targets(t *testing.T, base string, paths ...string) []sweep.Target {
 	t.Helper()
 	var b strings.Builder
@@ -66,26 +89,20 @@ func targets(t *testing.T, base string, paths ...string) []sweep.Target {
 	return ts
 }
 
-// START test OMIT
+// END helpers OMIT
+
+// START outcomes OMIT
 func TestRunnerOutcomes(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		var inFlight, peak atomic.Int64
-		srv := fleet(t, &inFlight, &peak)
-		runner, err := sweep.NewRunner(sweep.Config{
-			Concurrency: 8,
-			PerHost:     8,
-			Timeout:     2 * time.Second,
+		var peak atomic.Int64
+		srv := fleet(t, &peak)
+		runner := newRunner(t, srv, sweep.Config{
+			Timeout: 2 * time.Second,
 			Retry: retry.Policy{
 				MaxAttempts: 3,
 				BaseDelay:   100 * time.Millisecond,
 			},
-			Probers: map[sweep.Kind]sweep.Prober{
-				sweep.KindHTTP: sweep.HTTPProber{Client: srv.Client()},
-			},
 		})
-		if err != nil {
-			t.Fatal(err)
-		}
 
 		start := time.Now()
 		got := map[string]sweep.Result{}
@@ -121,17 +138,81 @@ func TestRunnerOutcomes(t *testing.T) {
 	})
 }
 
-// END test OMIT
+// END outcomes OMIT
 
+// START cancel OMIT
+func TestRunnerCancellationMarksInFlightTargets(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		var peak atomic.Int64
+		srv := fleet(t, &peak)
+		runner := newRunner(t, srv, sweep.Config{
+			Concurrency: 2,
+			Timeout:     time.Minute,
+		})
+		ctx, cancel := context.WithCancel(t.Context())
+		time.AfterFunc(3*time.Second, cancel) // the user presses Ctrl-C
+
+		var statuses []sweep.Status
+		inv := targets(t, srv.URL, "/slow", "/slow", "/slow", "/slow")
+		for r := range runner.Run(ctx, inv) {
+			statuses = append(statuses, r.Status)
+		}
+		if len(statuses) != 2 {
+			t.Fatalf("got %d results, want only the 2 that had started",
+				len(statuses))
+		}
+		for _, s := range statuses {
+			if s != sweep.StatusCancelled {
+				t.Errorf("status = %s, want cancelled", s)
+			}
+		}
+	})
+}
+
+// END cancel OMIT
+
+// START limit OMIT
+func TestRunnerRespectsConcurrencyLimit(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		var peak atomic.Int64
+		srv := fleet(t, &peak)
+		runner := newRunner(t, srv, sweep.Config{
+			Concurrency: 3,
+			Timeout:     time.Second,
+		})
+		paths := make([]string, 30)
+		for i := range paths {
+			paths[i] = "/ok"
+		}
+
+		start, n := time.Now(), 0
+		for range runner.Run(t.Context(), targets(t, srv.URL, paths...)) {
+			n++
+		}
+		if n != 30 {
+			t.Fatalf("got %d results, want 30", n)
+		}
+		if p := peak.Load(); p != 3 {
+			t.Errorf("peak concurrent requests = %d, want 3", p)
+		}
+		// 30 checks of 50ms, three at a time: ten rounds.
+		if el := time.Since(start); el != 500*time.Millisecond {
+			t.Errorf("sweep took %v, want 500ms", el)
+		}
+	})
+}
+
+// END limit OMIT
+
+// START perhost OMIT
 func TestRunnerRespectsPerHostLimit(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		var inFlight, peak atomic.Int64
-		srv := fleet(t, &inFlight, &peak)
-		runner, _ := sweep.NewRunner(sweep.Config{
+		var peak atomic.Int64
+		srv := fleet(t, &peak)
+		runner := newRunner(t, srv, sweep.Config{
 			Concurrency: 50, // plenty of global capacity...
 			PerHost:     3,  // ...but only 3 at a time against this host
 			Timeout:     time.Second,
-			Probers:     map[sweep.Kind]sweep.Prober{sweep.KindHTTP: sweep.HTTPProber{Client: srv.Client()}},
 		})
 		paths := make([]string, 30)
 		for i := range paths {
@@ -150,48 +231,33 @@ func TestRunnerRespectsPerHostLimit(t *testing.T) {
 	})
 }
 
-func TestRunnerCancellationMarksInFlightTargets(t *testing.T) {
-	synctest.Test(t, func(t *testing.T) {
-		var inFlight, peak atomic.Int64
-		srv := fleet(t, &inFlight, &peak)
-		runner, _ := sweep.NewRunner(sweep.Config{
-			Concurrency: 2, PerHost: 2, Timeout: time.Minute,
-			Probers: map[sweep.Kind]sweep.Prober{sweep.KindHTTP: sweep.HTTPProber{Client: srv.Client()}},
-		})
-		ctx, cancel := context.WithCancel(t.Context())
-		time.AfterFunc(3*time.Second, cancel) // the user presses Ctrl-C
+// END perhost OMIT
 
-		var statuses []sweep.Status
-		for r := range runner.Run(ctx, targets(t, srv.URL, "/slow", "/slow", "/slow", "/slow")) {
-			statuses = append(statuses, r.Status)
-		}
-		if len(statuses) != 2 {
-			t.Fatalf("got %d results, want only the 2 that had started", len(statuses))
-		}
-		for _, s := range statuses {
-			if s != sweep.StatusCancelled {
-				t.Errorf("status = %s, want cancelled", s)
-			}
-		}
-	})
-}
-
+// START cert OMIT
 func TestUntrustedCertificateIsNotRetried(t *testing.T) {
-	srv := httptest.NewTLSServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	srv := httptest.NewTLSServer(http.NotFoundHandler())
 	defer srv.Close()
 	// A client that does NOT trust the test server's self-signed CA.
-	runner, _ := sweep.NewRunner(sweep.Config{
+	untrusting := sweep.HTTPProber{Client: &http.Client{}}
+	runner, err := sweep.NewRunner(sweep.Config{
 		Concurrency: 1, PerHost: 1, Timeout: 5 * time.Second,
 		Retry:   retry.Policy{MaxAttempts: 3, BaseDelay: time.Millisecond},
-		Probers: map[sweep.Kind]sweep.Prober{sweep.KindHTTP: sweep.HTTPProber{Client: &http.Client{}}},
+		Probers: map[sweep.Kind]sweep.Prober{sweep.KindHTTP: untrusting},
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 	for r := range runner.Run(t.Context(), targets(t, srv.URL, "/")) {
-		if r.Status != sweep.StatusDown || r.Attempts != 1 || !strings.Contains(r.Error, "certificate") {
-			t.Errorf("got %+v, want down after exactly 1 attempt with a certificate error", r)
+		if r.Status != sweep.StatusDown || r.Attempts != 1 ||
+			!strings.Contains(r.Error, "certificate") {
+			t.Errorf("got %+v, want down after 1 attempt, certificate error", r)
 		}
 	}
 }
 
+// END cert OMIT
+
+// START parse OMIT
 func TestParseTargetsReportsAllErrors(t *testing.T) {
 	_, err := sweep.ParseTargets(strings.NewReader(`
 # inventory
@@ -203,9 +269,12 @@ dns://example.com
 	if err == nil {
 		t.Fatal("want error")
 	}
-	for _, want := range []string{"line 4", "unsupported scheme", "line 5", "host:port"} {
+	wants := []string{"line 4", "unsupported scheme", "line 5", "host:port"}
+	for _, want := range wants {
 		if !strings.Contains(err.Error(), want) {
 			t.Errorf("error %q missing %q", err, want)
 		}
 	}
 }
+
+// END parse OMIT

@@ -1,0 +1,1 @@
+cmd/sweep/main.go:130:8: the cancel function returned by context.WithTimeoutCause should be called, not discarded, to avoid a context leak

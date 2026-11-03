@@ -1,0 +1,6 @@
+checkAll: db-1: connection refused
+goroutines: 4
+goroutineleak profile: total 3
+3 @ 0x… 0x… 0x… 0x… 0x…
+#       0x…     main.checkAll.func1+0x37        ~/leak/main.go:20
+

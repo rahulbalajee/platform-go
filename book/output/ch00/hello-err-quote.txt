@@ -1,0 +1,4 @@
+$ go run .
+# hello
+./main.go:6:41: newline in string
+./main.go:6:41: syntax error: unexpected newline in argument list; possibly missing comma or )

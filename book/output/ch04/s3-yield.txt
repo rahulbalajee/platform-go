@@ -1,0 +1,21 @@
+panic: runtime error: range function continued iteration after function for loop body returned false [recovered, repanicked]
+
+goroutine 36 [running, synctest bubble 4]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+sweep/conc_test.TestStreamEarlyBreakCancelsAndWaits.func1-range1(0x…?)
+        ~/broken/conc/conc_test.go:119 +0x74
+sweep/conc.Stream[...].1()
+        ~/broken/conc/conc.go:116 +0x15c
+sweep/conc_test.TestStreamEarlyBreakCancelsAndWaits.func1(0x…)
+        ~/broken/conc/conc_test.go:119 +0x158
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing/synctest.testingSynctestTest in goroutine 35
+        $GOROOT/src/testing/testing.go:2309 +0x204
+FAIL    sweep/conc      0.438s
+FAIL

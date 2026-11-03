@@ -1,0 +1,3 @@
+$ go build .
+# logq
+./main.go:62:21: undefined: logline.parse

@@ -1,0 +1,5 @@
+$ go run . -level loud app.log
+logq: unknown level "loud"
+exit status 2
+$ echo $?
+1

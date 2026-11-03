@@ -1,0 +1,5 @@
+sweep: invalid targets:
+  line 2: "ftp://files.example.com/": unsupported scheme "ftp" (want http or https)
+  line 3: "https://:8443/healthz": missing host
+  line 4: "http://127.0.0.1:99999/ok": invalid port "99999" (want 1-65535)
+exit status 2

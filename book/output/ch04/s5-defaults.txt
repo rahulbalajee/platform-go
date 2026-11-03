@@ -1,0 +1,25 @@
+panic: invalid argument to N [recovered, repanicked]
+
+goroutine 25 [running, synctest bubble 2]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+math/rand/v2.(*Rand).N[...](...)
+        $GOROOT/src/math/rand/v2/rand.go:215
+math/rand/v2.N[...](...)
+        $GOROOT/src/math/rand/v2/rand.go:337
+sweep/retry.Policy.backoff({0x3, 0x0, 0x0, 0x0, 0x0}, 0x1, {0x…?, 0x…?})
+        ~/broken/retry/retry.go:128 +0xc0
+sweep/retry.Policy.Do({0x3, 0x0, 0x0, 0x0, 0x0}, {0x…, 0x…}, 0x…)
+        ~/broken/retry/retry.go:74 +0xd0
+sweep/retry_test.TestDoExhaustionWrapsLastError.func1(0x…)
+        ~/broken/retry/retry_test.go:70 +0x64
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing/synctest.testingSynctestTest in goroutine 24
+        $GOROOT/src/testing/testing.go:2309 +0x204
+FAIL    sweep/retry     0.547s
+FAIL

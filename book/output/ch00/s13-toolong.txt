@@ -1,0 +1,3 @@
+$ ./logq huge.log
+logq: huge.log:1: bufio.Scanner: token too long
+logq: hint: lines can be at most 1048576 bytes long

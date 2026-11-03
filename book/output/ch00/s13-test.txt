@@ -1,0 +1,5 @@
+$ go test ./...
+ok  	logq	0.925s
+ok  	logq/logline	0.424s
+ok  	logq/match	1.711s
+ok  	logq/rank	1.315s

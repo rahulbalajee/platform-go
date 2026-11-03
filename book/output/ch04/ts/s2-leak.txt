@@ -1,0 +1,2 @@
+goleak: Errors on successful test run: found unexpected goroutines:
+[Goroutine 12 in state chan send, with sweep/internal/sweep.(*Runner).Run.func1 on top of the stack:

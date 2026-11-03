@@ -1,0 +1,9 @@
+$ go run . app.log
+line 11: bad time "this"
+DEBUG  0
+INFO   0
+WARN   0
+ERROR  0
+bad    1
+errors: 0.0% of 0 entries
+from 00:00:00 to 00:00:00 (0s)

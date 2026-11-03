@@ -1,0 +1,7 @@
+UP   http://127.0.0.1:8099/ok      200 OK
+DOWN http://127.0.0.1:8099/down    unhealthy status 503 Service Unavailable
+DOWN http://127.0.0.1:8099/missing unhealthy status 404 Not Found
+DOWN http://127.0.0.1:8099/slow?a  Get "http://127.0.0.1:8099/slow?a": context deadline exceeded
+DOWN http://127.0.0.1:8099/slow?b  Get "http://127.0.0.1:8099/slow?b": context deadline exceeded
+checked 5/5 targets in 4.004s: 1 up, 4 down
+exit status 1

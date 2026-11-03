@@ -157,6 +157,51 @@ more.
 The old `#exercises(...)` helper remains only until every chapter is
 converted; new and retrofitted chapters use `#exercise-set`.
 
+### Reference chapters and lessons from the pilot
+
+**Chapter 4 is the model** for a project chapter (`book/chapters/04*.typ`,
+`workbook/ch04`, `solutions/ch04`, `book/scripts/capture-ch04.sh`,
+`book/appendix/solutions/ch04.typ`); **Chapter 0** shows how deep a
+`#goconcept` can go for a beginner. Read both before starting. What the pilot
+learned:
+
+- **Work backwards from production.** Make the final step equal to the
+  production code first (SYNC passes), then derive earlier steps by removing
+  features. Keep OMIT regions in the final files; SYNC ignores OMIT markers
+  and blank lines, which is what makes this practical.
+- **Troubleshoot cells quote captured text.** The capture script writes the
+  key lines of each deliberately broken run to `book/output/chNN/ts/*.txt`,
+  and the "If you see" cell is `#quote-output("chNN/ts/name.txt")`. Never type
+  an error message into a table.
+- **Capture-script pattern** (copy it from `capture-ch04.sh`): `use_step N`
+  points the reader's working directory at snapshot N; `deps` replays the
+  reader's `go get`/`go mod tidy` on the previous step's `go.mod` and asserts
+  the result equals the snapshot's; `broken`/`edit` applies a scripted edit
+  to a copy and fails if the edit did not apply, so troubleshoot captures
+  cannot silently go stale.
+- **Grow tests, don't rewrite them.** Structure tests so each step adds table
+  rows or new test functions rather than changing old ones; then only the new
+  region needs printing. Reprinting the same 60-line test in three steps is
+  what made Chapter 4 long.
+- **Timing tests:** `testing/synctest` with `httptest.NewTestServer` makes
+  timeout and retry assertions exact and instant. Use it wherever time matters.
+- **Analysis exercises may have solution modules** (a simulation or
+  benchmark): real numbers beat arithmetic, and they expose traps.
+- **Keep internet-dependent captures to one checkpoint at most**; certificate
+  ages and DNS answers change on every run. Prefer a local server program in
+  the snapshot (Chapter 4's `cmd/fleet`).
+- **Generated files:** list glob patterns (relative to a step dir) of files
+  produced by commands the book prints (`kubebuilder init`, `controller-gen`,
+  `stringer`, `go generate`) in `workbook/chNN/GENERATED`; coverage skips
+  them. The checkpoint must show the generating command.
+- **Layout:** header bars of checkpoints, callouts and exercises are sticky;
+  use `#needspace(14em)` before a checkpoint that starts with a tall block if
+  a header still strands. `workbook/go.mod` fences all exercise overlays out
+  of the root module.
+- **The coverage report names ranges and the enclosing declaration**
+  ("lines 6-10 in `func TestGreet`"), so fix it by widening or adding the
+  region around that declaration.
+
 ## Typst template API (`book/template/book.typ`)
 
 Start the chapter file with `#import "../template/book.typ": *`, then:

@@ -1,0 +1,5 @@
+$ go run .
+# logq
+./main.go:10:2: "os" imported and not used
+./main.go:28:6: declared and not used: i
+./main.go:32:10: declared and not used: err

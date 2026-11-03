@@ -1,5 +1,6 @@
 package main
 
+// START imports OMIT
 import (
 	"bytes"
 	"context"
@@ -16,9 +17,11 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/lifecycle"
 )
 
+// END imports OMIT
+
 // START e2e OMIT
-// TestRunEndToEnd drives the real binary entry point against real sockets:
-// one healthy HTTP server, one 503, and a TCP port nobody listens on.
+// TestRunEndToEnd drives the real entry point against real sockets: one
+// healthy HTTP server, one that answers 503, and a TCP port nobody listens on.
 func TestRunEndToEnd(t *testing.T) {
 	ok := func(http.ResponseWriter, *http.Request) {}
 	unavailable := func(w http.ResponseWriter, _ *http.Request) {
@@ -61,7 +64,7 @@ func TestRunEndToEnd(t *testing.T) {
 		t.Errorf("summary = %+v, want 3 total, 1 up, 2 down", doc.Summary)
 	}
 	if r := doc.Results[1]; r.Status != "down" || r.Attempts != 2 {
-		t.Errorf("503 target = %+v, want down after 2 attempts (503 is retryable)", r)
+		t.Errorf("503 target = %+v, want down after 2 attempts", r)
 	}
 	if !strings.Contains(stderr.String(), "checked 3/3 targets") {
 		t.Errorf("stderr summary missing: %q", stderr.String())
@@ -70,33 +73,41 @@ func TestRunEndToEnd(t *testing.T) {
 
 // END e2e OMIT
 
+// START usage OMIT
 func TestRunUsageErrors(t *testing.T) {
+	const inv = "https://example.com\n"
 	for name, tc := range map[string]struct {
 		args  []string
 		stdin string
 		want  string
 	}{
 		"bad flag":   {[]string{"-nope"}, "", "flag provided but not defined"},
-		"bad format": {[]string{"-o", "xml"}, "https://example.com\n", "unknown output format"},
 		"bad target": {nil, "gopher://example.com\n", "unsupported scheme"},
-		"bad limits": {[]string{"-c", "0"}, "https://example.com\n", "concurrency must be >= 1"},
+		"bad limits": {[]string{"-c", "0"}, inv, "concurrency must be >= 1"},
+		"bad format": {[]string{"-o", "xml"}, inv, "unknown output format"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			var stdout, stderr bytes.Buffer
-			code := run(t.Context(), tc.args, strings.NewReader(tc.stdin), &stdout, &stderr)
+			code := run(t.Context(), tc.args, strings.NewReader(tc.stdin),
+				&stdout, &stderr)
 			if code != exitUsage || !strings.Contains(stderr.String(), tc.want) {
-				t.Errorf("code=%d stderr=%q; want %d and %q", code, stderr.String(), exitUsage, tc.want)
+				t.Errorf("code=%d stderr=%q; want %d and %q",
+					code, stderr.String(), exitUsage, tc.want)
 			}
 		})
 	}
 }
 
+// END usage OMIT
+
+// START interrupted OMIT
 func TestRunInterruptedExitsWith130(t *testing.T) {
 	ctx, cancel := context.WithCancelCause(t.Context())
-	cancel(&lifecycle.SignalError{Signal: syscall.SIGINT}) // as if Ctrl-C arrived first
+	cancel(&lifecycle.SignalError{Signal: syscall.SIGINT}) // as if Ctrl-C came first
 
 	var stdout, stderr bytes.Buffer
-	code := run(ctx, nil, strings.NewReader("https://example.invalid\n"), &stdout, &stderr)
+	stdin := strings.NewReader("https://example.invalid\n")
+	code := run(ctx, nil, stdin, &stdout, &stderr)
 	if code != lifecycle.ExitInterrupted {
 		t.Fatalf("exit code = %d, want 130", code)
 	}
@@ -105,6 +116,9 @@ func TestRunInterruptedExitsWith130(t *testing.T) {
 	}
 }
 
+// END interrupted OMIT
+
+// START closedport OMIT
 // closedPort returns an address that refuses connections.
 func closedPort(t *testing.T) string {
 	t.Helper()
@@ -116,3 +130,5 @@ func closedPort(t *testing.T) string {
 	l.Close()
 	return addr
 }
+
+// END closedport OMIT

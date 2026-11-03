@@ -1,0 +1,8 @@
+$ go build -o logq . && ./logq -strict app.log > /dev/null
+logq: app.log:11: bad time "this"
+$ golangci-lint run ./...
+main.go:156:14: type switch on error will fail on wrapped errors. Use errors.As to check for specific errors (errorlint)
+	switch e := err.(type) {
+	            ^
+1 issues:
+* errorlint: 1

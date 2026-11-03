@@ -1,3 +1,5 @@
+// START head OMIT
+
 package conc_test
 
 import (
@@ -17,12 +19,13 @@ import (
 // TestMain fails the package if any test leaves a goroutine behind.
 func TestMain(m *testing.M) { goleak.VerifyTestMain(m) }
 
+// END head OMIT
+
+// START map OMIT
 func TestMapPreservesOrderAndBoundsConcurrency(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var inFlight, peak atomic.Int64
-		items := []int{5, 1, 4, 2, 3}
-
-		got, err := conc.Map(t.Context(), items, 2, func(ctx context.Context, n int) (int, error) {
+		square := func(ctx context.Context, n int) (int, error) {
 			cur := inFlight.Add(1)
 			defer inFlight.Add(-1)
 			for { // record the high-water mark
@@ -33,7 +36,9 @@ func TestMapPreservesOrderAndBoundsConcurrency(t *testing.T) {
 			}
 			time.Sleep(time.Duration(n) * time.Second) // virtual time: instant
 			return n * n, nil
-		})
+		}
+
+		got, err := conc.Map(t.Context(), []int{5, 1, 4, 2, 3}, 2, square)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -50,8 +55,7 @@ func TestMapFailFastCancelsSiblings(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		boom := errors.New("boom")
 		var cancelled atomic.Int64
-
-		_, err := conc.Map(t.Context(), []int{1, 2, 3, 4}, 4, func(ctx context.Context, n int) (int, error) {
+		fn := func(ctx context.Context, n int) (int, error) {
 			if n == 1 {
 				// Fail only after every sibling is running and blocked.
 				time.Sleep(time.Second)
@@ -64,7 +68,9 @@ func TestMapFailFastCancelsSiblings(t *testing.T) {
 			case <-time.After(time.Hour):
 				return n, nil
 			}
-		})
+		}
+
+		_, err := conc.Map(t.Context(), []int{1, 2, 3, 4}, 4, fn)
 		if !errors.Is(err, boom) {
 			t.Fatalf("err = %v, want boom", err)
 		}
@@ -74,15 +80,18 @@ func TestMapFailFastCancelsSiblings(t *testing.T) {
 	})
 }
 
+// END map OMIT
+
+// START stream OMIT
 func TestStreamYieldsInCompletionOrder(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		delays := []time.Duration{3 * time.Second, 1 * time.Second, 2 * time.Second}
+		sleep := func(ctx context.Context, d time.Duration) time.Duration {
+			time.Sleep(d)
+			return d
+		}
 		var got []time.Duration
-		for d := range conc.Stream(t.Context(), slices.Values(delays), 3,
-			func(ctx context.Context, d time.Duration) time.Duration {
-				time.Sleep(d)
-				return d
-			}) {
+		for d := range conc.Stream(t.Context(), slices.Values(delays), 3, sleep) {
 			got = append(got, d)
 		}
 		want := []time.Duration{time.Second, 2 * time.Second, 3 * time.Second}
@@ -95,10 +104,7 @@ func TestStreamYieldsInCompletionOrder(t *testing.T) {
 func TestStreamEarlyBreakCancelsAndWaits(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var started, finished atomic.Int64
-		items := slices.Values(make([]int, 100))
-
-		n := 0
-		for range conc.Stream(t.Context(), items, 8, func(ctx context.Context, _ int) int {
+		work := func(ctx context.Context, _ int) int {
 			started.Add(1)
 			defer finished.Add(1)
 			select {
@@ -106,14 +112,19 @@ func TestStreamEarlyBreakCancelsAndWaits(t *testing.T) {
 			case <-time.After(time.Second):
 			}
 			return 0
-		}) {
+		}
+
+		n := 0
+		items := slices.Values(make([]int, 100))
+		for range conc.Stream(t.Context(), items, 8, work) {
 			if n++; n == 3 {
 				break
 			}
 		}
 		// Stream must not return while workers are still running.
 		if s, f := started.Load(), finished.Load(); s != f {
-			t.Fatalf("started %d but finished %d: Stream returned with work in flight", s, f)
+			t.Fatalf("started %d but finished %d: Stream returned with "+
+				"work in flight", s, f)
 		}
 		if s := started.Load(); s >= 100 {
 			t.Errorf("started %d calls; early break should stop new work", s)
@@ -129,17 +140,17 @@ func TestStreamParentCancelStillDeliversStartedResults(t *testing.T) {
 			time.Sleep(1500 * time.Millisecond) // "Ctrl-C" mid-run
 			cancel()
 		}()
+		work := func(ctx context.Context, i int) int {
+			started.Add(1)
+			select {
+			case <-ctx.Done():
+			case <-time.After(time.Second):
+			}
+			return i
+		}
 
 		got := 0
-		for range conc.Stream(ctx, slices.Values(make([]int, 10)), 2,
-			func(ctx context.Context, i int) int {
-				started.Add(1)
-				select {
-				case <-ctx.Done():
-				case <-time.After(time.Second):
-				}
-				return i
-			}) {
+		for range conc.Stream(ctx, slices.Values(make([]int, 10)), 2, work) {
 			got++
 		}
 		// Two calls finished at 1s; the next two were cancelled in flight at
@@ -150,6 +161,9 @@ func TestStreamParentCancelStillDeliversStartedResults(t *testing.T) {
 	})
 }
 
+// END stream OMIT
+
+// START keyed OMIT
 func TestKeyedSemaphoreLimitsPerKey(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		sem := conc.NewKeyedSemaphore(2)
@@ -189,7 +203,8 @@ func TestKeyedSemaphoreLimitsPerKey(t *testing.T) {
 		relB1()
 		synctest.Wait()
 		if n := sem.Len(); n != 0 {
-			t.Errorf("Len = %d after all releases, want 0 (idle keys must be freed)", n)
+			t.Errorf("Len = %d after all releases, want 0 (idle keys must be "+
+				"freed)", n)
 		}
 	})
 }
@@ -203,7 +218,8 @@ func TestKeyedSemaphoreHonoursContext(t *testing.T) {
 		ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 		defer cancel()
 		start := time.Now()
-		if _, err := sem.Acquire(ctx, "k"); !errors.Is(err, context.DeadlineExceeded) {
+		_, err := sem.Acquire(ctx, "k")
+		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("err = %v, want DeadlineExceeded", err)
 		}
 		if el := time.Since(start); el != 5*time.Second {
@@ -211,3 +227,5 @@ func TestKeyedSemaphoreHonoursContext(t *testing.T) {
 		}
 	})
 }
+
+// END keyed OMIT

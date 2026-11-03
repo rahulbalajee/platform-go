@@ -14,6 +14,7 @@
 
 #part("I", "Foundations: Go for Systems Work",
   blurb: [The language and runtime from a platform engineer's point of view: what makes Go the default for infrastructure, and the disciplines that keep tools correct under concurrency, failure, and change.])
+#include "chapters/00-zero.typ"
 #include "chapters/01-toolchain.typ"
 #include "chapters/02-api-design.typ"
 #include "chapters/03-errors.typ"

@@ -1,0 +1,48 @@
+--- FAIL: TestStopAtFirstDown (0.00s)
+panic: deadlock: main bubble goroutine has exited but blocked goroutines remain [recovered, repanicked]
+
+goroutine 8 [running]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+internal/synctest.Run(0x…)
+        $GOROOT/src/runtime/synctest.go:247 +0x2b4
+testing/synctest.Test(0x…, 0x…)
+        $GOROOT/src/testing/synctest/synctest.go:291 +0x90
+sweep/internal/sweep_test.TestStopAtFirstDown(0x…?)
+        ~/broken/internal/sweep/failfast_test.go:15 +0x24
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+
+goroutine 14 [chan send (durable), synctest bubble 1]:
+sweep/internal/sweep.(*Runner).Run.func1()
+        ~/broken/internal/sweep/runner.go:66 +0x7c
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 10
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+
+goroutine 15 [chan send (durable), synctest bubble 1]:
+sweep/internal/sweep.(*Runner).Run.func1()
+        ~/broken/internal/sweep/runner.go:66 +0x7c
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 10
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+
+goroutine 16 [sync.WaitGroup.Wait (durable), synctest bubble 1]:
+sync.runtime_SemacquireWaitGroup(0x0?, 0x0?)
+        $GOROOT/src/runtime/sema.go:114 +0x38
+sync.(*WaitGroup).Wait(0x…)
+        $GOROOT/src/sync/waitgroup.go:206 +0xa4
+sweep/internal/sweep.(*Runner).Run.func2()
+        ~/broken/internal/sweep/runner.go:70 +0x24
+created by sweep/internal/sweep.(*Runner).Run in goroutine 10
+        ~/broken/internal/sweep/runner.go:69 +0x1b0
+FAIL    sweep/internal/sweep    0.477s
+FAIL

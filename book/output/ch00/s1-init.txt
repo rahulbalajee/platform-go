@@ -1,0 +1,4 @@
+$ mkdir logq
+$ cd logq
+$ go mod init logq
+go: creating new go.mod: module logq

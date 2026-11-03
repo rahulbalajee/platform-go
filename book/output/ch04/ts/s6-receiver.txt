@@ -1,0 +1,1 @@
+    summary_test.go:28: String() = "checked 0/4 targets in 1.5s: 0 up, 0 down", want "checked 3/4 targets in 1.5s: 2 up, 1 down"

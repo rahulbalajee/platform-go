@@ -1,0 +1,6 @@
+
+interrupt: shutting down (press Ctrl-C again to force)
+STATUS     TARGET                        LATENCY  TRIES  DETAIL
+CANCELLED  http://127.0.0.1:8099/slow?1  1.073s   1      received signal interrupt
+CANCELLED  http://127.0.0.1:8099/slow?2  1.073s   1      received signal interrupt
+checked 2/8 targets in 1.073s: 0 up, 0 down, 2 cancelled (interrupted; 6 never started)

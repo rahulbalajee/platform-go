@@ -1,0 +1,15 @@
+$ ls logs
+app-1.log
+app-2.log
+app-3.log
+app-4.log
+app-5.log
+app-6.log
+app-7.log
+app-8.log
+$ /usr/bin/time ./logq -j 1 -count logs/*.log 2>&1 | grep -E 'ERROR|real'
+ERROR  16000000
+        1.42 real         1.38 user         0.12 sys
+$ /usr/bin/time ./logq -j 8 -count logs/*.log 2>&1 | grep -E 'ERROR|real'
+ERROR  16000000
+        0.90 real         2.89 user         0.70 sys

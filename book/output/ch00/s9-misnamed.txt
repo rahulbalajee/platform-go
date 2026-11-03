@@ -1,0 +1,3 @@
+$ go test ./...
+?   	logq	[no test files]
+?   	logq/logline	[no test files]

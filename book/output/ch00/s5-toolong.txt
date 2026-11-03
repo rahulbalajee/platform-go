@@ -1,0 +1,3 @@
+$ go run . long.log
+logq: bufio.Scanner: token too long
+exit status 1

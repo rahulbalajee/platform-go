@@ -1,0 +1,3 @@
+$ go run .
+# ex3
+./main.go:7:8: no new variables on left side of :=

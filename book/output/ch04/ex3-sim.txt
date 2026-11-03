@@ -1,0 +1,6 @@
+    limits_test.go:94: a: 3 hosts             6s
+    limits_test.go:94: b: 3 hosts, -rate 0    2.5s
+    limits_test.go:94: b, grouped by host     6.1s
+    limits_test.go:94: c: 300 hosts, -rate 0  1s
+    limits_test.go:94: d: 1 host, instant     3.9s
+ok      sweep/internal/sweep    0.489s

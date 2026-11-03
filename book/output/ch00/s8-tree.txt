@@ -1,0 +1,14 @@
+$ find . -name "*.go" | sort
+./logline/logline.go
+./logline/stats.go
+./main.go
+$ go run . app.log
+line 11: bad time "this"
+DEBUG  2
+INFO   8
+WARN   3
+ERROR  4
+bad    1
+errors: 23.5% of 17 entries
+from 09:00:01 to 09:06:12 (6m11s)
+$ go vet ./...

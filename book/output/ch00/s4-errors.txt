@@ -1,0 +1,9 @@
+$ go run .
+usage: logq FILE
+exit status 2
+$ go run . nope.log
+logq: open nope.log: no such file or directory
+exit status 1
+$ cd ~
+$ go run . app.log
+go: go.mod file not found in current directory or any parent directory; see 'go help modules'

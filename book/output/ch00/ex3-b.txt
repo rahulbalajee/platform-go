@@ -1,0 +1,3 @@
+$ go run .
+# ex3
+./main.go:6:17: cannot use "8080" (untyped string constant) as int value in variable declaration

@@ -1,0 +1,8 @@
+$ go run . long.log; echo "exit status: $?"
+DEBUG  0
+INFO   0
+WARN   0
+ERROR  0
+bad    0
+errors: 0.0% of 0 entries
+exit status: 0

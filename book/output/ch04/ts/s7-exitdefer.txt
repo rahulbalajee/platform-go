@@ -1,0 +1,1 @@
+cmd/sweep/main.go:52:2: exitAfterDefer: os.Exit will exit, and `defer stop()` will not run (gocritic)

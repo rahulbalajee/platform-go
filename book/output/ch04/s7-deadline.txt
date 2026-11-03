@@ -1,0 +1,8 @@
+STATUS     TARGET                         LATENCY  TRIES  DETAIL
+UP         http://127.0.0.1:8099/ok       0s       1      200 OK
+DOWN       http://127.0.0.1:8099/down     1ms      3      unhealthy status 503 Service Unavai…
+DOWN       http://127.0.0.1:8099/missing  0s       1      unhealthy status 404 Not Found
+CANCELLED  http://127.0.0.1:8099/slow?a   1.501s   1      sweep deadline of 1.5s exceeded
+CANCELLED  http://127.0.0.1:8099/slow?b   1.501s   1      sweep deadline of 1.5s exceeded
+checked 5/5 targets in 1.501s: 1 up, 2 down, 2 cancelled (interrupted; 0 never started)
+exit status 1

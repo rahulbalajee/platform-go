@@ -1,0 +1,7 @@
+$ file hello
+hello: Mach-O 64-bit executable arm64
+$ GOOS=linux GOARCH=amd64 go build -o hello-linux
+$ GOOS=windows GOARCH=amd64 go build -o hello.exe
+$ file hello-linux hello.exe | cut -d, -f1-2
+hello-linux: ELF 64-bit LSB executable, x86-64
+hello.exe:   PE32+ executable (console) x86-64, for MS Windows

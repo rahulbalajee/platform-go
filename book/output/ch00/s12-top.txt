@@ -1,0 +1,9 @@
+$ ./logq -top 3 app.log edge.log 2>/dev/null
+api      9
+edge     7
+worker   5
+$ go test ./...
+ok  	logq	0.453s
+ok  	logq/logline	0.861s
+ok  	logq/match	1.414s
+ok  	logq/rank	1.835s

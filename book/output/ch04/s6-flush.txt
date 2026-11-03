@@ -1,0 +1,6 @@
+2026/11/03 17:20:27 http: TLS handshake error from 127.0.0.1:64018: remote error: tls: bad certificate
+--- FAIL: TestTableIsInInputOrder (0.00s)
+    summary_test.go:72: want a header and 3 rows, got:
+FAIL
+FAIL    sweep/internal/sweep    0.659s
+FAIL

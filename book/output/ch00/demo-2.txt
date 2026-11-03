@@ -1,0 +1,2 @@
+$ ./logq -json -level error -grep reset app.log edge.log 2>/dev/null
+{"time":"2026-11-03T09:02:41Z","level":"ERROR","service":"db","message":"connection reset by peer"}

@@ -1,0 +1,5 @@
+--- FAIL: TestStreamEarlyBreakCancelsAndWaits (0.00s)
+    conc_test.go:126: started 9 but finished 8: Stream returned with work in flight
+FAIL
+FAIL    sweep/conc      0.420s
+FAIL

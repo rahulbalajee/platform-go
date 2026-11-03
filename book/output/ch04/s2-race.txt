@@ -1,0 +1,67 @@
+==================
+WARNING: DATA RACE
+Read at 0x… by goroutine 14:
+  sweep/internal/sweep.(*Runner).Run.func1()
+      ~/broken/internal/sweep/runner.go:68 +0xb4
+
+Previous write at 0x… by goroutine 16:
+  sweep/internal/sweep.(*Runner).Run.func1()
+      ~/broken/internal/sweep/runner.go:68 +0xc8
+
+Goroutine 14 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  sweep/internal/sweep_test.TestRunnerOutcomes.func1()
+      ~/broken/internal/sweep/runner_test.go:98 +0x1ec
+  testing.tRunner()
+      $GOROOT/src/testing/testing.go:2195 +0x164
+  testing.testingSynctestTest.gowrap1()
+      $GOROOT/src/testing/testing.go:2309 +0x34
+
+Goroutine 16 (finished) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  sweep/internal/sweep_test.TestRunnerOutcomes.func1()
+      ~/broken/internal/sweep/runner_test.go:98 +0x1ec
+  testing.tRunner()
+      $GOROOT/src/testing/testing.go:2195 +0x164
+  testing.testingSynctestTest.gowrap1()
+      $GOROOT/src/testing/testing.go:2309 +0x34
+==================
+--- FAIL: TestRunnerOutcomes (0.00s)
+    testing.go:1867: race detected during execution of test
+==================
+WARNING: DATA RACE
+Write at 0x… by goroutine 84:
+  sweep/internal/sweep.(*Runner).Run.func1()
+      ~/broken/internal/sweep/runner.go:68 +0xc8
+
+Previous write at 0x… by goroutine 78:
+  sweep/internal/sweep.(*Runner).Run.func1()
+      ~/broken/internal/sweep/runner.go:68 +0xc8
+
+Goroutine 84 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  sweep/internal/sweep_test.TestRunnerChecksConcurrently.func1()
+      ~/broken/internal/sweep/runner_test.go:167 +0x16c
+  testing.tRunner()
+      $GOROOT/src/testing/testing.go:2195 +0x164
+  testing.testingSynctestTest.gowrap1()
+      $GOROOT/src/testing/testing.go:2309 +0x34
+
+Goroutine 78 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  sweep/internal/sweep_test.TestRunnerChecksConcurrently.func1()
+      ~/broken/internal/sweep/runner_test.go:167 +0x16c
+  testing.tRunner()
+      $GOROOT/src/testing/testing.go:2195 +0x164
+  testing.testingSynctestTest.gowrap1()
+      $GOROOT/src/testing/testing.go:2309 +0x34
+==================
+--- FAIL: TestRunnerChecksConcurrently (0.01s)
+    testing.go:1867: race detected during execution of test
+FAIL
+FAIL    sweep/internal/sweep    0.479s
+FAIL

@@ -1,0 +1,6 @@
+$ go build ./...
+# logq/match
+match/match.go:94:7: impossible type switch case: Contains
+	m (variable of interface type Matcher) cannot have dynamic type Contains (wrong type for method Match)
+		have Match(string) bool
+		want Match(logline.Entry) bool

@@ -1,0 +1,27 @@
+# Chapter 4's final build step is the production code that later chapters
+# reuse. book/scripts/check_workbook.py checks that each pair below is
+# identical apart from OMIT markers and these import paths.
+@import sweep/conc = github.com/rahulbalajee/platform-go/pkg/conc
+@import sweep/retry = github.com/rahulbalajee/platform-go/pkg/retry
+@import sweep/lifecycle = github.com/rahulbalajee/platform-go/pkg/lifecycle
+@import sweep/internal/sweep = github.com/rahulbalajee/platform-go/internal/sweep
+
+workbook/ch04/step7/conc/conc.go = pkg/conc/conc.go
+workbook/ch04/step7/conc/keyed.go = pkg/conc/keyed.go
+workbook/ch04/step7/conc/conc_test.go = pkg/conc/conc_test.go
+workbook/ch04/step7/retry/retry.go = pkg/retry/retry.go
+workbook/ch04/step7/retry/retry_test.go = pkg/retry/retry_test.go
+workbook/ch04/step7/lifecycle/lifecycle.go = pkg/lifecycle/lifecycle.go
+workbook/ch04/step7/lifecycle/lifecycle_test.go = pkg/lifecycle/lifecycle_test.go
+workbook/ch04/step7/internal/sweep/target.go = internal/sweep/target.go
+workbook/ch04/step7/internal/sweep/probe.go = internal/sweep/probe.go
+workbook/ch04/step7/internal/sweep/resolver.go = internal/sweep/resolver.go
+workbook/ch04/step7/internal/sweep/runner.go = internal/sweep/runner.go
+workbook/ch04/step7/internal/sweep/report.go = internal/sweep/report.go
+workbook/ch04/step7/internal/sweep/main_test.go = internal/sweep/main_test.go
+workbook/ch04/step7/internal/sweep/runner_test.go = internal/sweep/runner_test.go
+workbook/ch04/step7/internal/sweep/probe_test.go = internal/sweep/probe_test.go
+workbook/ch04/step7/internal/sweep/summary_test.go = internal/sweep/summary_test.go
+workbook/ch04/step7/cmd/sweep/main.go = cmd/sweep/main.go
+workbook/ch04/step7/cmd/sweep/main_test.go = cmd/sweep/main_test.go
+workbook/ch04/step7/cmd/fleet/main.go = examples/ch04/fleet/main.go

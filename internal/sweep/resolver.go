@@ -1,3 +1,5 @@
+// START head OMIT
+
 package sweep
 
 import (
@@ -10,7 +12,6 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
-// START resolver OMIT
 // CachingResolver deduplicates and caches DNS lookups. Sweeping 500 URLs on
 // 20 hosts should cost 20 lookups, not 500, and must not hammer the resolver
 // when hundreds of goroutines ask for the same name in the same millisecond.
@@ -29,6 +30,9 @@ type cacheEntry struct {
 	expires time.Time
 }
 
+// END head OMIT
+
+// START lookup OMIT
 // LookupHost returns cached addresses or performs one shared lookup for all
 // concurrent callers of the same host.
 func (r *CachingResolver) LookupHost(ctx context.Context, host string) (
@@ -61,8 +65,9 @@ func (r *CachingResolver) LookupHost(ctx context.Context, host string) (
 	}
 }
 
-// END resolver OMIT
+// END lookup OMIT
 
+// START cache OMIT
 func (r *CachingResolver) cached(host string) ([]string, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -82,9 +87,14 @@ func (r *CachingResolver) store(host string, addrs []string) {
 	r.cache[host] = cacheEntry{addrs: addrs, expires: time.Now().Add(r.TTL)}
 }
 
+// END cache OMIT
+
+// START dial OMIT
 // DialContext dials addr ("host:port") using cached resolution, trying each
 // address in turn. It has the signature http.Transport.DialContext expects.
-func (r *CachingResolver) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+func (r *CachingResolver) DialContext(ctx context.Context, network, addr string) (
+	net.Conn, error) {
+
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, err
@@ -110,3 +120,5 @@ func (r *CachingResolver) DialContext(ctx context.Context, network, addr string)
 	}
 	return nil, errors.Join(errs...)
 }
+
+// END dial OMIT

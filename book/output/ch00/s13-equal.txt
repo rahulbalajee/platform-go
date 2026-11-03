@@ -1,0 +1,8 @@
+$ go build -o logq . && ./logq huge.log
+logq: huge.log:1: bufio.Scanner: token too long
+$ golangci-lint run ./...
+main.go:162:7: comparing with == will fail on wrapped errors. Use errors.Is to check for a specific error (errorlint)
+	case err == bufio.ErrTooLong:
+	     ^
+1 issues:
+* errorlint: 1

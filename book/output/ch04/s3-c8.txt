@@ -1,0 +1,2 @@
+checked 8/8 targets in 1.002s: 0 up, 8 down
+exit status 1

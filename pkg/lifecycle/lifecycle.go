@@ -1,3 +1,5 @@
+// START head OMIT
+
 // Package lifecycle wires process signals into context cancellation with
 // the two-stage shutdown users expect from production CLIs and daemons:
 // the first Ctrl-C asks politely (cancel, drain, report), the second one
@@ -23,7 +25,10 @@ type SignalError struct{ Signal os.Signal }
 
 func (e *SignalError) Error() string { return "received signal " + e.Signal.String() }
 
+// END head OMIT
+
 // START notify OMIT
+
 // Options tune NotifyContext. The zero value is right for real programs;
 // tests replace Exit and Stderr.
 type Options struct {

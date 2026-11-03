@@ -1,0 +1,7 @@
+$ go run . app.log 2>&1 | head -6 | cut -c1-80
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x2 addr=0x18 pc=0x102685190]
+
+goroutine 1 [running]:
+main.config.scan({{0x0, 0x0}, 0x0, 0x0, {0x10277a828, 0x1ff76e682008}, {0x10277a
+	/Users/you/logq/scan.go:48 

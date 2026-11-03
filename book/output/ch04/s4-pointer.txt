@@ -1,0 +1,2 @@
+# sweep/cmd/sweep
+cmd/sweep/main.go:201:18: cannot use sweep.TCPProber{…} (value of struct type sweep.TCPProber) as sweep.Prober value in map literal: sweep.TCPProber does not implement sweep.Prober (method Probe has pointer receiver)

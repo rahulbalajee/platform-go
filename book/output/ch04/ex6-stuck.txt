@@ -1,0 +1,5 @@
+goroutine 61 [chan send (durable), synctest bubble 4]:
+sweep/conc.Stream[...].1.1-range1.1()
+--
+goroutine 63 [chan send (durable), synctest bubble 4]:
+sweep/conc.Stream[...].1.1-range1.1()

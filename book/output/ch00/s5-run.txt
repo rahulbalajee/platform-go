@@ -1,0 +1,13 @@
+$ go run . app.log
+line 11: unknown level "line"
+DEBUG  2
+INFO   8
+WARN   3
+ERROR  4
+bad    1
+errors: 23.5% of 17 entries
+$ go build -o logq .
+$ /usr/bin/time -l ./logq big.log 2>&1 | grep -E 'ERROR|real|maximum resident'
+ERROR  2000000
+        0.60 real         0.21 user         0.02 sys
+            10715136  maximum resident set size

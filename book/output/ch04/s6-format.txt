@@ -1,0 +1,2 @@
+sweep: unknown output format "yaml" (want table, wide, json, jsonl)
+exit status 2

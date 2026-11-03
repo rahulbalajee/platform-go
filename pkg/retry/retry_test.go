@@ -1,3 +1,4 @@
+// START head OMIT
 package retry_test
 
 import (
@@ -13,7 +14,9 @@ import (
 
 var errFlaky = errors.New("flaky")
 
-// START test OMIT
+// END head OMIT
+
+// START backoff OMIT
 func TestDoRetriesUntilSuccessWithinBackoffCeiling(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		p := retry.Policy{
@@ -43,8 +46,9 @@ func TestDoRetriesUntilSuccessWithinBackoffCeiling(t *testing.T) {
 	})
 }
 
-// END test OMIT
+// END backoff OMIT
 
+// START classify OMIT
 func TestDoStopsOnPermanent(t *testing.T) {
 	calls := 0
 	bad := errors.New("404 not found")
@@ -62,9 +66,8 @@ func TestDoStopsOnPermanent(t *testing.T) {
 
 func TestDoExhaustionWrapsLastError(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		err := retry.Policy{MaxAttempts: 3}.Do(t.Context(), func(context.Context) error {
-			return errFlaky
-		})
+		p := retry.Policy{MaxAttempts: 3}
+		err := p.Do(t.Context(), func(context.Context) error { return errFlaky })
 		ex, ok := errors.AsType[*retry.ExhaustedError](err)
 		if !ok || ex.Attempts != 3 {
 			t.Fatalf("err = %v, want ExhaustedError after 3 attempts", err)
@@ -75,14 +78,22 @@ func TestDoExhaustionWrapsLastError(t *testing.T) {
 	})
 }
 
+// END classify OMIT
+
+// START after OMIT
 func TestDoHonoursRetryAfter(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		p := retry.Policy{MaxAttempts: 2, BaseDelay: time.Millisecond, MaxDelay: time.Minute}
+		p := retry.Policy{
+			MaxAttempts: 2,
+			BaseDelay:   time.Millisecond,
+			MaxDelay:    time.Minute,
+		}
+		throttled := errors.New("429 too many requests")
 		start := time.Now()
 		calls := 0
 		_ = p.Do(t.Context(), func(context.Context) error {
 			if calls++; calls == 1 {
-				return retry.After(30*time.Second, errors.New("429 too many requests"))
+				return retry.After(30*time.Second, throttled)
 			}
 			return nil
 		})
@@ -94,9 +105,14 @@ func TestDoHonoursRetryAfter(t *testing.T) {
 
 func TestDoAbortsWhenContextEnds(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
-		ctx, cancel := context.WithTimeoutCause(t.Context(), 3*time.Second, errors.New("deploy window closed"))
+		closed := errors.New("deploy window closed")
+		ctx, cancel := context.WithTimeoutCause(t.Context(), 3*time.Second, closed)
 		defer cancel()
-		p := retry.Policy{MaxAttempts: 100, BaseDelay: time.Second, MaxDelay: time.Second}
+		p := retry.Policy{
+			MaxAttempts: 100,
+			BaseDelay:   time.Second,
+			MaxDelay:    time.Second,
+		}
 
 		err := p.Do(ctx, func(context.Context) error { return errFlaky })
 		if err == nil || !errors.Is(err, errFlaky) {
@@ -108,17 +124,23 @@ func TestDoAbortsWhenContextEnds(t *testing.T) {
 	})
 }
 
+// END after OMIT
+
+// START value OMIT
 func TestValueGenericMethod(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		calls := 0
-		v, err := retry.Policy{}.Value(t.Context(), func(context.Context) (string, error) {
+		fetch := func(context.Context) (string, error) {
 			if calls++; calls < 2 {
 				return "", errFlaky
 			}
 			return "v1.42.0", nil
-		})
+		}
+		v, err := retry.Policy{}.Value(t.Context(), fetch)
 		if err != nil || v != "v1.42.0" {
 			t.Fatalf("Value = %q, %v", v, err)
 		}
 	})
 }
+
+// END value OMIT

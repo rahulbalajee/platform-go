@@ -1,0 +1,3 @@
+$ go run . app.log
+# logq
+./main.go:71:4: append(bad, lineNo) (value of type []int) is not used

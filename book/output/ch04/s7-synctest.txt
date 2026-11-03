@@ -1,0 +1,6 @@
+=== RUN   TestRunnerOutcomes
+--- PASS: TestRunnerOutcomes (0.00s)
+ok      sweep/internal/sweep    0.211s
+=== RUN   TestDoRetriesUntilSuccessWithinBackoffCeiling
+--- PASS: TestDoRetriesUntilSuccessWithinBackoffCeiling (0.00s)
+ok      sweep/retry     0.313s

@@ -1,0 +1,401 @@
+panic: test timed out after 20s
+        running tests:
+                TestRunnerOutcomes (20s)
+
+goroutine 87 [running]:
+testing.(*M).startAlarm.func1()
+        $GOROOT/src/testing/testing.go:2961 +0x2c4
+created by time.goFunc
+        $GOROOT/src/time/sleep.go:182 +0x38
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x…, {0x…?, 0x…?}, 0x…)
+        $GOROOT/src/testing/testing.go:2268 +0x3cc
+testing.runTests.func1(0x…)
+        $GOROOT/src/testing/testing.go:2744 +0x38
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+testing.runTests({0x…, 0x5}, {0x…, 0x14}, 0x…, {0x…, 0xd, 0xd}, {0x…?, 0x…?, ...})
+        $GOROOT/src/testing/testing.go:2742 +0x400
+testing.(*M).Run(0x…)
+        $GOROOT/src/testing/testing.go:2602 +0x578
+go.uber.org/goleak.VerifyTestMain({0x…?, 0x…?}, {0x0, 0x0, 0x0})
+        ~/go/pkg/mod/go.uber.org/goleak@v1.3.0/testmain.go:53 +0x44
+sweep/internal/sweep_test.TestMain(...)
+        ~/broken/internal/sweep/main_test.go:10
+main.main()
+        _testmain.go:74 +0xa4
+
+goroutine 20 [synctest.Run (durable), synctest bubble 1]:
+internal/synctest.Run(0x…)
+        $GOROOT/src/runtime/synctest.go:214 +0x1a4
+testing/synctest.Test(0x…, 0x…)
+        $GOROOT/src/testing/synctest/synctest.go:291 +0x90
+sweep/internal/sweep_test.TestRunnerOutcomes(0x…?)
+        ~/broken/internal/sweep/runner_test.go:96 +0x24
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+
+goroutine 21 [chan receive (durable), synctest bubble 1]:
+testing/synctest.testingSynctestTest(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2310 +0x218
+testing/synctest.Test.func1()
+        $GOROOT/src/testing/synctest/synctest.go:292 +0x28
+created by testing/synctest.Test in goroutine 20
+        $GOROOT/src/testing/synctest/synctest.go:291 +0x90
+
+goroutine 22 [chan receive (durable), synctest bubble 1]:
+sweep/conc.Stream[...].1()
+        ~/broken/conc/conc.go:115 +0x16c
+sweep/internal/sweep_test.TestRunnerOutcomes.func1(0x…)
+        ~/broken/internal/sweep/runner_test.go:110 +0x29c
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing/synctest.testingSynctestTest in goroutine 21
+        $GOROOT/src/testing/testing.go:2309 +0x204
+
+goroutine 23 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Accept(0x…)
+        $GOROOT/src/internal/poll/fd_unix.go:618 +0x210
+net.(*netFD).accept(0x…)
+        $GOROOT/src/net/fd_unix.go:149 +0x28
+net.(*TCPListener).accept(0x…)
+        $GOROOT/src/net/tcpsock_posix.go:159 +0x24
+net.(*TCPListener).Accept(0x…)
+        $GOROOT/src/net/tcpsock.go:387 +0x2c
+net/http.(*Server).Serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:3574 +0x2a8
+net/http/httptest.(*Server).goServe.func1()
+        $GOROOT/src/net/http/httptest/server.go:586 +0x54
+created by net/http/httptest.(*Server).goServe in goroutine 22
+        $GOROOT/src/net/http/httptest/server.go:584 +0x8c
+
+goroutine 24 [sync.WaitGroup.Wait (durable), synctest bubble 1]:
+sync.runtime_SemacquireWaitGroup(0x4?, 0x80?)
+        $GOROOT/src/runtime/sema.go:114 +0x38
+sync.(*WaitGroup).Wait(0x…)
+        $GOROOT/src/sync/waitgroup.go:206 +0xa4
+sweep/conc.Stream[...].1.1()
+        ~/broken/conc/conc.go:112 +0x134
+created by sweep/conc.Stream[...].1 in goroutine 22
+        ~/broken/conc/conc.go:86 +0x13c
+
+goroutine 25 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).roundTrip(0x…, 0x…)
+        $GOROOT/src/net/http/transport.go:3092 +0x718
+net/http.(*Transport).roundTrip(0x…, 0x…)
+        $GOROOT/src/net/http/transport.go:725 +0x800
+net/http.(*Transport).RoundTrip(0x…?, 0x…?)
+        $GOROOT/src/net/http/roundtrip.go:33 +0x20
+net/http.send(0x…, {0x…, 0x…}, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/http/client.go:266 +0x4b0
+net/http.(*Client).send(0x…, 0x…, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/http/client.go:187 +0x1d0
+net/http.(*Client).do(0x…, 0x…)
+        $GOROOT/src/net/http/client.go:745 +0x71c
+net/http.(*Client).Do(...)
+        $GOROOT/src/net/http/client.go:604
+sweep/internal/sweep.HTTPProber.Probe({0x…?, {0x0?, 0x…?}}, {0x…, 0x…}, {0x0, {0x…, 0x19}, {0x…, 0x4}, ...})
+        ~/broken/internal/sweep/probe.go:64 +0x1c0
+sweep/internal/sweep.(*Runner).check.func1({0x…, 0x…})
+        ~/broken/internal/sweep/runner.go:139 +0x168
+sweep/retry.Policy.Do({0x3, 0x5f5e100, 0x…, 0x0, 0x0}, {0x…, 0x…}, 0x…)
+        ~/broken/retry/retry.go:61 +0xe4
+sweep/internal/sweep.(*Runner).check(0x…, {0x…, 0x…}, {0x0, {0x…, 0x19}, {0x…, 0x4}, 0x…})
+        ~/broken/internal/sweep/runner.go:128 +0x18c
+sweep/conc.Stream[...].1.1-range1.1()
+        ~/broken/conc/conc.go:105 +0x78
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 24
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+
+goroutine 26 [select (durable), synctest bubble 1]:
+sweep/retry.Policy.Do({0x3, 0x5f5e100, 0x…, 0x0, 0x0}, {0x…, 0x…}, 0x…)
+        ~/broken/retry/retry.go:80 +0x1c0
+sweep/internal/sweep.(*Runner).check(0x…, {0x…, 0x…}, {0x1, {0x…, 0x1c}, {0x…, 0x4}, 0x…})
+        ~/broken/internal/sweep/runner.go:128 +0x18c
+sweep/conc.Stream[...].1.1-range1.1()
+        ~/broken/conc/conc.go:105 +0x78
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 24
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+
+goroutine 27 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).roundTrip(0x…, 0x…)
+        $GOROOT/src/net/http/transport.go:3092 +0x718
+net/http.(*Transport).roundTrip(0x…, 0x…)
+        $GOROOT/src/net/http/transport.go:725 +0x800
+net/http.(*Transport).RoundTrip(0x…?, 0x…?)
+        $GOROOT/src/net/http/roundtrip.go:33 +0x20
+net/http.send(0x…, {0x…, 0x…}, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/http/client.go:266 +0x4b0
+net/http.(*Client).send(0x…, 0x…, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/http/client.go:187 +0x1d0
+net/http.(*Client).do(0x…, 0x…)
+        $GOROOT/src/net/http/client.go:745 +0x71c
+net/http.(*Client).Do(...)
+        $GOROOT/src/net/http/client.go:604
+sweep/internal/sweep.HTTPProber.Probe({0x…?, {0x0?, 0x…?}}, {0x…, 0x…}, {0x2, {0x…, 0x1b}, {0x…, 0x4}, ...})
+        ~/broken/internal/sweep/probe.go:64 +0x1c0
+sweep/internal/sweep.(*Runner).check.func1({0x…, 0x…})
+        ~/broken/internal/sweep/runner.go:139 +0x168
+sweep/retry.Policy.Do({0x3, 0x5f5e100, 0x…, 0x0, 0x0}, {0x…, 0x…}, 0x…)
+        ~/broken/retry/retry.go:61 +0xe4
+sweep/internal/sweep.(*Runner).check(0x…, {0x…, 0x…}, {0x2, {0x…, 0x1b}, {0x…, 0x4}, 0x…})
+        ~/broken/internal/sweep/runner.go:128 +0x18c
+sweep/conc.Stream[...].1.1-range1.1()
+        ~/broken/conc/conc.go:105 +0x78
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 24
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+
+goroutine 33 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x18?, 0x8000?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x0?, 0x…?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*persistConn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/http/transport.go:2300 +0x48
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x1)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*persistConn).readLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2493 +0x120
+created by net/http.(*Transport).dialConn in goroutine 31
+        $GOROOT/src/net/http/transport.go:2123 +0x14d8
+
+goroutine 49 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x8?, 0x80?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x0?, 0x…?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*persistConn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/http/transport.go:2300 +0x48
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x1)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*persistConn).readLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2493 +0x120
+created by net/http.(*Transport).dialConn in goroutine 29
+        $GOROOT/src/net/http/transport.go:2123 +0x14d8
+
+goroutine 50 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).writeLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2833 +0x98
+created by net/http.(*Transport).dialConn in goroutine 29
+        $GOROOT/src/net/http/transport.go:2124 +0x1528
+
+goroutine 34 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).writeLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2833 +0x98
+created by net/http.(*Transport).dialConn in goroutine 31
+        $GOROOT/src/net/http/transport.go:2124 +0x1528
+
+goroutine 5 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x0?, 0x0?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*persistConn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/http/transport.go:2300 +0x48
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x1)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*persistConn).readLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2493 +0x120
+created by net/http.(*Transport).dialConn in goroutine 30
+        $GOROOT/src/net/http/transport.go:2123 +0x14d8
+
+goroutine 6 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).writeLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2833 +0x98
+created by net/http.(*Transport).dialConn in goroutine 30
+        $GOROOT/src/net/http/transport.go:2124 +0x1528
+
+goroutine 65 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x0?, 0x0?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*persistConn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/http/transport.go:2300 +0x48
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x1)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*persistConn).readLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2493 +0x120
+created by net/http.(*Transport).dialConn in goroutine 32
+        $GOROOT/src/net/http/transport.go:2123 +0x14d8
+
+goroutine 66 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).writeLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2833 +0x98
+created by net/http.(*Transport).dialConn in goroutine 32
+        $GOROOT/src/net/http/transport.go:2124 +0x1528
+
+goroutine 81 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*connReader).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/net/http/server.go:856 +0x228
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x4)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2193 +0x6cc
+created by net/http.(*Server).Serve in goroutine 23
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+
+goroutine 82 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x…?, 0x0?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*connReader).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/net/http/server.go:856 +0x228
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x4)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2193 +0x6cc
+created by net/http.(*Server).Serve in goroutine 23
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+
+goroutine 83 [select (durable), synctest bubble 1]:
+sweep/internal/sweep_test.fleet.func4({0x…?, 0x9?}, 0x…)
+        ~/broken/internal/sweep/runner_test.go:46 +0x94
+sweep/internal/sweep_test.fleet.func1.func1({0x…, 0x…}, 0x…)
+        ~/broken/internal/sweep/runner_test.go:33 +0xb4
+net/http.HandlerFunc.ServeHTTP(0x…?, {0x…?, 0x…?}, 0x…?)
+        $GOROOT/src/net/http/server.go:2358 +0x38
+net/http.(*ServeMux).ServeHTTP(0x0?, {0x…, 0x…}, 0x…)
+        $GOROOT/src/net/http/server.go:2923 +0x194
+net/http.serverHandler.ServeHTTP({0x…?}, {0x…?, 0x…?}, 0x1?)
+        $GOROOT/src/net/http/server.go:3436 +0xb0
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2157 +0x5a0
+created by net/http.(*Server).Serve in goroutine 23
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+
+goroutine 84 [sleep (durable), synctest bubble 1]:
+time.Sleep(0x2faf080)
+        $GOROOT/src/runtime/time.go:366 +0x130
+sweep/internal/sweep_test.fleet.func2({0x…?, 0x9?}, 0x3?)
+        ~/broken/internal/sweep/runner_test.go:38 +0x24
+sweep/internal/sweep_test.fleet.func1.func1({0x…, 0x…}, 0x…)
+        ~/broken/internal/sweep/runner_test.go:33 +0xb4
+net/http.HandlerFunc.ServeHTTP(0x…?, {0x…?, 0x…?}, 0x…?)
+        $GOROOT/src/net/http/server.go:2358 +0x38
+net/http.(*ServeMux).ServeHTTP(0x0?, {0x…, 0x…}, 0x…)
+        $GOROOT/src/net/http/server.go:2923 +0x194
+net/http.serverHandler.ServeHTTP({0x…?}, {0x…?, 0x…?}, 0x1?)
+        $GOROOT/src/net/http/server.go:3436 +0xb0
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2157 +0x5a0
+created by net/http.(*Server).Serve in goroutine 23
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+
+goroutine 85 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1, 0x1})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x0?, 0x0?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x0?, 0x0?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*connReader).backgroundRead(0x…)
+        $GOROOT/src/net/http/server.go:746 +0x38
+created by net/http.(*connReader).startBackgroundRead in goroutine 84
+        $GOROOT/src/net/http/server.go:742 +0xc0
+
+goroutine 86 [IO wait, synctest bubble 1]:
+internal/poll.runtime_pollWait(0x…, 0x72)
+        $GOROOT/src/runtime/netpoll.go:351 +0xa0
+internal/poll.(*pollDesc).wait(0x…?, 0x…?, 0x0)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:84 +0x28
+internal/poll.(*pollDesc).waitRead(...)
+        $GOROOT/src/internal/poll/fd_poll_runtime.go:89
+internal/poll.(*FD).Read(0x…, {0x…, 0x1, 0x1})
+        $GOROOT/src/internal/poll/fd_unix.go:170 +0x22c
+net.(*netFD).Read(0x…, {0x…?, 0x0?, 0x0?})
+        $GOROOT/src/net/fd_posix.go:68 +0x28
+net.(*conn).Read(0x…, {0x…?, 0x0?, 0x0?})
+        $GOROOT/src/net/net.go:196 +0x34
+net/http.(*connReader).backgroundRead(0x…)
+        $GOROOT/src/net/http/server.go:746 +0x38
+created by net/http.(*connReader).startBackgroundRead in goroutine 83
+        $GOROOT/src/net/http/server.go:742 +0xc0
+FAIL    sweep/internal/sweep    20.488s
+FAIL

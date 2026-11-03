@@ -1,0 +1,4 @@
+$ go run . app.log
+# logq
+./main.go:49:14: invalid operation: line == "" (mismatched types func() string and untyped string)
+./main.go:52:28: cannot use line (variable of type func() string) as string value in argument to parseLevel

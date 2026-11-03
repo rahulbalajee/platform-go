@@ -1,0 +1,28 @@
+PASS
+goleak: Errors on successful test run: found unexpected goroutines:
+[Goroutine 12 in state chan send, with sweep/internal/sweep.(*Runner).Run.func1 on top of the stack:
+sweep/internal/sweep.(*Runner).Run.func1()
+        ~/broken/internal/sweep/runner.go:66 +0x7c
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 8
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+ Goroutine 13 in state chan send, with sweep/internal/sweep.(*Runner).Run.func1 on top of the stack:
+sweep/internal/sweep.(*Runner).Run.func1()
+        ~/broken/internal/sweep/runner.go:66 +0x7c
+sync.(*WaitGroup).Go.func1()
+        $GOROOT/src/sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 8
+        $GOROOT/src/sync/waitgroup.go:238 +0x78
+ Goroutine 14 in state sync.WaitGroup.Wait, with sync.runtime_SemacquireWaitGroup on top of the stack:
+sync.runtime_SemacquireWaitGroup(0x0?, 0x0?)
+        $GOROOT/src/runtime/sema.go:114 +0x38
+sync.(*WaitGroup).Wait(0x…)
+        $GOROOT/src/sync/waitgroup.go:206 +0xa4
+sweep/internal/sweep.(*Runner).Run.func2()
+        ~/broken/internal/sweep/runner.go:70 +0x24
+created by sweep/internal/sweep.(*Runner).Run in goroutine 8
+        ~/broken/internal/sweep/runner.go:69 +0x1b0
+]
+FAIL    sweep/internal/sweep    0.953s
+FAIL

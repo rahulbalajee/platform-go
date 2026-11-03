@@ -1,0 +1,13 @@
+$ go test -cover ./...
+	logq		coverage: 0.0% of statements
+ok  	logq/logline	0.437s	coverage: 73.7% of statements
+$ go test -coverprofile=cover.out ./logline
+ok  	logq/logline	0.161s	coverage: 73.7% of statements
+$ go tool cover -func=cover.out
+logq/logline/logline.go:31:	String		83.3%
+logq/logline/logline.go:47:	ParseLevel	100.0%
+logq/logline/logline.go:70:	Parse		100.0%
+logq/logline/stats.go:19:	Add		100.0%
+logq/logline/stats.go:35:	Print		0.0%
+logq/logline/stats.go:48:	percent		0.0%
+total:				(statements)	73.7%

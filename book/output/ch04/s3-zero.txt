@@ -1,0 +1,41 @@
+panic: test timed out after 10s
+        running tests:
+                TestMapZeroLimit (10s)
+
+goroutine 20 [running]:
+testing.(*M).startAlarm.func1()
+        $GOROOT/src/testing/testing.go:2961 +0x2c4
+created by time.goFunc
+        $GOROOT/src/time/sleep.go:182 +0x38
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x…, {0x…?, 0x…?}, 0x…)
+        $GOROOT/src/testing/testing.go:2268 +0x3cc
+testing.runTests.func1(0x…)
+        $GOROOT/src/testing/testing.go:2744 +0x38
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+testing.runTests({0x…, 0x5}, {0x…, 0xa}, 0x…, {0x…, 0x6, 0x6}, {0x…?, 0x…?, ...})
+        $GOROOT/src/testing/testing.go:2742 +0x400
+testing.(*M).Run(0x…)
+        $GOROOT/src/testing/testing.go:2602 +0x578
+go.uber.org/goleak.VerifyTestMain({0x…?, 0x…?}, {0x0, 0x0, 0x0})
+        ~/go/pkg/mod/go.uber.org/goleak@v1.3.0/testmain.go:53 +0x44
+sweep/conc_test.TestMain(...)
+        ~/broken/conc/conc_test.go:20
+main.main()
+        _testmain.go:60 +0xa4
+
+goroutine 19 [chan send]:
+golang.org/x/sync/errgroup.(*Group).Go(0x…, 0x…)
+        ~/go/pkg/mod/golang.org/x/sync@v0.24.0/errgroup/errgroup.go:74 +0x38
+sweep/conc.Map[...]({0x…, 0x…}, {0x…, 0x3, 0x…}, 0x0?, 0x…)
+        ~/broken/conc/conc.go:41 +0xf0
+sweep/conc_test.TestMapZeroLimit(0x…?)
+        ~/broken/conc/zero_test.go:12 +0x60
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    sweep/conc      10.434s
+FAIL

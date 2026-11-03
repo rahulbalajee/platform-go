@@ -1,0 +1,4 @@
+$ go build -o logq .
+$ ./logq -json -level error -grep reset app.log
+{"time":"2026-11-03T09:02:41Z","level":"ERROR","service":"db","message":"connection reset by peer"}
+app.log:11: bad time "this"

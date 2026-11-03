@@ -13,6 +13,7 @@
 // 130 interrupted.
 package main
 
+// START imports OMIT
 import (
 	"context"
 	"errors"
@@ -29,13 +30,19 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
 
+// END imports OMIT
+
+// START version OMIT
 // version is stamped at build time: -ldflags "-X main.version=v1.2.3".
 var version = "dev"
 
+// END version OMIT
+
+// Exit statuses are sweep's contract with scripts and CI.
 const (
-	exitOK    = 0
-	exitDown  = 1
-	exitUsage = 2
+	exitOK    = 0 // every target is up
+	exitDown  = 1 // at least one target is down, or the run was cut short
+	exitUsage = 2 // bad flags, bad inventory, or output that can't be written
 )
 
 // START main OMIT
@@ -48,68 +55,81 @@ func main() {
 
 // END main OMIT
 
+// START flags OMIT
+// options is the parsed command line.
+type options struct {
+	concurrency int
+	perHost     int
+	rate        float64
+	timeout     time.Duration
+	deadline    time.Duration
+	attempts    int
+	minCert     time.Duration
+	output      string
+	version     bool
+	files       []string // inventory files; none means stdin
+}
+
+// parseFlags parses the command line. On a usage error the flag package
+// has already printed the problem and the usage text to stderr.
+func parseFlags(args []string, stderr io.Writer) (options, error) {
+	var o options
+	fs := flag.NewFlagSet("sweep", flag.ContinueOnError)
+	fs.SetOutput(stderr)
+	fs.IntVar(&o.concurrency, "c", 32, "max targets checked concurrently")
+	fs.IntVar(&o.perHost, "per-host", 4, "max concurrent checks per host")
+	fs.Float64Var(&o.rate, "rate", 50, "max attempts per second (0 = no limit)")
+	fs.DurationVar(&o.timeout, "timeout", 5*time.Second, "timeout per attempt")
+	fs.DurationVar(&o.deadline, "deadline", 0, "overall deadline (0 = none)")
+	fs.IntVar(&o.attempts, "attempts", 3, "attempts per target incl. the first")
+	fs.DurationVar(&o.minCert, "min-cert-validity", 14*24*time.Hour,
+		"fail TLS targets whose certificate expires sooner")
+	fs.StringVar(&o.output, "o", "table", "output: table, wide, json, jsonl")
+	fs.BoolVar(&o.version, "version", false, "print version and exit")
+	err := fs.Parse(args)
+	o.files = fs.Args()
+	return o, err
+}
+
+// END flags OMIT
+
 // START run OMIT
 // run is main without the process-global side effects, so tests can call it
-// directly with fake arguments, streams and a cancellable context.
+// directly with fake arguments, streams and a cancellable context. It
+// returns the exit status.
 func run(ctx context.Context, args []string, stdin io.Reader,
 	stdout, stderr io.Writer) int {
 
-	fs := flag.NewFlagSet("sweep", flag.ContinueOnError)
-	fs.SetOutput(stderr)
-	var (
-		concurrency = fs.Int("c", 32, "max targets checked concurrently")
-		perHost     = fs.Int("per-host", 4, "max concurrent checks per host")
-		qps         = fs.Float64("rate", 50, "max attempts per second (0 = no limit)")
-		timeout     = fs.Duration("timeout", 5*time.Second, "timeout per attempt")
-		deadline    = fs.Duration("deadline", 0, "overall deadline (0 = none)")
-		attempts    = fs.Int("attempts", 3, "attempts per target incl. the first")
-		minCert     = fs.Duration("min-cert-validity", 14*24*time.Hour,
-			"fail TLS targets whose certificate expires sooner")
-		output      = fs.String("o", "table", "output: table, wide, json, jsonl")
-		showVersion = fs.Bool("version", false, "print version and exit")
-	)
-	if err := fs.Parse(args); err != nil {
+	opts, err := parseFlags(args, stderr)
+	if err != nil {
 		if errors.Is(err, flag.ErrHelp) {
-			return exitOK
+			return exitOK // -h asked for the usage text; it was printed
 		}
 		return exitUsage
 	}
-	if *showVersion {
+	if opts.version {
 		fmt.Fprintln(stdout, "sweep", version)
 		return exitOK
 	}
-
-	targets, err := readTargets(fs.Args(), stdin)
+	targets, err := readTargets(opts.files, stdin)
 	if err != nil {
 		fmt.Fprintln(stderr, "sweep:", err)
 		return exitUsage
 	}
-	reporter, err := sweep.NewReporter(*output, stdout)
+	reporter, err := sweep.NewReporter(opts.output, stdout)
 	if err != nil {
 		fmt.Fprintln(stderr, "sweep:", err)
 		return exitUsage
 	}
-	runner, err := sweep.NewRunner(sweep.Config{
-		Concurrency: *concurrency,
-		PerHost:     *perHost,
-		Rate:        *qps,
-		Timeout:     *timeout,
-		Retry: retry.Policy{
-			MaxAttempts: *attempts,
-			BaseDelay:   200 * time.Millisecond,
-			MaxDelay:    2 * time.Second,
-		},
-		Probers: defaultProbers(*minCert),
-	})
+	runner, err := newRunner(opts)
 	if err != nil {
 		fmt.Fprintln(stderr, "sweep:", err)
 		return exitUsage
 	}
-
-	if *deadline > 0 {
+	if opts.deadline > 0 {
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeoutCause(ctx, *deadline,
-			fmt.Errorf("sweep deadline of %s exceeded", *deadline))
+		ctx, cancel = context.WithTimeoutCause(ctx, opts.deadline,
+			fmt.Errorf("sweep deadline of %s exceeded", opts.deadline))
 		defer cancel()
 	}
 
@@ -140,13 +160,18 @@ func run(ctx context.Context, args []string, stdin io.Reader,
 	}
 }
 
-// END run OMIT
-
+// isSignal reports whether ctx was cancelled by a signal, as opposed to
+// the -deadline or a parent context.
 func isSignal(ctx context.Context) bool {
 	_, ok := errors.AsType[*lifecycle.SignalError](context.Cause(ctx))
 	return ok
 }
 
+// END run OMIT
+
+// START read OMIT
+// readTargets parses the inventory from the named files, in order, or from
+// stdin when there are none.
 func readTargets(paths []string, stdin io.Reader) ([]sweep.Target, error) {
 	if len(paths) == 0 {
 		return sweep.ParseTargets(stdin)
@@ -163,7 +188,30 @@ func readTargets(paths []string, stdin io.Reader) ([]sweep.Target, error) {
 	return sweep.ParseTargets(io.MultiReader(readers...))
 }
 
+// END read OMIT
+
+// START newrunner OMIT
+// newRunner turns the command line into a validated sweep.Runner.
+func newRunner(o options) (*sweep.Runner, error) {
+	return sweep.NewRunner(sweep.Config{
+		Concurrency: o.concurrency,
+		PerHost:     o.perHost,
+		Rate:        o.rate,
+		Timeout:     o.timeout,
+		Retry: retry.Policy{
+			MaxAttempts: o.attempts,
+			BaseDelay:   200 * time.Millisecond,
+			MaxDelay:    2 * time.Second,
+		},
+		Probers: defaultProbers(o.minCert),
+	})
+}
+
+// END newrunner OMIT
+
 // START probers OMIT
+// defaultProbers wires one prober per target kind. HTTP, TCP and TLS share
+// a resolver that caches lookups and merges concurrent ones.
 func defaultProbers(minCert time.Duration) map[sweep.Kind]sweep.Prober {
 	resolver := &sweep.CachingResolver{
 		Resolver: net.DefaultResolver,

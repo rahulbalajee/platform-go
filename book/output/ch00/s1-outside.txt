@@ -1,0 +1,3 @@
+$ go run .
+# logq
+./main.go:8:1: syntax error: non-declaration statement outside function body

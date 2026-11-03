@@ -1,0 +1,18 @@
+2026-11-03T09:00:01Z INFO api listening on :8080
+2026-11-03T09:00:02Z INFO worker started 4 workers
+2026-11-03T09:00:05Z DEBUG api loaded 12 routes
+2026-11-03T09:01:10Z INFO api GET /healthz 200 2ms
+2026-11-03T09:01:12Z WARN db slow query took 1250ms
+2026-11-03T09:01:15Z INFO api GET /orders 200 48ms
+2026-11-03T09:02:40Z ERROR api GET /orders 500 timeout talking to db
+2026-11-03T09:02:41Z ERROR db connection reset by peer
+2026-11-03T09:02:45Z WARN worker retrying job 1182 (attempt 2)
+2026-11-03T09:03:00Z INFO worker job 1182 done in 3.2s
+this line is not in the expected format
+2026-11-03T09:03:30Z INFO api GET /healthz 200 1ms
+2026-11-03T09:04:02Z ERROR worker job 1190 failed: timeout after 30s
+2026-11-03T09:04:05Z WARN api request body too large (2.1MB)
+2026-11-03T09:05:00Z INFO api GET /users 200 12ms
+2026-11-03T09:05:20Z DEBUG worker queue depth 3
+2026-11-03T09:06:11Z ERROR api GET /checkout 502 upstream payments unavailable
+2026-11-03T09:06:12Z INFO db connections 18/20 in use

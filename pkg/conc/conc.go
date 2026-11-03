@@ -1,7 +1,7 @@
+// START head OMIT
+
 // Package conc provides small, leak-free concurrency building blocks for
-// platform tooling: bounded fan-out with ordered results (Map), streaming
-// fan-out behind an iterator (Stream), and per-key concurrency limits
-// (KeyedSemaphore).
+// platform tooling.
 //
 // Every helper in this package follows the same contract: when it returns,
 // every goroutine it started has exited. Callers never need to "wait a bit"
@@ -16,7 +16,10 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// END head OMIT
+
 // START map OMIT
+
 // Map calls fn for every item, running at most limit calls at once, and
 // returns the results in input order.
 //
@@ -53,6 +56,7 @@ func Map[T, R any](ctx context.Context, items []T, limit int,
 // END map OMIT
 
 // START stream OMIT
+
 // Stream calls fn for every value produced by in, running at most limit calls
 // at once, and yields each result as soon as it is ready (completion order,
 // not input order).

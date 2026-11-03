@@ -1,0 +1,7 @@
+2026-11-03T09:00:00Z INFO edge proxy ready on :443
+2026-11-03T09:01:30Z WARN edge tls handshake timeout from 10.0.4.17
+2026-11-03T09:02:40Z ERROR edge upstream api returned 500 for /orders
+2026-11-03T09:03:05Z INFO edge config reloaded
+2026-11-03T09:04:44Z ERROR edge upstream api timeout after 10s
+2026-11-03T09:06:11Z ERROR edge upstream payments returned 502
+2026-11-03T09:06:30Z INFO edge 1520 requests in the last 5m

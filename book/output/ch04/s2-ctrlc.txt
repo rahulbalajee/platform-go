@@ -1,0 +1,6 @@
+DOWN http://127.0.0.1:8099/missing unhealthy status 404 Not Found
+DOWN http://127.0.0.1:8099/down    unhealthy status 503 Service Unavailable
+UP   http://127.0.0.1:8099/ok      200 OK
+CANCELLED http://127.0.0.1:8099/slow?a  interrupt signal received
+CANCELLED http://127.0.0.1:8099/slow?b  interrupt signal received
+checked 5/5 targets in 628ms: 1 up, 2 down, 2 cancelled (interrupted)

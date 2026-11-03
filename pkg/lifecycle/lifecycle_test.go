@@ -1,3 +1,5 @@
+// START head OMIT
+
 //go:build unix
 
 package lifecycle_test
@@ -32,6 +34,8 @@ func (s *syncBuffer) String() string {
 	defer s.mu.Unlock()
 	return s.b.String()
 }
+
+// END head OMIT
 
 // START test OMIT
 func TestTwoStageShutdown(t *testing.T) {
@@ -71,8 +75,6 @@ func TestTwoStageShutdown(t *testing.T) {
 	}
 }
 
-// END test OMIT
-
 func TestStopIsIdempotentAndCancels(t *testing.T) {
 	ctx, stop := lifecycle.NotifyContext(t.Context(), lifecycle.Options{
 		Signals: []os.Signal{syscall.SIGUSR2},
@@ -83,3 +85,5 @@ func TestStopIsIdempotentAndCancels(t *testing.T) {
 		t.Fatal("stop must cancel the context")
 	}
 }
+
+// END test OMIT

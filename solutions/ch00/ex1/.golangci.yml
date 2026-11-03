@@ -1,0 +1,12 @@
+# Settings for golangci-lint. The standard set is errcheck, govet,
+# ineffassign, staticcheck and unused; the list below adds two more.
+version: "2"
+
+linters:
+  default: standard
+  enable:
+    - errorlint # error checks that miss wrapped errors
+    - gocritic # a collection of small bug and style checks
+  exclusions:
+    presets:
+      - std-error-handling # allow unchecked Close and fmt.Print* errors

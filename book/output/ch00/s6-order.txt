@@ -1,0 +1,10 @@
+$ ./logq app.log 2>/dev/null | head -4
+INFO   8
+DEBUG  2
+WARN   3
+ERROR  4
+$ ./logq app.log 2>/dev/null | head -4
+ERROR  4
+INFO   8
+DEBUG  2
+WARN   3

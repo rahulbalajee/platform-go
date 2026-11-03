@@ -1,0 +1,3 @@
+$ go build -o logq . && ./logq -level error nope.log
+$ echo $?
+1

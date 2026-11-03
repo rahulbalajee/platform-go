@@ -1,0 +1,14 @@
+$ go test ./...
+?   	logq	[no test files]
+--- FAIL: TestParse (0.00s)
+    --- FAIL: TestParse/info_line (0.00s)
+        logline_test.go:53: Parse("2026-11-03T09:00:01Z INFO api listening on :8080")
+             got {2026-11-03 09:00:01 +0000 UTC INFO api api}
+            want {2026-11-03 09:00:01 +0000 UTC INFO api listening on :8080}
+    --- FAIL: TestParse/lowercase_level (0.00s)
+        logline_test.go:53: Parse("2026-11-03T09:02:41Z error db connection reset")
+             got {2026-11-03 09:02:41 +0000 UTC ERROR db db}
+            want {2026-11-03 09:02:41 +0000 UTC ERROR db connection reset}
+FAIL
+FAIL	logq/logline	0.411s
+FAIL

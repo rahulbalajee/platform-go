@@ -1,0 +1,9 @@
+$ go run .
+Hello, platform engineer!
+$ go build
+$ ls
+go.mod
+hello
+main.go
+$ ./hello
+Hello, platform engineer!

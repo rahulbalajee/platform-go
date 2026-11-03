@@ -1,0 +1,9 @@
+STATUS  TARGET                         LATENCY  TRIES  DETAIL
+UP      http://127.0.0.1:8099/ok       1ms      1      200 OK
+UP      http://127.0.0.1:8099/flaky    0s       3      200 OK
+DOWN    http://127.0.0.1:8099/down     0s       3      unhealthy status 503 Service Unavai…
+DOWN    http://127.0.0.1:8099/busy     1ms      3      unhealthy status 429 Too Many Reque…
+DOWN    http://127.0.0.1:8099/missing  0s       1      unhealthy status 404 Not Found
+DOWN    http://127.0.0.1:8099/slow     1.001s   3      attempt timed out after 1s (after 3…
+checked 6/6 targets in 3.278s: 2 up, 4 down
+exit status 1

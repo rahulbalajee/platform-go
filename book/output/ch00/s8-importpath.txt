@@ -1,0 +1,2 @@
+$ go build .
+main.go:13:2: package logline is not in std (/usr/local/go/src/logline)

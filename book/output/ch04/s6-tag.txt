@@ -1,0 +1,1 @@
+internal/sweep/runner.go:42:2: struct field tag `json:latency_ns` not compatible with reflect.StructTag.Get: bad syntax for struct tag value

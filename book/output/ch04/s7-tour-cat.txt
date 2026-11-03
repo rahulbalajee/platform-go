@@ -1,0 +1,11 @@
+# Staging, as seen from the build agent
+http://127.0.0.1:8099/ok
+http://127.0.0.1:8099/flaky
+http://127.0.0.1:8099/down
+http://127.0.0.1:8099/missing
+http://127.0.0.1:8099/slow
+https://go.dev/
+tcp://127.0.0.1:9
+tls://go.dev:443
+tls://expired.badssl.com:443
+dns://does-not-exist.invalid

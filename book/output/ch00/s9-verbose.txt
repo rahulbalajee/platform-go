@@ -1,0 +1,19 @@
+$ go test -v ./logline
+=== RUN   TestParse
+=== RUN   TestParse/info_line
+=== RUN   TestParse/lowercase_level
+=== RUN   TestParse/too_few_fields
+=== RUN   TestParse/bad_time
+=== RUN   TestParse/bad_level
+--- PASS: TestParse (0.00s)
+    --- PASS: TestParse/info_line (0.00s)
+    --- PASS: TestParse/lowercase_level (0.00s)
+    --- PASS: TestParse/too_few_fields (0.00s)
+    --- PASS: TestParse/bad_time (0.00s)
+    --- PASS: TestParse/bad_level (0.00s)
+=== RUN   TestParseLevel
+--- PASS: TestParseLevel (0.00s)
+=== RUN   TestStatsAdd
+--- PASS: TestStatsAdd (0.00s)
+PASS
+ok  	logq/logline	0.155s

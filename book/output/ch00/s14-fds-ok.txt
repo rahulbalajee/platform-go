@@ -1,0 +1,7 @@
+$ go build -o logq .
+$ ulimit -SHn 64
+$ ./logq -count many/*.log | head -4
+query: level>=DEBUG
+DEBUG  0
+INFO   600000
+WARN   0

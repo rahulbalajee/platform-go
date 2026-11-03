@@ -1,0 +1,4 @@
+?       sweep/cmd/fleet [no test files]
+ok      sweep/cmd/sweep 0.533s
+ok      sweep/conc      0.947s
+ok      sweep/internal/sweep    1.385s

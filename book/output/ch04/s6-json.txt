@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "total": 6,
+    "checked": 6,
+    "up": 2,
+    "down": 4,
+    "cancelled": 0,
+    "elapsed_ns": 3433888666,
+    "interrupted": false
+  },
+  "results": [
+    {
+      "index": 0,
+      "target": "http://127.0.0.1:8099/ok",
+      "kind": "http",
+      "status": "up",
+      "attempts": 1,
+      "latency_ns": 1508041,
+      "detail": "200 OK"
+    },
+    {
+      "index": 1,

@@ -1,0 +1,3 @@
+# sweep/conc_test
+# [sweep/conc_test]
+vet: conc/types_test.go:16:41: in call to conc.Map, type func(ctx context.Context, n int) (string, error) of label does not match inferred type func(context.Context, string) (R, error) for func(context.Context, T) (R, error)

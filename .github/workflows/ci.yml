@@ -79,6 +79,36 @@ jobs:
           working-directory: ${{ matrix.module }}
       - run: go test -race -count=1 ./...
 
+  # The build track (book/AUTHORING.md): every step and solution module builds,
+  # lints and passes its race tests; every new or changed line of every step is
+  # printed in the book; exercise tests fail on their base step; final steps
+  # match the production code they became.
+  workbook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: envtest binaries (operator build steps)
+        working-directory: projects/watchtower
+        run: |
+          make setup-envtest
+          echo "KUBEBUILDER_ASSETS=$(bin/setup-envtest use 1.37.0 --bin-dir "$PWD/bin" -p path)" >> "$GITHUB_ENV"
+      - name: Build track checks
+        run: python3 book/scripts/check_workbook.py --race
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
+      - name: Lint every step and solution module
+        run: |
+          for m in $(find workbook solutions -name go.mod -not -path workbook/go.mod -not -path '*/exercises/*' -exec dirname {} \; | sort); do
+            echo "== $m"
+            (cd "$m" && golangci-lint run --config "$GITHUB_WORKSPACE/.golangci.yml" ./...) || exit 1
+          done
+
   # Reachable known vulnerabilities fail the build (Chapter 1). govulncheck is
   # pinned as a tool in examples/ch01/tools/go.mod.
   vuln:

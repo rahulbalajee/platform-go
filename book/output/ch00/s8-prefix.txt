@@ -1,0 +1,4 @@
+$ go build .
+# logq
+./main.go:51:30: undefined: Stats
+./main.go:52:9: undefined: Stats

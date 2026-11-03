@@ -1,0 +1,2 @@
+$ go test
+?   	logq	[no test files]

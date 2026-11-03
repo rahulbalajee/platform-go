@@ -1,6 +1,7 @@
-// Package sweep checks many network targets concurrently (HTTP endpoints,
-// TCP ports, TLS certificates, DNS names) with bounded parallelism, per-host
-// politeness, a global rate limit, per-attempt timeouts, and retries.
+// START head OMIT
+
+// Package sweep checks many network targets concurrently: HTTP endpoints,
+// TCP ports, TLS certificates and DNS names.
 package sweep
 
 import (
@@ -34,6 +35,9 @@ type Target struct {
 // Host returns the host[:port] used for per-host concurrency limits.
 func (t Target) Host() string { return t.URL.Host }
 
+// END head OMIT
+
+// START parse OMIT
 // ParseTargets reads one target per line. Blank lines and lines starting with
 // # are ignored. All syntax errors are reported together, with line numbers,
 // so a user can fix an inventory file in one pass.
@@ -67,6 +71,9 @@ func ParseTargets(r io.Reader) ([]Target, error) {
 	return targets, nil
 }
 
+// END parse OMIT
+
+// START parse1 OMIT
 func parseTarget(raw string) (Target, error) {
 	u, err := url.Parse(raw)
 	if err != nil {
@@ -79,12 +86,15 @@ func parseTarget(raw string) (Target, error) {
 	case "tcp", "tls":
 		t.Kind = Kind(u.Scheme)
 		if _, port, err := net.SplitHostPort(u.Host); err != nil || port == "" {
-			return Target{}, fmt.Errorf("%q: %s targets need host:port", raw, u.Scheme)
+			return Target{}, fmt.Errorf("%q: %s targets need host:port",
+				raw, u.Scheme)
 		}
 	case "dns":
 		t.Kind = KindDNS
 	default:
-		return Target{}, fmt.Errorf("%q: unsupported scheme %q (want http, https, tcp, tls, dns)", raw, u.Scheme)
+		return Target{}, fmt.Errorf(
+			"%q: unsupported scheme %q (want http, https, tcp, tls, dns)",
+			raw, u.Scheme)
 	}
 	if u.Hostname() == "" {
 		return Target{}, fmt.Errorf("%q: missing host", raw)
@@ -101,3 +111,5 @@ func parseTarget(raw string) (Target, error) {
 	// END port OMIT
 	return t, nil
 }
+
+// END parse1 OMIT

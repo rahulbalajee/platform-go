@@ -1,0 +1,8 @@
+$ go run . app.log
+line 11: unknown level "line"
+DEBUG  2
+INFO   8
+WARN   3
+ERROR  4
+bad    1
+errors: 23.5% of 17 entries

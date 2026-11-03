@@ -1,0 +1,9 @@
+$ go run .
+logq version 0.1.0
+sample line: 2026-11-03T09:02:40Z ERROR api GET /orders 500
+sample size: 46 bytes
+4 of 18 lines are errors (%!f(int=0)%)
+warnings counted so far: 0
+healthy: false
+$ go vet .
+main.go:23:41: fmt.Printf format %.1f has arg share of wrong type int

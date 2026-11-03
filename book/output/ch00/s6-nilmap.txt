@@ -1,0 +1,11 @@
+$ go run . app.log
+panic: assignment to entry in nil map
+
+goroutine 1 [running]:
+main.countLevels({0x100e6f180?, 0x3f2fcfcf4048?})
+	/Users/you/logq/main.go:74 +0x228
+main.run({0x16f102c2a?, 0x100d3c28c?})
+	/Users/you/logq/main.go:46 +0x68
+main.main()
+	/Users/you/logq/main.go:30 +0x80
+exit status 2

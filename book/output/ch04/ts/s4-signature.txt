@@ -1,0 +1,3 @@
+cmd/sweep/main.go:206:18: cannot use sweep.DNSProber{…} (value of struct type sweep.DNSProber) as sweep.Prober value in map literal: sweep.DNSProber does not implement sweep.Prober (wrong type for method Probe)
+                have Probe(context.Context, *sweep.Target) (string, error)
+                want Probe(context.Context, sweep.Target) (string, error)

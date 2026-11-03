@@ -1,0 +1,16 @@
+$ grep -v format app.log > clean.log
+$ go run . clean.log
+DEBUG  2
+INFO   8
+WARN   3
+ERROR  4
+panic: runtime error: index out of range [0] with length 0
+
+goroutine 1 [running]:
+main.printSummary(0x752bef4a60f0, {0x0, 0x0, 0x100000000?})
+	/Users/you/logq/main.go:117 +0x250
+main.run({0x16f696c2b?, 0x1007a828c?})
+	/Users/you/logq/main.go:50 +0x94
+main.main()
+	/Users/you/logq/main.go:30 +0x80
+exit status 2

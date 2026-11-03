@@ -1,0 +1,4 @@
+$ go run .
+# logq
+./main.go:13:2: undefined: size
+./main.go:22:30: undefined: size

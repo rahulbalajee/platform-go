@@ -1,0 +1,1 @@
+internal/sweep/report.go:45:2: SA4005: ineffective assignment to field Summary.Checked (staticcheck)

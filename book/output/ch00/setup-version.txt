@@ -1,0 +1,4 @@
+$ go version
+go version go1.27.3 darwin/arm64
+$ which go
+/usr/local/go/bin/go

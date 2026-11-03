@@ -1,0 +1,6 @@
+2026/11/03 17:20:26 http: TLS handshake error from 127.0.0.1:64010: remote error: tls: bad certificate
+--- FAIL: TestSummary (0.00s)
+    summary_test.go:28: String() = "checked 0/4 targets in 1.5s: 0 up, 0 down", want "checked 3/4 targets in 1.5s: 2 up, 1 down"
+FAIL
+FAIL    sweep/internal/sweep    0.643s
+FAIL

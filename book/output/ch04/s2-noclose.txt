@@ -1,0 +1,148 @@
+--- FAIL: TestRunnerOutcomes (0.00s)
+panic: deadlock: all goroutines in bubble are blocked [recovered, repanicked]
+
+goroutine 20 [running]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+internal/synctest.Run(0x…)
+        $GOROOT/src/runtime/synctest.go:247 +0x2b4
+testing/synctest.Test(0x…, 0x…)
+        $GOROOT/src/testing/synctest/synctest.go:291 +0x90
+sweep/internal/sweep_test.TestRunnerOutcomes(0x…?)
+        ~/broken/internal/sweep/runner_test.go:90 +0x24
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+
+goroutine 21 [chan receive (durable), synctest bubble 1]:
+testing/synctest.testingSynctestTest(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2310 +0x218
+testing/synctest.Test.func1()
+        $GOROOT/src/testing/synctest/synctest.go:292 +0x28
+created by testing/synctest.Test in goroutine 20
+        $GOROOT/src/testing/synctest/synctest.go:291 +0x90
+
+goroutine 22 [chan receive (durable), synctest bubble 1]:
+sweep/internal/sweep_test.TestRunnerOutcomes.func1(0x…)
+        ~/broken/internal/sweep/runner_test.go:98 +0x1a8
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing/synctest.testingSynctestTest in goroutine 21
+        $GOROOT/src/testing/testing.go:2309 +0x204
+
+goroutine 23 [select (durable), synctest bubble 1]:
+internal/gate.(*Gate).WaitAndLock(0x…, {0x…, 0x…})
+        $GOROOT/src/internal/gate/gate.go:51 +0x84
+internal/nettest.(*Listener).Accept(0x…)
+        $GOROOT/src/internal/nettest/listener.go:105 +0x44
+net/http.(*Server).Serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:3574 +0x2a8
+net/http/httptest.(*Server).goServe.func1()
+        $GOROOT/src/net/http/httptest/server.go:586 +0x54
+created by net/http/httptest.(*Server).goServe in goroutine 22
+        $GOROOT/src/net/http/httptest/server.go:584 +0x8c
+
+goroutine 24 [select (durable), synctest bubble 1]:
+internal/gate.(*Gate).WaitAndLock(0x…, {0x…, 0x…})
+        $GOROOT/src/internal/gate/gate.go:51 +0x84
+internal/nettest.(*Listener).Accept(0x…)
+        $GOROOT/src/internal/nettest/listener.go:105 +0x44
+crypto/tls.(*listener).Accept(0x…)
+        $GOROOT/src/crypto/tls/tls.go:78 +0x28
+net/http.(*Server).Serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:3574 +0x2a8
+net/http/httptest.(*Server).goServe.func1()
+        $GOROOT/src/net/http/httptest/server.go:586 +0x54
+created by net/http/httptest.(*Server).goServe in goroutine 22
+        $GOROOT/src/net/http/httptest/server.go:584 +0x8c
+
+goroutine 67 [select (durable), synctest bubble 1]:
+internal/nettest.(*connHalf).waitAndLockForRead(...)
+        $GOROOT/src/internal/nettest/conn.go:322
+internal/nettest.(*connHalf).read(0x…, {0x…, 0x1000, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:341 +0x74
+internal/nettest.(*Conn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:61 +0x28
+net/http.(*connReader).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/net/http/server.go:856 +0x228
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x4)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2193 +0x6cc
+created by net/http.(*Server).Serve in goroutine 23
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+
+goroutine 39 [select (durable), synctest bubble 1]:
+internal/nettest.(*connHalf).waitAndLockForRead(...)
+        $GOROOT/src/internal/nettest/conn.go:322
+internal/nettest.(*connHalf).read(0x…, {0x…, 0x1000, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:341 +0x74
+internal/nettest.(*Conn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:61 +0x28
+net/http.(*connReader).Read(0x…, {0x…, 0x1000, 0x1000})
+        $GOROOT/src/net/http/server.go:856 +0x228
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x4)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*conn).serve(0x…, {0x…, 0x…})
+        $GOROOT/src/net/http/server.go:2193 +0x6cc
+created by net/http.(*Server).Serve in goroutine 23
+        $GOROOT/src/net/http/server.go:3604 +0x3e8
+
+goroutine 37 [select (durable), synctest bubble 1]:
+internal/nettest.(*connHalf).waitAndLockForRead(...)
+        $GOROOT/src/internal/nettest/conn.go:322
+internal/nettest.(*connHalf).read(0x…, {0x…, 0x1000, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:341 +0x74
+internal/nettest.(*Conn).Read(0x…, {0x…?, 0x0?, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:61 +0x28
+net/http.(*persistConn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/http/transport.go:2300 +0x48
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x1)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*persistConn).readLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2493 +0x120
+created by net/http.(*Transport).dialConn in goroutine 36
+        $GOROOT/src/net/http/transport.go:2123 +0x14d8
+
+goroutine 38 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).writeLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2833 +0x98
+created by net/http.(*Transport).dialConn in goroutine 36
+        $GOROOT/src/net/http/transport.go:2124 +0x1528
+
+goroutine 49 [select (durable), synctest bubble 1]:
+internal/nettest.(*connHalf).waitAndLockForRead(...)
+        $GOROOT/src/internal/nettest/conn.go:322
+internal/nettest.(*connHalf).read(0x…, {0x…, 0x1000, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:341 +0x74
+internal/nettest.(*Conn).Read(0x…, {0x…?, 0x0?, 0x…?})
+        $GOROOT/src/internal/nettest/conn.go:61 +0x28
+net/http.(*persistConn).Read(0x…, {0x…?, 0x…?, 0x…?})
+        $GOROOT/src/net/http/transport.go:2300 +0x48
+bufio.(*Reader).fill(0x…)
+        $GOROOT/src/bufio/bufio.go:113 +0xdc
+bufio.(*Reader).Peek(0x…, 0x1)
+        $GOROOT/src/bufio/bufio.go:152 +0x58
+net/http.(*persistConn).readLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2493 +0x120
+created by net/http.(*Transport).dialConn in goroutine 34
+        $GOROOT/src/net/http/transport.go:2123 +0x14d8
+
+goroutine 50 [select (durable), synctest bubble 1]:
+net/http.(*persistConn).writeLoop(0x…)
+        $GOROOT/src/net/http/transport.go:2833 +0x98
+created by net/http.(*Transport).dialConn in goroutine 34
+        $GOROOT/src/net/http/transport.go:2124 +0x1528
+FAIL    sweep/internal/sweep    0.476s
+FAIL

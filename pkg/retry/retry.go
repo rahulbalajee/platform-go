@@ -1,3 +1,5 @@
+// START head OMIT
+
 // Package retry implements context-aware retries with capped exponential
 // backoff and full jitter, the strategy that best spreads retry storms
 // across a fleet of clients.
@@ -13,6 +15,8 @@ import (
 	"math/rand/v2"
 	"time"
 )
+
+// END head OMIT
 
 // START policy OMIT
 
@@ -30,8 +34,6 @@ type Policy struct {
 	OnRetry func(attempt int, err error, delay time.Duration)
 }
 
-// END policy OMIT
-
 func (p Policy) withDefaults() Policy {
 	if p.MaxAttempts <= 0 {
 		p.MaxAttempts = 3
@@ -44,6 +46,8 @@ func (p Policy) withDefaults() Policy {
 	}
 	return p
 }
+
+// END policy OMIT
 
 // START do OMIT
 
@@ -87,6 +91,7 @@ func (p Policy) Do(ctx context.Context, op func(context.Context) error) error {
 // END do OMIT
 
 // START value OMIT
+
 // Value is Do for operations that return a result. It is a generic method,
 // which Go supports from 1.27 on, so call sites read naturally:
 //
@@ -108,6 +113,7 @@ func (p Policy) Value[T any](ctx context.Context,
 // END value OMIT
 
 // START backoff OMIT
+
 // backoff returns the delay before retry number attempt (1-based) using
 // "full jitter": a uniform random duration in [0, min(MaxDelay, Base*2^n)).
 // An After error overrides the computed delay (still capped).
@@ -123,8 +129,6 @@ func (p Policy) backoff(attempt int, err error) time.Duration {
 	return rand.N(ceiling) + 1 // +1ns keeps the delay strictly positive
 }
 
-// END backoff OMIT
-
 func (p Policy) shouldRetry(err error) bool {
 	if _, ok := errors.AsType[*permanentError](err); ok {
 		return false
@@ -135,7 +139,10 @@ func (p Policy) shouldRetry(err error) bool {
 	return true
 }
 
+// END backoff OMIT
+
 // START errors OMIT
+
 // Permanent marks err as non-retryable. The wrapper is transparent: its
 // message is err's message and errors.Is/As see through it.
 func Permanent(err error) error {

@@ -1,0 +1,13 @@
+$ cat app.log edge.log | ./logq -count -top 3
+stdin:11: bad time "this"
+query: level>=DEBUG
+DEBUG  2
+INFO   11
+WARN   4
+ERROR  7
+bad    1
+errors: 29.2% of 24 entries
+from 09:00:00 to 09:06:30 (6m30s)
+api      9
+edge     7
+worker   5

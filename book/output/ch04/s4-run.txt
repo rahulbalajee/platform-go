@@ -1,0 +1,8 @@
+DOWN tcp://127.0.0.1:9             dial tcp 127.0.0.1:9: connect: connection refused
+UP   http://127.0.0.1:8099/ok      200 OK
+DOWN dns://does-not-exist.invalid  lookup does-not-exist.invalid: no such host
+UP   tcp://localhost:8099          connected to 127.0.0.1:8099
+UP   dns://go.dev                  8 address(es): 2001:4860:4802:36::15
+UP   tls://go.dev:443              cert "go.dev" expires in 47d
+checked 6/6 targets in 235ms: 4 up, 2 down
+exit status 1

@@ -1,0 +1,4 @@
+sweep: invalid targets:
+  line 1: "htps://example.com/healthz": unsupported scheme "htps" (want http, https, tcp, tls, dns)
+  line 2: "tcp://db.example.com": tcp targets need host:port
+exit status 2

@@ -1,0 +1,5 @@
+$ go test .
+# logq [logq.test]
+./main_test.go:39:32: cannot use stdout (variable of struct type bytes.Buffer) as io.Writer value in argument to run: bytes.Buffer does not implement io.Writer (method Write has pointer receiver)
+FAIL	logq [build failed]
+FAIL

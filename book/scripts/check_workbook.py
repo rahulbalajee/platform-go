@@ -6,6 +6,10 @@ Layout checked, per chapter NN:
   workbook/chNN/exercises/exK/  acceptance tests only; overlaid on the base step
       BASE (optional file)      name of the base step dir; default: the last step
   solutions/chNN/exK/           full module: base step + solution + same tests
+  workbook/chNN/GENERATED       (optional) glob patterns, relative to a step dir,
+                                of files produced by commands the book prints
+                                (kubebuilder init, controller-gen, stringer);
+                                exempt from coverage
   workbook/chNN/SYNC (optional) "workbook/... = pkg/..." file pairs and
                                 "@import old = new" rewrites; the final step must
                                 match the production code it was promoted to
@@ -28,6 +32,7 @@ from __future__ import annotations
 import argparse
 import difflib
 import filecmp
+import fnmatch
 import glob
 import os
 import re
@@ -95,11 +100,51 @@ def shown_lines(root: str) -> dict[str, set[int]]:
     return shown
 
 
+DECL = re.compile(r"^(func|type|var|const|import|package)\b")
+
+
+def describe_ranges(path: str, nums: list[int]) -> list[str]:
+    """Group line numbers into ranges, each with its enclosing declaration."""
+    lines = open(path, encoding="utf-8", errors="replace").read().split("\n")
+    ranges, start, prev = [], None, None
+    for n in sorted(nums):
+        if start is None:
+            start = prev = n
+        elif n == prev + 1:
+            prev = n
+        else:
+            ranges.append((start, prev))
+            start = prev = n
+    if start is not None:
+        ranges.append((start, prev))
+    out = []
+    for a, b in ranges:
+        decl = next((lines[i].strip() for i in range(a - 1, -1, -1) if DECL.match(lines[i])), "")
+        span = f"{a}" if a == b else f"{a}-{b}"
+        out.append(f"lines {span}" + (f" (in `{decl[:60]}`)" if decl else ""))
+    return out
+
+
+def generated_patterns(root: str, ch: str) -> list[str]:
+    p = os.path.join(root, "workbook", f"ch{ch}", "GENERATED")
+    if not os.path.isfile(p):
+        return []
+    pats = []
+    for line in open(p, encoding="utf-8"):
+        line = line.split("#", 1)[0].strip()
+        if line:
+            pats.append(line)
+    return pats
+
+
 def check_coverage(root: str, ch: str, shown: dict[str, set[int]]) -> None:
     prev = None
+    gen = generated_patterns(root, ch)
     for d in step_dirs(root, ch):
         for rel in files_in(d):
             if os.path.basename(rel) in SKIP_COVERAGE or rel.endswith(".golden"):
+                continue
+            if any(fnmatch.fnmatch(rel, g) for g in gen):
                 continue
             cur_path = os.path.join(d, rel)
             try:
@@ -120,8 +165,8 @@ def check_coverage(root: str, ch: str, shown: dict[str, set[int]]) -> None:
             key = os.path.relpath(cur_path, root)
             missing = [n for n, _ in changed if n not in shown.get(key, set())]
             if missing:
-                fail(f"coverage: {key}: {len(missing)} new/changed line(s) never printed, "
-                     f"e.g. lines {', '.join(map(str, missing[:8]))}")
+                fail(f"coverage: {key}: {len(missing)} new/changed line(s) never printed: "
+                     + "; ".join(describe_ranges(cur_path, missing)))
         prev = d
 
 

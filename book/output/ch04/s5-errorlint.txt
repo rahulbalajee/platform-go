@@ -1,0 +1,5 @@
+internal/sweep/runner.go:140:21: comparing with == will fail on wrapped errors. Use errors.Is to check for a specific error (errorlint)
+                if perr != nil && context.Cause(actx) == errAttemptTimeout {
+                                  ^
+1 issues:
+* errorlint: 1

@@ -1,0 +1,8 @@
+$ go run .
+db
+panic: runtime error: index out of range [2] with length 2
+
+goroutine 1 [running]:
+main.main()
+	/Users/you/ex3/main.go:8 +0xa8
+exit status 2

@@ -1,0 +1,16 @@
+$ cat main.go
+package main
+import "fmt"
+func main() {
+fmt.Println( "Hello, platform engineer!" )
+}
+$ go fmt
+main.go
+$ cat main.go
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello, platform engineer!")
+}

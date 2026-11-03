@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package sweep
 
 import (
@@ -14,6 +16,9 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
 
+// END imports OMIT
+
+// START status OMIT
 // Status is the outcome of checking one target.
 type Status string
 
@@ -23,6 +28,9 @@ const (
 	StatusCancelled Status = "cancelled" // the run was interrupted mid-check
 )
 
+// END status OMIT
+
+// START result OMIT
 // Result is the report for one target. It is designed to be printed as a
 // table row or serialised as one JSON line.
 type Result struct {
@@ -35,6 +43,8 @@ type Result struct {
 	Detail   string        `json:"detail,omitempty"`
 	Error    string        `json:"error,omitempty"`
 }
+
+// END result OMIT
 
 // START config OMIT
 // Config holds every knob that shapes a sweep's load on the outside world.
@@ -94,11 +104,11 @@ func (r *Runner) Run(ctx context.Context, targets []Target) iter.Seq[Result] {
 
 // END run OMIT
 
+// START check OMIT
 // errAttemptTimeout is the cancellation cause of a single timed-out attempt,
 // distinguishing "this target is slow" from "the user pressed Ctrl-C".
 var errAttemptTimeout = errors.New("attempt timed out")
 
-// START check OMIT
 func (r *Runner) check(ctx context.Context, t Target) Result {
 	res := Result{Index: t.Index, Target: t.Raw, Kind: t.Kind}
 	prober, ok := r.cfg.Probers[t.Kind]
@@ -138,15 +148,13 @@ func (r *Runner) check(ctx context.Context, t Target) Result {
 	switch {
 	case err == nil:
 		res.Status = StatusUp
-	case ctx.Err() != nil:
+	case ctx.Err() != nil: // the whole run was cancelled, not just this check
 		return cancelled(res, context.Cause(ctx))
 	default:
 		res.Status, res.Error = StatusDown, rootMessage(err)
 	}
 	return res
 }
-
-// END check OMIT
 
 func cancelled(res Result, cause error) Result {
 	res.Status = StatusCancelled
@@ -162,3 +170,5 @@ func rootMessage(err error) string {
 	}
 	return err.Error()
 }
+
+// END check OMIT

@@ -1,0 +1,8 @@
+$ ./logq -grep "disk full" app.log
+app.log:11: bad time "this"
+$ echo $?
+1
+$ ./logq -level loud app.log
+logq: unknown level "loud"
+$ echo $?
+2

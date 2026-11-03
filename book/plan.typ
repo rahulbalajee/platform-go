@@ -4,7 +4,7 @@
   (numeral: "I", title: "Foundations: Go for Systems Work",
    blurb: [The language and runtime from a platform engineer's point of view: what makes Go the default for infrastructure, and the disciplines that keep tools correct under concurrency, failure, and change.],
    chapters: (
-    (0, "Go from Zero: Programming Fundamentals by Building a Real Tool", none, [For readers new to programming or new to Go: values, types, control flow, functions, structs, methods, interfaces, errors, packages, testing, I/O and goroutines, learned by building a log-query CLI one working step at a time.]),
+    (0, "Go from Zero: Programming Fundamentals by Building a Real Tool", <ch-zero>, [For readers new to programming or new to Go: values, types, control flow, functions, structs, methods, interfaces, errors, packages, testing, I/O and goroutines, learned by building a log-query CLI one working step at a time.]),
     (1, "The Platform Engineer's Go: Toolchain, Modules, and the Monorepo", <ch-toolchain>, [Go 1.27 toolchain, `toolchain` and `tool` directives, workspaces, project layout, linting, and the companion monorepo.]),
     (2, "Designing Go APIs That Last", <ch-api-design>, [Small interfaces, functional options, generics and Go 1.27 generic methods, package boundaries, and API stability for internal SDKs.]),
     (3, "Errors, Exit Codes, and Failure as a Feature", <ch-errors>, [Wrapping, `errors.AsType`, typed errors, `errors.Join`, exit-code contracts, panics at boundaries, and user-facing versus operator-facing messages.]),

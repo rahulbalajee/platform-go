@@ -1,0 +1,8 @@
+UP   http://127.0.0.1:8099/ok      1x  200 OK
+DOWN http://127.0.0.1:8099/missing 1x  unhealthy status 404 Not Found
+UP   http://127.0.0.1:8099/flaky   3x  200 OK
+DOWN http://127.0.0.1:8099/down    3x  unhealthy status 503 Service Unavailable (after 3 attempts)
+DOWN http://127.0.0.1:8099/busy    3x  unhealthy status 429 Too Many Requests (after 3 attempts)
+DOWN http://127.0.0.1:8099/slow    3x  attempt timed out after 1s (after 3 attempts)
+checked 6/6 targets in 3.272s: 2 up, 4 down
+exit status 1

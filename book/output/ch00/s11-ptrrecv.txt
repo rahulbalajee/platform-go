@@ -1,0 +1,3 @@
+$ go build .
+# logq
+./main.go:116:21: cannot use *re (variable of struct type match.Regexp) as match.Matcher value in argument to append: match.Regexp does not implement match.Matcher (method Match has pointer receiver)

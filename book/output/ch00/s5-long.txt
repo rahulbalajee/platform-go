@@ -1,0 +1,12 @@
+$ printf '2026-11-03T09:00:00Z INFO api ' > long.log
+$ head -c 100000 /dev/zero | tr '\0' x >> long.log
+$ echo >> long.log
+$ wc -c long.log
+  100031 long.log
+$ go run . long.log
+DEBUG  0
+INFO   1
+WARN   0
+ERROR  0
+bad    0
+errors: 0.0% of 1 entries

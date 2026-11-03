@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package sweep
 
 import (
@@ -14,6 +16,8 @@ import (
 
 	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
+
+// END imports OMIT
 
 // START prober OMIT
 // A Prober performs one attempt against a target. It returns a short,
@@ -109,6 +113,7 @@ func parseRetryAfter(v string) (time.Duration, bool) {
 
 // END retryafter OMIT
 
+// START tcp OMIT
 // TCPProber succeeds if a TCP connection can be established.
 type TCPProber struct {
 	Dial func(ctx context.Context, network, addr string) (net.Conn, error)
@@ -123,6 +128,9 @@ func (p TCPProber) Probe(ctx context.Context, t Target) (string, error) {
 	return "connected to " + conn.RemoteAddr().String(), nil
 }
 
+// END tcp OMIT
+
+// START tlstype OMIT
 // TLSProber performs a TLS handshake and fails, permanently, if the leaf
 // certificate expires within MinValidity. Expiring certificates are the
 // single most common self-inflicted outage this tool can catch early.
@@ -133,6 +141,9 @@ type TLSProber struct {
 	Now         func() time.Time
 }
 
+// END tlstype OMIT
+
+// START tlsprobe OMIT
 func (p TLSProber) Probe(ctx context.Context, t Target) (string, error) {
 	raw, err := p.Dial(ctx, "tcp", t.URL.Host)
 	if err != nil {
@@ -158,20 +169,28 @@ func (p TLSProber) Probe(ctx context.Context, t Target) (string, error) {
 		now = p.Now
 	}
 	left := leaf.NotAfter.Sub(now())
-	detail := fmt.Sprintf("cert %q expires in %s", leaf.Subject.CommonName, humanDays(left))
+	detail := fmt.Sprintf("cert %q expires in %s",
+		leaf.Subject.CommonName, humanDays(left))
 	if left < p.MinValidity {
-		return detail, retry.Permanent(fmt.Errorf("certificate expires in %s (minimum %s)",
+		return detail, retry.Permanent(fmt.Errorf(
+			"certificate expires in %s (minimum %s)",
 			humanDays(left), humanDays(p.MinValidity)))
 	}
 	return detail, nil
 }
 
+// END tlsprobe OMIT
+
+// START dnstype OMIT
 // DNSProber resolves a name. It deliberately bypasses any cache: the point
 // is to test resolution itself.
 type DNSProber struct {
 	Resolver *net.Resolver
 }
 
+// END dnstype OMIT
+
+// START dnsprobe OMIT
 func (p DNSProber) Probe(ctx context.Context, t Target) (string, error) {
 	addrs, err := p.Resolver.LookupHost(ctx, t.URL.Hostname())
 	if err != nil {
@@ -183,6 +202,9 @@ func (p DNSProber) Probe(ctx context.Context, t Target) (string, error) {
 	return fmt.Sprintf("%d address(es): %s", len(addrs), addrs[0]), nil
 }
 
+// END dnsprobe OMIT
+
+// START humandays OMIT
 func humanDays(d time.Duration) string {
 	days := d.Hours() / 24
 	if days >= 2 || days <= -2 {
@@ -190,3 +212,5 @@ func humanDays(d time.Duration) string {
 	}
 	return d.Round(time.Minute).String()
 }
+
+// END humandays OMIT

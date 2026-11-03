@@ -1,0 +1,8 @@
+$ go run .
+line 5: too few fields
+DEBUG  1
+INFO   1
+WARN   1
+ERROR  2
+bad    1
+errors: 40.0% of 5 entries

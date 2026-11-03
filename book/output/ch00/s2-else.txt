@@ -1,0 +1,3 @@
+$ go run .
+# logq
+./main.go:52:2: syntax error: unexpected keyword else, expected }

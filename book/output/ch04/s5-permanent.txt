@@ -1,0 +1,6 @@
+--- FAIL: TestRunnerOutcomes (0.00s)
+    runner_test.go:133: /missing: got down/3/"unhealthy status 404 Not Found (after 3 attempts)", want down/1/"404"
+2026/11/03 17:20:11 http: TLS handshake error from 127.0.0.1:63969: remote error: tls: bad certificate
+FAIL
+FAIL    sweep/internal/sweep    0.741s
+FAIL

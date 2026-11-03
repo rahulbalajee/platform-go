@@ -1,3 +1,5 @@
+// START type OMIT
+
 package conc
 
 import (
@@ -5,7 +7,6 @@ import (
 	"sync"
 )
 
-// START keyed OMIT
 // KeyedSemaphore limits concurrency per key: at most limit holders for any
 // single key, with no limit across keys. Tools use it for politeness, for
 // example "no more than 4 concurrent requests to any one host" while still
@@ -29,6 +30,10 @@ type keyedSlot struct {
 func NewKeyedSemaphore(limit int) *KeyedSemaphore {
 	return &KeyedSemaphore{limit: max(limit, 1), slots: make(map[string]*keyedSlot)}
 }
+
+// END type OMIT
+
+// START acquire OMIT
 
 // Acquire blocks until a slot for key is free or ctx is done. On success it
 // returns a release function that must be called; calling it more than once
@@ -67,7 +72,9 @@ func (k *KeyedSemaphore) unref(key string, s *keyedSlot) {
 	}
 }
 
-// END keyed OMIT
+// END acquire OMIT
+
+// START len OMIT
 
 // Len reports the number of keys currently tracked. It exists for tests and
 // metrics; a steadily growing Len indicates leaked release functions.
@@ -76,3 +83,5 @@ func (k *KeyedSemaphore) Len() int {
 	defer k.mu.Unlock()
 	return len(k.slots)
 }
+
+// END len OMIT

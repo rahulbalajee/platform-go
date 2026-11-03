@@ -1,0 +1,4 @@
+$ ./logq app.log -level error 2>&1 | tail -3
+app.log:2026-11-03T09:06:11Z ERROR api GET /checkout 502 upstream payments unavailable
+app.log:2026-11-03T09:06:12Z INFO db connections 18/20 in use
+logq: open -level: no such file or directory

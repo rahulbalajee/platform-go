@@ -1,0 +1,3 @@
+$ go build -o logq .
+# logq
+./main.go:60:13: cannot use count (variable of type *bool) as bool value in struct literal

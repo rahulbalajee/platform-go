@@ -1,0 +1,4 @@
+$ go run . app.log 2>&1 | head -3
+line 1: parsing time "2026-11-03T09:00:01Z" as "YYYY-MM-DDThh:mm:ssZ": cannot parse "2026-11-03T09:00:01Z" as "YYYY-MM-DDThh:mm:ssZ"
+line 2: parsing time "2026-11-03T09:00:02Z" as "YYYY-MM-DDThh:mm:ssZ": cannot parse "2026-11-03T09:00:02Z" as "YYYY-MM-DDThh:mm:ssZ"
+line 3: parsing time "2026-11-03T09:00:05Z" as "YYYY-MM-DDThh:mm:ssZ": cannot parse "2026-11-03T09:00:05Z" as "YYYY-MM-DDThh:mm:ssZ"

@@ -1,0 +1,8 @@
+$ find . -type f -not -name app.log | sort
+./.golangci.yml
+./go.mod
+./logline/logline_test.go
+./logline/logline.go
+./logline/stats_test.go
+./logline/stats.go
+./main.go

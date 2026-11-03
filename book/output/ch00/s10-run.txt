@@ -1,0 +1,14 @@
+$ ./logq -level warn app.log
+2026-11-03T09:01:12Z WARN db slow query took 1250ms
+2026-11-03T09:02:40Z ERROR api GET /orders 500 timeout talking to db
+2026-11-03T09:02:41Z ERROR db connection reset by peer
+2026-11-03T09:02:45Z WARN worker retrying job 1182 (attempt 2)
+app.log:11: bad time "this"
+2026-11-03T09:04:02Z ERROR worker job 1190 failed: timeout after 30s
+2026-11-03T09:04:05Z WARN api request body too large (2.1MB)
+2026-11-03T09:06:11Z ERROR api GET /checkout 502 upstream payments unavailable
+$ ./logq -level error -grep timeout app.log edge.log
+app.log:2026-11-03T09:02:40Z ERROR api GET /orders 500 timeout talking to db
+app.log:11: bad time "this"
+app.log:2026-11-03T09:04:02Z ERROR worker job 1190 failed: timeout after 30s
+edge.log:2026-11-03T09:04:44Z ERROR edge upstream api timeout after 10s

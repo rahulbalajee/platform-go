@@ -1,0 +1,31 @@
+$ go build -o logq . && ./logq -count app.log edge.log 2>/dev/null | head -3
+query: level>=DEBUG
+DEBUG  2
+INFO   11
+$ go build -race -o logq . && ./logq -count app.log edge.log 2>&1 | head -26
+==================
+WARNING: DATA RACE
+Read at 0x00c00014e030 by goroutine 7:
+  main.config.scanAll.func1()
+      /Users/you/logq/scan.go:56 +0xb4
+
+Previous write at 0x00c00014e030 by goroutine 8:
+  main.config.scanAll.func1()
+      /Users/you/logq/scan.go:56 +0x140
+
+Goroutine 7 (running) created at:
+  sync.(*WaitGroup).Go()
+      /usr/local/go/src/sync/waitgroup.go:238 +0x6c
+  main.run()
+      /Users/you/logq/main.go:85 +0x6bc
+  main.main()
+      /Users/you/logq/main.go:32 +0xf0
+
+Goroutine 8 (finished) created at:
+  sync.(*WaitGroup).Go()
+      /usr/local/go/src/sync/waitgroup.go:238 +0x6c
+  main.run()
+      /Users/you/logq/main.go:85 +0x6bc
+  main.main()
+      /Users/you/logq/main.go:32 +0xf0
+==================

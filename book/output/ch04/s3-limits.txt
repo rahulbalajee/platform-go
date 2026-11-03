@@ -1,0 +1,3 @@
+sweep: concurrency must be >= 1, got 0
+timeout must be positive, got 0s
+exit status 2

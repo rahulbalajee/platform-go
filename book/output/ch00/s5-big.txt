@@ -1,0 +1,7 @@
+$ yes '2026-11-03T09:02:40Z ERROR api GET /orders 500 timeout talking to db' | head -n 2000000 > big.log
+$ ls -lh big.log
+-rw-r--r--@ 1 you  staff   132M  3 Nov 17:03 big.log
+$ /usr/bin/time -l ./logq-step4 big.log 2>&1 | grep -E 'ERROR|real|maximum resident'
+ERROR  2000000
+        0.74 real         0.24 user         0.02 sys
+           353468416  maximum resident set size

@@ -1,0 +1,5 @@
+$ ./logq -strict app.log > /dev/null
+logq: app.log:11: bad time "this"
+logq: hint: times look like 2026-11-03T09:00:01Z (RFC 3339)
+$ echo $?
+2

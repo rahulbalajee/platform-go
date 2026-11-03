@@ -1,0 +1,1 @@
+retry/retry.go:128:9: G404: Use of weak random number generator (math/rand or math/rand/v2 instead of crypto/rand) (gosec)

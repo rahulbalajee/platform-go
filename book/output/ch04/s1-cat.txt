@@ -1,0 +1,6 @@
+# Paths served by the fake fleet (go run ./cmd/fleet)
+http://127.0.0.1:8099/ok
+http://127.0.0.1:8099/down
+http://127.0.0.1:8099/missing
+http://127.0.0.1:8099/slow?a
+http://127.0.0.1:8099/slow?b

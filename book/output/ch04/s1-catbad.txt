@@ -1,0 +1,4 @@
+http://127.0.0.1:8099/ok
+ftp://files.example.com/
+https://:8443/healthz
+http://127.0.0.1:99999/ok

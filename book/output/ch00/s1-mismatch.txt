@@ -1,0 +1,3 @@
+$ go run .
+# logq
+./main.go:17:11: invalid operation: float64(errorCount) / total (mismatched types float64 and int)

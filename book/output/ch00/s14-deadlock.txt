@@ -1,0 +1,7 @@
+$ go run . app.log edge.log 2>&1 | head -6 | cut -c1-80
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+main.config.scanAll({{0x104f412c0, 0x574185c38018}, 0x0, 0x0, 0x0, 0x0, 0x4, 0x1
+	/Users/you/logq/scan.go:65 
+main.run({0x574185c00070, 0x2, 0x2}, {0x104f412e0, 0x574185c04000}, {0x104f41320

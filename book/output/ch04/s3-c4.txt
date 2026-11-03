@@ -1,0 +1,10 @@
+DOWN http://127.0.0.1:8099/slow?4  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?1  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?2  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?3  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?5  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?7  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?8  attempt timed out after 1s
+DOWN http://127.0.0.1:8099/slow?6  attempt timed out after 1s
+checked 8/8 targets in 2.002s: 0 up, 8 down
+exit status 1

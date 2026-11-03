@@ -1,0 +1,1 @@
+cmd/sweep/main.go:25:2: package sweep/internal/sweep is not in std ($GOROOT/src/sweep/internal/sweep)

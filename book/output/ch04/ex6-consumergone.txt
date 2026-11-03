@@ -1,0 +1,3 @@
+--- FAIL: TestStreamEarlyBreakCancelsAndWaits (0.00s)
+panic: deadlock: all goroutines in bubble are blocked [recovered, repanicked]
+

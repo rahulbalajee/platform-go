@@ -1,0 +1,15 @@
+$ pwd
+/Users/you
+$ mkdir code
+$ cd code
+$ pwd
+/Users/you/code
+$ ls
+$ echo "hello" > note.txt
+$ ls
+note.txt
+$ cat note.txt
+hello
+$ cd ..
+$ pwd
+/Users/you

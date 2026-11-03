@@ -1,0 +1,8 @@
+$ go run .
+logq version 0.1.0
+sample line: 2026-11-03T09:02:40Z ERROR api GET /orders 500
+sample size: 46 bytes
+4 of 18 lines are errors (22.2%)
+warnings counted so far: 0
+healthy: false
+$ go vet .

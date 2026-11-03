@@ -1,0 +1,14 @@
+internal/sweep/report.go:45:2: SA4005: ineffective assignment to field Summary.Checked (staticcheck)
+        s.Checked++
+        ^
+internal/sweep/report.go:48:3: SA4005: ineffective assignment to field Summary.Up (staticcheck)
+                s.Up++
+                ^
+internal/sweep/report.go:50:3: SA4005: ineffective assignment to field Summary.Down (staticcheck)
+                s.Down++
+                ^
+internal/sweep/report.go:52:3: SA4005: ineffective assignment to field Summary.Cancelled (staticcheck)
+                s.Cancelled++
+                ^
+4 issues:
+* staticcheck: 4

@@ -1,0 +1,5 @@
+retry/retry.go:128:9: G404: Use of weak random number generator (math/rand or math/rand/v2 instead of crypto/rand) (gosec)
+        return rand.N(ceiling) + 1 // +1ns keeps the delay strictly positive
+               ^
+1 issues:
+* gosec: 1

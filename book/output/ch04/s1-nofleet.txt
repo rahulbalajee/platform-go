@@ -1,0 +1,7 @@
+DOWN http://127.0.0.1:8099/ok      Get "http://127.0.0.1:8099/ok": dial tcp 127.0.0.1:8099: connect: connection refused
+DOWN http://127.0.0.1:8099/down    Get "http://127.0.0.1:8099/down": dial tcp 127.0.0.1:8099: connect: connection refused
+DOWN http://127.0.0.1:8099/missing Get "http://127.0.0.1:8099/missing": dial tcp 127.0.0.1:8099: connect: connection refused
+DOWN http://127.0.0.1:8099/slow?a  Get "http://127.0.0.1:8099/slow?a": dial tcp 127.0.0.1:8099: connect: connection refused
+DOWN http://127.0.0.1:8099/slow?b  Get "http://127.0.0.1:8099/slow?b": dial tcp 127.0.0.1:8099: connect: connection refused
+checked 5/5 targets in 1ms: 0 up, 5 down
+exit status 1

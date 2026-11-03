@@ -1,0 +1,3 @@
+$ go run .
+# logq
+./main.go:49:5: non-boolean condition in if statement

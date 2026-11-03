@@ -1,0 +1,28 @@
+panic: assignment to entry in nil map
+        
+        runtime/debug.Stack()
+                $GOROOT/src/runtime/debug/stack.go:26 +0x64
+        golang.org/x/sync/singleflight.newPanicError({0x…, 0x…})
+                ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:44 +0x24
+        golang.org/x/sync/singleflight.(*Group).doCall.func2.1()
+                ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:193 +0x34
+        panic({0x…?, 0x…?})
+                $GOROOT/src/runtime/panic.go:859 +0x120
+        sweep/internal/sweep.(*CachingResolver).store(0x…, {0x…, 0x9}, {0x…, 0x2, 0x2})
+                ~/broken/internal/sweep/resolver.go:84 +0x100
+        sweep/internal/sweep.(*CachingResolver).LookupHost.func1()
+                ~/broken/internal/sweep/resolver.go:53 +0xdc
+        golang.org/x/sync/singleflight.(*Group).doCall.func2(0x…, 0x…, 0x0?)
+                ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:198 +0x54
+        golang.org/x/sync/singleflight.(*Group).doCall(0x0?, 0x…?, {0x…?, 0x…?}, 0x…?)
+                ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:200 +0x68
+        created by golang.org/x/sync/singleflight.(*Group).DoChan in goroutine 6
+                ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:138 +0x348
+        
+
+goroutine 9 [running]:
+golang.org/x/sync/singleflight.(*Group).doCall.func1.gowrap2()
+        ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:167 +0x20
+created by golang.org/x/sync/singleflight.(*Group).doCall.func1 in goroutine 7
+        ~/go/pkg/mod/golang.org/x/sync@v0.24.0/singleflight/singleflight.go:167 +0x274
+exit status 2
