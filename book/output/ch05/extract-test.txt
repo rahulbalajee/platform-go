@@ -1,0 +1,10 @@
+    extract "../escaped.txt": mkdirat ..: path escapes from parent
+    extract "/tmp/escaped.txt": mkdirat /tmp: path escapes from parent
+    extract "logs": symlink to "../" leaves the destination
+    extract "logs": symlink to "/etc" leaves the destination
+    extract "a/logs": symlink to "../b/../../etc" leaves the destination
+    extract "a.txt": openat a.txt: file exists
+--- PASS: TestExtractTarRejectsEscapes (0.01s)
+    extract "cache/escaped.txt": mkdirat cache: statat cache: path escapes from parent
+--- PASS: TestExtractTarRefusesPlantedSymlink (0.00s)
+ok  	github.com/rahulbalajee/platform-go/pkg/fsx	0.426s

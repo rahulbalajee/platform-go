@@ -1,0 +1,9 @@
+not found: errors.Is(err, ErrNotFound)=true
+  op="GET /v1/deployments/d-404" status=404 code=not_found
+  message="deployment \"d-404\" not found"
+  request=01a1a0a0-9064-7389-a06d-7d9a1a4f343d
+conflict: errors.Is(err, ErrConflict)=true
+timeout: platformapi: waiting for op-9: context deadline exceeded
+  d-9 is still in_progress on the server
+rollout: operation op-10 failed: rollout_failed: 2/4 replicas failed health checks
+  code=rollout_failed; d-10 ended failed at 2/4 replicas

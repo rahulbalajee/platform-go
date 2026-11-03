@@ -1,0 +1,8 @@
+--- FAIL: TestEndpoints (0.00s)
+    --- FAIL: TestEndpoints//healthz (0.00s)
+        flaky_test.go:42: GET /healthz: dial tcp 127.0.0.1:PORT: connect: connection refused
+    --- FAIL: TestEndpoints//readyz (0.00s)
+        flaky_test.go:42: GET /readyz: dial tcp 127.0.0.1:PORT: connect: connection refused
+FAIL
+FAIL	github.com/rahulbalajee/platform-go/examples/ch06/flaky	0.206s
+FAIL

@@ -1,0 +1,11 @@
+op-9 started: deployment d-9 is pending
+  op-9 rolling out v1.5.0: 1/4 replicas updated
+  op-9 rolling out v1.5.0: 2/4 replicas updated
+  op-9 rolling out v1.5.0: 3/4 replicas updated
+  op-9 rolling out v1.5.0: 4/4 replicas updated
+  | d-9 rollout of checkout v1.5.0 to staging
+  | d-9 replica 1/4 updated, health check passed
+  | d-9 replica 2/4 updated, health check passed
+  | d-9 replica 3/4 updated, health check passed
+  | d-9 replica 4/4 updated, health check passed
+  | d-9 state: succeeded

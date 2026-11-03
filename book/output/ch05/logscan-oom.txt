@@ -1,0 +1,8 @@
+$ docker run --name ch05-readall --memory=1g -v $PWD:/data:ro pgo-ch05 \
+    /logscan -mode readall /data/access.log; echo "exit=$?"
+exit=137
+$ docker inspect -f 'OOMKilled={{.State.OOMKilled}}' ch05-readall
+OOMKilled=true
+$ docker run --rm --memory=1g -e GOMEMLIMIT=900MiB -v $PWD:/data:ro pgo-ch05 \
+    /logscan -mode readall /data/access.log; echo "exit=$?"
+exit=137

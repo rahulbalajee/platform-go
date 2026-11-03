@@ -1,0 +1,3 @@
+fuzz: elapsed: 1m1s, execs: 1600916 (0/sec), new interesting: 249 (total: 261)
+PASS
+ok  	github.com/rahulbalajee/platform-go/internal/sweep	61.523s

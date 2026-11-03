@@ -1,0 +1,9 @@
+67459060
+golang.org/x/sync v0.24.0 h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=
+golang.org/x/sync v0.24.0/go.mod h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=
+
+go.sum database tree
+70705188
+c9FbgMM6y73EMPfntGHZ2MRMognAwtkTOPjeyrkEds8=
+
+— sum.golang.org Az3grtlvirtvs45XwyCv5Mbe/h2OU38wMBua+Fr56wHYebtcMw7Kg3qWUrGmfmq

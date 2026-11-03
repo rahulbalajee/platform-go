@@ -1,0 +1,7 @@
+--- FAIL: TestRegistryStartsEmpty (0.00s)
+    flaky_test.go:17: registry has 1 checks, want 0
+--- FAIL: TestRegister (0.00s)
+    flaky_test.go:23: check "api" already registered
+FAIL
+FAIL	github.com/rahulbalajee/platform-go/examples/ch06/flaky	0.509s
+FAIL

@@ -1,0 +1,12 @@
+type Server struct {
+	// Has unexported fields.
+}
+    Server is the fake platform API. Its methods are safe for concurrent use.
+
+func New() *Server
+func (s *Server) BreakVersion(version string)
+func (s *Server) DeploymentState(id string) string
+func (s *Server) FailNext(n, status int, retryAfter time.Duration)
+func (s *Server) Requests() []Request
+func (s *Server) RequireToken(token string)
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request)

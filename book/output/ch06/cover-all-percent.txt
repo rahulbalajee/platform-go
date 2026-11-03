@@ -1,0 +1,5 @@
+        cmd/sweep               coverage: 89.7% of statements
+        internal/sweep          coverage: 67.8% of statements
+        pkg/conc                coverage: 98.5% of statements
+        pkg/lifecycle           coverage: 100.0% of statements
+        pkg/retry               coverage: 90.6% of statements

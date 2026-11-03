@@ -1,0 +1,5 @@
+load config: open /etc/deployctl/deployctl.json: no such file or directory
+Is(wrapped, fs.ErrNotExist)   = true
+Is(flattened, fs.ErrNotExist) = false
+As:     op = open  path = /etc/deployctl/deployctl.json
+AsType: op = open  cause = no such file or directory

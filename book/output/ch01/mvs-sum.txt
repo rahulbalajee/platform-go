@@ -1,0 +1,8 @@
+example.com/codec v1.4.0 h1:nNaEF9iN523Wllh80x1RUmxc97NMzs9uyvUv8M9m2do=
+example.com/codec v1.4.0/go.mod h1:kSEDpU0dLF4GoLGfDq1zzN77wp1p+r321jjSWjWmGvo=
+example.com/codec/v2 v2.0.0 h1:dkKXG5OkEKH1s/38YsJ0a3ok6yuQmaDCqcI3Tchn2Yw=
+example.com/codec/v2 v2.0.0/go.mod h1:/DJ0MoFmEn8IN1TeyBe0sLV+2TPvKNP9BoGYjj9hTMs=
+example.com/log v1.2.0 h1:gAuEuNdHYuAN3tgXcRSf/NUoOlNsHV+Y2SeCPj0TM/U=
+example.com/log v1.2.0/go.mod h1:MYQVuaNXuOI3HQTwlxjy9pL3omG0HSD2jS4G5GoQhUk=
+example.com/metrics v1.2.0 h1:bZ0F0F4hwSYHNa42/59yxi4/4/1os7qfcLL9PkoPXG8=
+example.com/metrics v1.2.0/go.mod h1:yLHalgCL/kAFBRQ+kBWD6h0973tOqmDGGDyFd6BTLMY=

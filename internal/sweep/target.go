@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -88,5 +89,15 @@ func parseTarget(raw string) (Target, error) {
 	if u.Hostname() == "" {
 		return Target{}, fmt.Errorf("%q: missing host", raw)
 	}
+	// START port OMIT
+	// url.Parse only checks that a port is all digits. Reject what no dialer
+	// accepts, so the error carries a line number instead of surfacing later
+	// as a "down" target that was retried three times.
+	if p := u.Port(); p != "" {
+		if n, err := strconv.ParseUint(p, 10, 16); err != nil || n == 0 {
+			return Target{}, fmt.Errorf("%q: invalid port %q (want 1-65535)", raw, p)
+		}
+	}
+	// END port OMIT
 	return t, nil
 }

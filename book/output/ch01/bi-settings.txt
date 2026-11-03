@@ -1,0 +1,16 @@
+path           github.com/rahulbalajee/platform-go/examples/ch01/stamp
+main module    github.com/rahulbalajee/platform-go v0.0.0-20261103081532-b0977b0a7e31+dirty
+-buildmode     exe
+-compiler      gc
+CGO_ENABLED    1
+CGO_CFLAGS     
+CGO_CPPFLAGS   
+CGO_CXXFLAGS   
+CGO_LDFLAGS    
+GOARCH         arm64
+GOOS           darwin
+GOARM64        v8.0
+vcs            git
+vcs.revision   b0977b0a7e315a020c2d56df479c4b55698938da
+vcs.time       2026-11-03T08:15:32Z
+vcs.modified   true

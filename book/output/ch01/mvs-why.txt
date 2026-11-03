@@ -1,0 +1,4 @@
+# example.com/codec
+example.com/app
+example.com/log
+example.com/codec

@@ -1,0 +1,6 @@
+deploying checkout v1.4.2 to 2 targets
+  us-east-1   deployed 100ms
+  ap-south-1  failed   2s
+deployctl: deploy did not finish within 2s [DPL-TIMEOUT]
+  - ap-south-1: stopped before the API answered
+  hint: targets may still be converging: check "deployctl status", then re-run

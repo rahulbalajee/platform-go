@@ -1,0 +1,5 @@
+zombies is PID 7
+  PID  PPID S  COMM
+    1     0 S  docker-init
+    7     1 R  zombies
+0 zombie(s)

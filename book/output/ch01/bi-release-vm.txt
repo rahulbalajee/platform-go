@@ -1,0 +1,10 @@
+$DEMO/stamp: go1.27.3
+	path	github.com/rahulbalajee/platform-go/examples/ch01/stamp
+	mod	github.com/rahulbalajee/platform-go	(devel)	
+	build	-buildmode=exe
+	build	-compiler=gc
+	build	-trimpath=true
+	build	CGO_ENABLED=1
+	build	GOARCH=arm64
+	build	GOOS=darwin
+	build	GOARM64=v8.0

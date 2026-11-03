@@ -1,0 +1,2 @@
+deployctl: invalid value "many" for flag -parallel: parse error
+  hint: run "deployctl deploy -h" for usage

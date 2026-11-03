@@ -1,0 +1,3 @@
+{"msg":"api call","method":"GET","path":"/v1/whoami","token":"[REDACTED]"}
+{"msg":"api call","method":"POST","path":"/v1/deploy/us-east-1","token":"[REDACTED]"}
+{"msg":"api call","method":"POST","path":"/v1/deploy/us-west-2","token":"[REDACTED]"}

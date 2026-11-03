@@ -1,0 +1,20 @@
+deployctl crash report
+
+module:       github.com/rahulbalajee/platform-go@v0.0.0-20261103081532-b0977b0a7e31+dirty
+go:           go1.27.3
+GOARCH:       arm64
+GOOS:         darwin
+vcs.revision: b0977b0a7e315a020c2d56df479c4b55698938da
+vcs.time:     2026-11-03T08:15:32Z
+vcs.modified: true
+panic:        runtime error: invalid memory address or nil pointer dereference
+
+goroutine 1 [running]:
+runtime/debug.Stack()
+	runtime/debug/stack.go:26 +0x64
+github.com/rahulbalajee/platform-go/pkg/clierr.(*Program).Run.func1()
+	github.com/rahulbalajee/platform-go/pkg/clierr/program.go:64 +0x44
+panic({0x…?, 0x…?})
+	runtime/panic.go:859 +0x120
+main.status({0x…, 0x…}, {{0x…, 0xc}, {0x…, 0x4}, {0x0, 0x0}}, 0x…, 0x…, ...)
+	github.com/rahulbalajee/platform-go/examples/ch03/deployctl/status.go:37 +0x220

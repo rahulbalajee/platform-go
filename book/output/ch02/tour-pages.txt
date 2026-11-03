@@ -1,0 +1,9 @@
+five most recent deployments, three per page:
+level=DEBUG msg=request call="GET /v1/deployments" status=200
+  d-8  checkout  staging  v1.4.1  succeeded
+  d-7  checkout  dev      v1.4.1  succeeded
+  d-6  checkout  staging  v1.4.0  succeeded
+level=DEBUG msg=request call="GET /v1/deployments" status=200
+  d-5  checkout  dev      v1.4.0  succeeded
+  d-4  checkout  staging  v1.3.1  succeeded
+requests sent: 2

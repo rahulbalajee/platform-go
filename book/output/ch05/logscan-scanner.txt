@@ -1,0 +1,6 @@
+$ logscan -mode scanner access.log; echo "exit=$?"
+lines     1000000
+status    2xx=919680 3xx=50284 4xx=22021 5xx=8015
+read      73 MiB in 0.1s (1363 MiB/s)
+peak RSS  4.4 MiB
+exit=0

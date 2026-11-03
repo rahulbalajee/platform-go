@@ -1,0 +1,6 @@
+=== RUN   TestScanFSReadsPlainAndGzippedFiles
+--- PASS: TestScanFSReadsPlainAndGzippedFiles (0.00s)
+=== RUN   TestScannerBugIsSilent
+--- PASS: TestScannerBugIsSilent (0.00s)
+PASS
+ok  	github.com/rahulbalajee/platform-go/examples/ch05/logscan	0.496s

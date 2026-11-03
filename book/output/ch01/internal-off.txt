@@ -1,0 +1,2 @@
+hack/internaldemo/main.go:8:2: no required module provides package github.com/rahulbalajee/platform-go/internal/sweep; to add it:
+	go get github.com/rahulbalajee/platform-go/internal/sweep

@@ -1,0 +1,14 @@
+Scanning your binary for known vulnerabilities...
+
+Fetching vulnerabilities from the database...
+
+Checking the binary against the vulnerabilities...
+
+The package pattern matched the following root package:
+  github.com/rahulbalajee/platform-go
+Govulncheck scanned the following 3 modules and the go1.27.3 standard library:
+  github.com/rahulbalajee/platform-go@v0.0.0-20261103081532-b0977b0a7e31
+  golang.org/x/sync@v0.24.0
+  golang.org/x/time@v0.16.0
+
+No vulnerabilities found.

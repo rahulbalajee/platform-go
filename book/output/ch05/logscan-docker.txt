@@ -1,0 +1,6 @@
+$ docker run --rm --memory=64m -v $PWD:/data:ro pgo-ch05 /logscan /data/access.log
+lines      30000000
+status     2xx=27598282 3xx=1501450 4xx=659997 5xx=240270
+anomalies  1 truncated, 1 malformed
+read       2187 MiB in 1.4s (1555 MiB/s)
+peak RSS   11.5 MiB

@@ -688,7 +688,7 @@ way:
 
 #src("projects/watchtower/internal/controller/suite_test.go", region: "suite")
 
-Two details make the suite robust. The manager's cache is restricted to one
+Two details keep the suite from flaking. The manager's cache is restricted to one
 namespace, so tests that call `Reconcile` by hand can use another namespace
 without the running controller interfering. And a small prober wrapper
 answers for `*.svc.cluster.local` URLs, since envtest has no cluster DNS.

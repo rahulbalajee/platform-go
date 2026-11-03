@@ -1,0 +1,40 @@
+# A deploy step as a Kubernetes Job. The pod failure policy reads
+# deployctl's exit-code contract: retry what can succeed on a second try,
+# fail the Job at once for what cannot.
+# START job OMIT
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deploy-checkout-v1-4-2
+spec:
+  backoffLimit: 3
+  podFailurePolicy: # stable since Kubernetes 1.31
+    rules:
+      - action: FailJob # usage/config, bug, auth: retrying cannot help
+        onExitCodes:
+          containerName: deployctl
+          operator: In
+          values: [2, 70, 77]
+      - action: Ignore # node drained or pod preempted: not our failure
+        onPodConditions:
+          - type: DisruptionTarget
+      # Anything else (1 partial failure, 75 timeout, 143 SIGTERM) counts
+      # against backoffLimit, so the Job retries it.
+  template:
+    spec:
+      restartPolicy: Never # required by podFailurePolicy
+      containers:
+        - name: deployctl
+          image: deployctl:dev # go build ./examples/ch03/deployctl
+          args: ["-config", "/etc/deployctl/prod.json", "-o", "json",
+                 "deploy", "-timeout", "5m", "v1.4.2"]
+          env:
+            - name: DEPLOYCTL_TOKEN
+              valueFrom:
+                secretKeyRef: {name: deploy-token, key: token}
+          volumeMounts:
+            - {name: config, mountPath: /etc/deployctl, readOnly: true}
+      volumes:
+        - name: config
+          configMap: {name: deployctl-config}
+# END job OMIT

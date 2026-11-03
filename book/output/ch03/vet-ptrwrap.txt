@@ -1,0 +1,2 @@
+examples/ch03/testdata/ptrwrap.go:19:29: %w wants operand of error type 
+QuotaError, not pointer type *QuotaError (defeats errors.Is)

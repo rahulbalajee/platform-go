@@ -1,0 +1,13 @@
+$ echo '{"version":1,"workers":4}' | atomicput app.json
+$ reload -config app.json &
+14:36:19.356 reload: pid 89966 serving with version 1, workers=4
+$ echo '{"version":2,"workers":8}' | atomicput app.json
+$ kill -HUP %1
+14:36:19.383 reload: SIGHUP: version 1 -> 2, workers=8
+$ echo '{"version":3,"workers":0}' | atomicput app.json
+$ kill -HUP %1
+14:36:19.974 reload: SIGHUP: keeping version 2: app.json: workers must be at least 1, got 0
+$ kill -TERM %1; wait
+
+terminated: shutting down (press Ctrl-C again to force)
+14:36:20.503 reload: stopped cleanly

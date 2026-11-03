@@ -1,0 +1,16 @@
+$DEMO/sweep-linux-amd64: go1.27.3
+	path	github.com/rahulbalajee/platform-go/cmd/sweep
+	mod	github.com/rahulbalajee/platform-go	v0.0.0-20261103081532-b0977b0a7e31	
+	dep	golang.org/x/sync	v0.24.0	h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=
+	dep	golang.org/x/time	v0.16.0	h1:vMb6ptszcQMkcwiRTAuNNU50gom6++Q/6gY2hDM6VDE=
+	build	-buildmode=exe
+	build	-compiler=gc
+	build	-trimpath=true
+	build	CGO_ENABLED=0
+	build	GOARCH=amd64
+	build	GOOS=linux
+	build	GOAMD64=v1
+	build	vcs=git
+	build	vcs.revision=b0977b0a7e315a020c2d56df479c4b55698938da
+	build	vcs.time=2026-11-03T08:15:32Z
+	build	vcs.modified=false

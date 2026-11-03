@@ -1,0 +1,2 @@
+package example.com/ext
+	main.go:8:2: use of internal package github.com/rahulbalajee/platform-go/internal/sweep not allowed

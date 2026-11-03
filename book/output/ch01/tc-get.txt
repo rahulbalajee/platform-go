@@ -1,0 +1,3 @@
+go: updating go.mod requires go >= 1.27.0; switching to go1.27.3
+go: upgraded go 1.26.4 => 1.27.0
+go: added toolchain go1.27.3

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"strconv"
@@ -88,18 +89,25 @@ func (p HTTPProber) Probe(ctx context.Context, t Target) (string, error) {
 
 // END http OMIT
 
+// START retryafter OMIT
+// parseRetryAfter reads a Retry-After value: delay-seconds or an HTTP date.
 func parseRetryAfter(v string) (time.Duration, bool) {
 	if v == "" {
 		return 0, false
 	}
-	if secs, err := strconv.Atoi(v); err == nil && secs >= 0 {
-		return time.Duration(secs) * time.Second, true
+	if secs, err := strconv.ParseInt(v, 10, 64); err == nil && secs >= 0 {
+		// Clamp before multiplying: 27700000000s overflows a Duration and
+		// would come out negative, which means "retry immediately".
+		const maxSecs = math.MaxInt64 / int64(time.Second)
+		return time.Duration(min(secs, maxSecs)) * time.Second, true
 	}
 	if t, err := http.ParseTime(v); err == nil {
 		return max(time.Until(t), 0), true
 	}
 	return 0, false
 }
+
+// END retryafter OMIT
 
 // TCPProber succeeds if a TCP connection can be established.
 type TCPProber struct {

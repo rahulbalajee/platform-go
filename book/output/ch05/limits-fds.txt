@@ -1,0 +1,2 @@
+RLIMIT_NOFILE 256: opened 250 files, then: open /proc/self/status: too many open files
+errors.Is(err, syscall.EMFILE) = true

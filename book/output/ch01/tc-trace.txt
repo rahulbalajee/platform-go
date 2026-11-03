@@ -1,0 +1,5 @@
+go: upgrading toolchain to go1.27.3 (required by toolchain line in go.mod; upgrade 
+allowed by GOTOOLCHAIN=auto)
+go: using go1.27.3 toolchain from cache located at 
+~/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.27.3.darwin-arm64/bin/go
+go version go1.27.3 darwin/arm64

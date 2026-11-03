@@ -1,0 +1,155 @@
+package main
+
+import (
+	"bufio"
+	"bytes"
+	"compress/gzip"
+	"errors"
+	"fmt"
+	"io"
+	"io/fs"
+	"iter"
+	"strings"
+)
+
+// Stats is what logscan reports about a log.
+type Stats struct {
+	Lines     int64
+	Bytes     int64
+	Status    [6]int64 // by class: Status[2] counts 2xx, ..., Status[5] 5xx
+	Truncated int64    // lines longer than the line limit
+	Malformed int64    // lines without a status field
+}
+
+func (s *Stats) add(line []byte) {
+	s.Lines++
+	s.Bytes += int64(len(line)) + 1
+	if c := statusClass(line); c >= 1 && c <= 5 {
+		s.Status[c]++
+	} else {
+		s.Malformed++
+	}
+}
+
+func (s *Stats) merge(o Stats) {
+	s.Lines += o.Lines
+	s.Bytes += o.Bytes
+	s.Truncated += o.Truncated
+	s.Malformed += o.Malformed
+	for i := range s.Status {
+		s.Status[i] += o.Status[i]
+	}
+}
+
+// statusClass returns the first digit of the fifth space-separated field
+// ("2" for "200"), without allocating.
+func statusClass(line []byte) int {
+	field := 0
+	for i := range len(line) {
+		if line[i] == ' ' {
+			field++
+			if field == 4 && i+1 < len(line) && line[i+1] >= '1' && line[i+1] <= '5' {
+				return int(line[i+1] - '0')
+			}
+		}
+	}
+	return 0
+}
+
+// START lines OMIT
+// Line is one line of input, without its newline.
+type Line struct {
+	Bytes     []byte // only valid until the next iteration
+	Truncated bool   // the line was longer than max; Bytes holds its start
+}
+
+// Lines yields the lines of r using fixed buffers of max bytes, however
+// long the input or its lines are. A longer line is cut to max bytes and
+// the rest of it is skipped, so one bad line cannot stop the scan.
+func Lines(r io.Reader, max int) iter.Seq2[Line, error] {
+	return func(yield func(Line, error) bool) {
+		br := bufio.NewReaderSize(r, max)
+		long := make([]byte, 0, max) // keeps the start of an over-long line
+		for {
+			b, err := br.ReadSlice('\n') // a view into br's buffer: no copy
+			line := Line{Bytes: b}
+			if errors.Is(err, bufio.ErrBufferFull) {
+				line = Line{Bytes: append(long[:0], b...), Truncated: true}
+				for errors.Is(err, bufio.ErrBufferFull) { // skip the rest
+					_, err = br.ReadSlice('\n')
+				}
+			}
+			if err != nil && !errors.Is(err, io.EOF) {
+				yield(Line{}, err)
+				return
+			}
+			if len(line.Bytes) > 0 {
+				line.Bytes = bytes.TrimSuffix(line.Bytes, []byte("\n"))
+				if !yield(line, nil) {
+					return
+				}
+			}
+			if err != nil { // io.EOF
+				return
+			}
+		}
+	}
+}
+
+// END lines OMIT
+
+// scanFS scans every file in fsys that matches pattern, decompressing
+// names ending in .gz on the fly.
+func scanFS(fsys fs.FS, pattern string, maxLine int) (Stats, error) {
+	names, err := fs.Glob(fsys, pattern)
+	if err != nil {
+		return Stats{}, err
+	}
+	var total Stats
+	for _, name := range names {
+		st, err := scanFile(fsys, name, maxLine)
+		if err != nil {
+			return total, fmt.Errorf("%s: %w", name, err)
+		}
+		total.merge(st)
+	}
+	return total, nil
+}
+
+// START compose OMIT
+// scan streams one log through Lines. Memory use is the line buffer plus
+// whatever the decompressor needs, independent of the file's size.
+func scan(r io.Reader, maxLine int) (Stats, error) {
+	var st Stats
+	for line, err := range Lines(r, maxLine) {
+		if err != nil {
+			return st, err
+		}
+		if line.Truncated {
+			st.Truncated++
+		}
+		st.add(line.Bytes)
+	}
+	return st, nil
+}
+
+// scanFile scans one file, adding a gzip reader for names ending in .gz.
+func scanFile(fsys fs.FS, name string, maxLine int) (Stats, error) {
+	f, err := fsys.Open(name)
+	if err != nil {
+		return Stats{}, err
+	}
+	defer f.Close()
+	var r io.Reader = f
+	if strings.HasSuffix(name, ".gz") {
+		zr, err := gzip.NewReader(bufio.NewReaderSize(f, 64<<10))
+		if err != nil {
+			return Stats{}, err
+		}
+		defer zr.Close()
+		r = zr
+	}
+	return scan(r, maxLine)
+}
+
+// END compose OMIT

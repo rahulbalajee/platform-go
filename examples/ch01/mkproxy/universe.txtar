@@ -1,0 +1,125 @@
+A small module universe for Chapter 1, served offline by mkproxy.
+A service (example.com/app) uses two shared libraries that both depend on
+example.com/codec at different minimum versions. codec v1.5.1 retracts
+v1.5.0, and codec/v2 is a new major version with a different API.
+
+-- app/go.mod --
+module example.com/app
+
+go 1.27.0
+
+require (
+	example.com/codec/v2 v2.0.0
+	example.com/log v1.2.0
+	example.com/metrics v1.2.0
+)
+
+require example.com/codec v1.4.0 // indirect
+-- app/main.go --
+package main
+
+import (
+	"fmt"
+
+	codec2 "example.com/codec/v2"
+	"example.com/log"
+	"example.com/metrics"
+)
+
+func main() {
+	fmt.Println(log.Describe())
+	fmt.Println(metrics.Describe())
+	fmt.Println("app uses", codec2.Name())
+}
+-- example.com/log@v1.2.0/go.mod --
+module example.com/log
+
+go 1.27.0
+
+require example.com/codec v1.3.0
+-- example.com/log@v1.2.0/log.go --
+package log
+
+import "example.com/codec"
+
+func Describe() string {
+	return "log v1.2.0 (requires codec v1.3.0) runs " + codec.Name()
+}
+-- example.com/metrics@v1.2.0/go.mod --
+module example.com/metrics
+
+go 1.27.0
+
+require example.com/codec v1.4.0
+-- example.com/metrics@v1.2.0/metrics.go --
+package metrics
+
+import "example.com/codec"
+
+func Describe() string {
+	return "metrics v1.2.0 (requires codec v1.4.0) runs " + codec.Name()
+}
+-- example.com/metrics@v1.3.0/go.mod --
+module example.com/metrics
+
+go 1.27.0
+
+require example.com/codec v1.5.0
+-- example.com/metrics@v1.3.0/metrics.go --
+package metrics
+
+import "example.com/codec"
+
+func Describe() string {
+	return "metrics v1.3.0 (requires codec v1.5.0) runs " + codec.Name()
+}
+-- example.com/codec@v1.3.0/go.mod --
+module example.com/codec
+
+go 1.27.0
+-- example.com/codec@v1.3.0/codec.go --
+package codec
+
+func Name() string { return "codec v1.3.0" }
+-- example.com/codec@v1.4.0/go.mod --
+module example.com/codec
+
+go 1.27.0
+-- example.com/codec@v1.4.0/codec.go --
+package codec
+
+func Name() string { return "codec v1.4.0" }
+-- example.com/codec@v1.5.0/go.mod --
+module example.com/codec
+
+go 1.27.0
+-- example.com/codec@v1.5.0/codec.go --
+package codec
+
+func Name() string { return "codec v1.5.0" }
+-- example.com/codec@v1.5.1/go.mod --
+module example.com/codec
+
+go 1.27.0
+
+retract v1.5.0 // drops zero-valued fields
+-- example.com/codec@v1.5.1/codec.go --
+package codec
+
+func Name() string { return "codec v1.5.1" }
+-- example.com/codec/v2@v2.0.0/go.mod --
+module example.com/codec/v2
+
+go 1.27.0
+-- example.com/codec/v2@v2.0.0/codec.go --
+package codec
+
+func Name() string { return "codec/v2 v2.0.0" }
+-- fork/codec/go.mod --
+module example.com/codec
+
+go 1.27.0
+-- fork/codec/codec.go --
+package codec
+
+func Name() string { return "codec from ../fork/codec" }

@@ -1,0 +1,12 @@
+internal/sweep/report.go:97:49: inlining call to symbol
+internal/sweep/report.go:98:59: inlining call to truncate
+internal/sweep/report.go:98:59: inlining call to utf8.RuneCountInString
+internal/sweep/report.go:97:14: ... argument does not escape
+internal/sweep/report.go:97:49: ~r0 escapes to heap
+internal/sweep/report.go:97:62: r.Target escapes to heap
+internal/sweep/report.go:98:19: time.Duration.Round(r.Latency, time.Duration(1000000)) escapes to heap
+internal/sweep/report.go:98:40: r.Attempts escapes to heap
+internal/sweep/report.go:98:59: ~r0 escapes to heap
+internal/sweep/report.go:98:59: string(([]rune)(s)[:n - 1]) + "…" escapes to heap
+internal/sweep/report.go:98:59: string(([]rune)(s)[:n - 1]) does not escape
+internal/sweep/report.go:98:59: ([]rune)(s) does not escape

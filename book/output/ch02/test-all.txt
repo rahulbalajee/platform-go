@@ -1,0 +1,6 @@
+ok  	github.com/rahulbalajee/platform-go/pkg/platformapi	1.725s
+ok  	github.com/rahulbalajee/platform-go/pkg/platformapi/platformapifake	1.984s
+?   	github.com/rahulbalajee/platform-go/examples/ch02/evolve/after	[no test files]
+?   	github.com/rahulbalajee/platform-go/examples/ch02/evolve/before	[no test files]
+ok  	github.com/rahulbalajee/platform-go/examples/ch02/promote	2.543s
+ok  	github.com/rahulbalajee/platform-go/examples/ch02/tour	5.052s

@@ -1,0 +1,30 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http/httptest"
+
+	"github.com/rahulbalajee/platform-go/pkg/platformapi"
+	"github.com/rahulbalajee/platform-go/pkg/platformapi/platformapifake"
+)
+
+func main() {
+	srv := httptest.NewServer(platformapifake.New())
+	defer srv.Close()
+	client, err := platformapi.New(srv.URL)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	_, err = client.GetDeployment(context.Background(), "d-404",
+		platformapi.RequestID("req-1234"))
+	if errors.Is(err, platformapi.ErrNotFound) {
+		apiErr, _ := errors.AsType[*platformapi.APIError](err)
+		fmt.Println(apiErr.StatusCode, apiErr.Code, apiErr.RequestID)
+	}
+}
+
+Output: 404 not_found req-1234

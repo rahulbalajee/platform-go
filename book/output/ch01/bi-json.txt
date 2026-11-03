@@ -1,0 +1,10 @@
+{
+  "name": "stamp",
+  "version": "v0.0.0-20261103081532-b0977b0a7e31+dirty",
+  "revision": "b0977b0a7e315a020c2d56df479c4b55698938da",
+  "time": "2026-11-03T08:15:32Z",
+  "modified": true,
+  "module": "github.com/rahulbalajee/platform-go",
+  "goVersion": "go1.27.3",
+  "platform": "darwin/arm64"
+}

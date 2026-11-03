@@ -1,0 +1,6 @@
+target,default,stripped
+linux/amd64,10123684,6873248
+linux/arm64,9306842,6291616
+darwin/arm64,9639538,6490914
+windows/amd64,10260992,7076352
+linux/amd64 (GOAMD64=v3),10109277,6865056

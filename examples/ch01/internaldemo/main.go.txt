@@ -1,0 +1,11 @@
+// Command internaldemo imports the root module's internal/sweep package.
+// It is a .txt file; the capture script copies it into scratch modules.
+package main
+
+import (
+	"fmt"
+
+	"github.com/rahulbalajee/platform-go/internal/sweep"
+)
+
+func main() { fmt.Println(sweep.Target{}) }

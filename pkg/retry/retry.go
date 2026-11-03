@@ -15,6 +15,7 @@ import (
 )
 
 // START policy OMIT
+
 // Policy configures retries. The zero value is usable: 3 attempts, 100ms
 // base delay, 5s cap, and every error retryable unless marked Permanent.
 type Policy struct {
@@ -45,6 +46,7 @@ func (p Policy) withDefaults() Policy {
 }
 
 // START do OMIT
+
 // Do runs op until it succeeds, returns a non-retryable error, exhausts the
 // attempt budget, or ctx is done. The error returned on exhaustion wraps the
 // last error from op, so errors.Is/As see through it.

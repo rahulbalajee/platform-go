@@ -1,0 +1,10 @@
+cgroup v2 path  /
+memory.max      unlimited
+memory.high     unlimited
+memory.current  5.7 MiB (peak 7.1 MiB)
+cpu.max         unlimited
+pids.max        unlimited (current 5)
+GOMAXPROCS      10 (runtime.NumCPU 10)
+GOMEMLIMIT      unlimited
+RLIMIT_NOFILE   1048576 soft, 1048576 hard
+this process    5 threads, 7 open fds, VmRSS 5.9 MiB

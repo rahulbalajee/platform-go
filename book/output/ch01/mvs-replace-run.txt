@@ -1,0 +1,3 @@
+log v1.2.0 (requires codec v1.3.0) runs codec from ../fork/codec
+metrics v1.2.0 (requires codec v1.4.0) runs codec from ../fork/codec
+app uses codec/v2 v2.0.0

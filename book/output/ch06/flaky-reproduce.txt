@@ -1,0 +1,6 @@
+-test.shuffle 1793696417250651000
+--- FAIL: TestRegistryStartsEmpty (0.00s)
+    flaky_test.go:17: registry has 1 checks, want 0
+FAIL
+FAIL	github.com/rahulbalajee/platform-go/examples/ch06/flaky	0.394s
+FAIL

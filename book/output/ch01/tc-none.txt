@@ -1,0 +1,1 @@
+go: removed toolchain go1.27.3

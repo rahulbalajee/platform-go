@@ -1,0 +1,4 @@
+cgroup v2      not available on darwin
+GOMAXPROCS     10 (runtime.NumCPU 10)
+GOMEMLIMIT     unlimited
+RLIMIT_NOFILE  92160 soft, 9223372036854775807 hard

@@ -1,0 +1,1 @@
+$DEMO/platform-go/go.work

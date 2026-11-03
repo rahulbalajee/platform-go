@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1" # weekly, so new advisories surface without a push
 
 permissions:
   contents: read
@@ -22,6 +24,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - run: go mod tidy -diff
       - run: go vet ./...
       - uses: golangci/golangci-lint-action@v9
         with:
@@ -39,6 +42,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version-file: projects/watchtower/go.mod
+      - run: go mod tidy -diff
       - name: Generated code and manifests are up to date
         run: |
           make manifests generate
@@ -48,6 +52,47 @@ jobs:
           version: v2.15.0
           working-directory: projects/watchtower
       - run: make test
+
+  # Example modules with their own go.mod (heavier or demo-only dependencies).
+  examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - examples/ch01/tools
+          - examples/ch06/sweepscript
+          - examples/ch06/containers # testcontainers: needs Docker (present on the runner)
+    defaults:
+      run:
+        working-directory: ${{ matrix.module }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: ${{ matrix.module }}/go.mod
+      - run: go mod tidy -diff
+      - run: go vet ./...
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.15.0
+          working-directory: ${{ matrix.module }}
+      - run: go test -race -count=1 ./...
+
+  # Reachable known vulnerabilities fail the build (Chapter 1). govulncheck is
+  # pinned as a tool in examples/ch01/tools/go.mod.
+  vuln:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: examples/ch01/tools/go.mod
+      - name: govulncheck (root module)
+        run: go tool -modfile=examples/ch01/tools/go.mod govulncheck ./...
+      - name: govulncheck (watchtower)
+        working-directory: projects/watchtower
+        run: go tool -modfile=../../examples/ch01/tools/go.mod govulncheck ./...
 
   # Deploys the operator to kind and checks real behaviour end to end.
   watchtower-e2e:

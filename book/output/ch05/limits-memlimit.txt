@@ -1,0 +1,3 @@
+memory.max      256.0 MiB
+GOMAXPROCS      2 (runtime.NumCPU 10)
+GOMEMLIMIT      230.4 MiB

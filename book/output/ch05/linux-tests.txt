@@ -1,0 +1,3 @@
+fsx      PASS
+procx    PASS
+sysinfo  PASS

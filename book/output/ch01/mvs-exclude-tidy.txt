@@ -1,0 +1,2 @@
+go: dropping requirement on excluded version example.com/codec v1.4.0
+go: downloading example.com/codec v1.3.0

@@ -1,0 +1,11 @@
+*fmt.wrapError
+  *errors.joinError
+    *fmt.wrapError
+      context.deadlineExceededError
+    *fmt.wrapErrors
+      *errors.errorString
+      *fmt.wrapError
+        *fs.PathError
+          syscall.Errno
+Is(tree, DeadlineExceeded) = true
+Is(tree, fs.ErrNotExist)   = true

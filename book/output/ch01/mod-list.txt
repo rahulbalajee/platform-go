@@ -1,0 +1,16 @@
+github.com/rahulbalajee/platform-go
+github.com/creack/pty v1.1.24
+github.com/davecgh/go-spew v1.1.1
+github.com/google/go-cmp v0.7.0
+github.com/kr/pretty v0.1.0
+github.com/pmezard/go-difflib v1.0.0
+github.com/rogpeppe/go-internal v1.16.0
+github.com/stretchr/testify v1.8.0
+go.uber.org/goleak v1.3.0
+golang.org/x/mod v0.21.0
+golang.org/x/sync v0.24.0
+golang.org/x/sys v0.49.0
+golang.org/x/time v0.16.0
+golang.org/x/tools v0.26.0
+gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
+gopkg.in/yaml.v3 v3.0.1
