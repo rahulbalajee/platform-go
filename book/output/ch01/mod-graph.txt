@@ -1,6 +1,5 @@
 github.com/rahulbalajee/platform-go github.com/creack/pty@v1.1.24
 github.com/rahulbalajee/platform-go github.com/google/go-cmp@v0.7.0
-github.com/rahulbalajee/platform-go github.com/rogpeppe/go-internal@v1.16.0
 github.com/rahulbalajee/platform-go go@1.27.0
 github.com/rahulbalajee/platform-go go.uber.org/goleak@v1.3.0
 github.com/rahulbalajee/platform-go golang.org/x/sync@v0.24.0
@@ -8,10 +7,6 @@ github.com/rahulbalajee/platform-go golang.org/x/sys@v0.49.0
 github.com/rahulbalajee/platform-go golang.org/x/time@v0.16.0
 github.com/rahulbalajee/platform-go toolchain@go1.27.3
 github.com/google/go-cmp@v0.7.0 go@1.21
-github.com/rogpeppe/go-internal@v1.16.0 golang.org/x/mod@v0.21.0
-github.com/rogpeppe/go-internal@v1.16.0 golang.org/x/sys@v0.26.0
-github.com/rogpeppe/go-internal@v1.16.0 golang.org/x/tools@v0.26.0
-github.com/rogpeppe/go-internal@v1.16.0 go@1.25
 go@1.27.0 toolchain@go1.27.0
 go.uber.org/goleak@v1.3.0 github.com/stretchr/testify@v1.8.0
 go.uber.org/goleak@v1.3.0 github.com/davecgh/go-spew@v1.1.1

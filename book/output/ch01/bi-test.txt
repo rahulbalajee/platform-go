@@ -1,3 +1,3 @@
-ok  	github.com/rahulbalajee/platform-go/pkg/buildinfo	1.663s
-ok  	github.com/rahulbalajee/platform-go/examples/ch01/mkproxy	2.559s
-ok  	github.com/rahulbalajee/platform-go/examples/ch01/stamp	2.860s
+ok  	github.com/rahulbalajee/platform-go/pkg/buildinfo	1.942s
+ok  	github.com/rahulbalajee/platform-go/examples/ch01/mkproxy	1.595s
+ok  	github.com/rahulbalajee/platform-go/examples/ch01/stamp	3.122s

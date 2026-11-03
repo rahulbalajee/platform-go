@@ -321,17 +321,25 @@ The algorithm that turns this graph into the set of versions used for a build
 is *minimal version selection* (MVS), designed by Russ Cox for Go modules.
 It is short: start at the main module, walk every reachable requirement, and
 for each module keep the _highest_ version anyone requires. That list is the
-build list. Look at `golang.org/x/sys`:
+build list. The root module's graph is small enough to show the rule on the
+one dependency every module shares, the Go toolchain itself. Since Go 1.21,
+a `go` line is a requirement like any other: `go@1.26.0` means "this module
+needs at least Go 1.26.0", and `go get` manages it the way it manages
+`require` lines.
 
 #session(
-  ("go mod graph | grep golang.org/x/sys@", "ch01/mod-sys-graph.txt"),
-  ("go list -m golang.org/x/sys", "ch01/mod-sys-list.txt"),
+  ("go mod graph | grep ' go@'", "ch01/mod-go-graph.txt"),
+  ("go list -m go", "ch01/mod-go-list.txt"),
 )
 
-`go-internal` requires `x/sys` v0.26.0 or later.
-The root module asks for v0.49.0. MVS selects v0.49.0, the maximum of the
-minimums. It does not look at what exists on the proxy: if `x/sys` v0.50.0
-was released this morning, nothing changes until someone asks for it.
+`go-cmp` asks for Go 1.21, three `golang.org/x` modules for 1.26.0, and the
+root module for 1.27.0. MVS selects 1.27.0, the maximum of the minimums, and
+that is the oldest toolchain that can build this module. The same rule
+explains the toolchain switch in the previous section: when a dependency
+upgrade arrives with a higher `go` line, `go get` raises yours to match, and
+every developer's `go` command fetches the newer toolchain. MVS also never
+looks at what exists on the proxy. If `x/sys` v0.50.0 was released this
+morning, nothing changes until someone asks for it.
 
 The same rule at a larger scale, in the `watchtower` operator's module:
 
@@ -340,10 +348,10 @@ The same rule at a larger scale, in the `watchtower` operator's module:
   ("go list -m golang.org/x/net", "ch01/mod-xnet-list.txt"),
 )
 
-Seventeen requirements on `golang.org/x/net` at seven different minimum
-versions, from gRPC, OpenTelemetry, the Kubernetes libraries and the
-Prometheus client. The build uses one version, v0.59.0, the highest anyone
-asked for. Every library in the build gets a version at least as new as the
+Seventeen requirements on `golang.org/x/net` at five different minimum
+versions, from gRPC, OpenTelemetry, the Kubernetes libraries, the Prometheus
+client and the operator itself. The build uses one version, v0.60.0, the
+highest anyone asked for. Every library in the build gets a version at least as new as the
 one it declared, and never a version that nobody asked for.
 
 === A module universe you can run
@@ -733,7 +741,7 @@ adds `govulncheck` as a tool of the `watchtower` operator:
 #output("ch01/tools-wt-get.txt", cmd: "go get -tool golang.org/x/vuln/cmd/govulncheck@v1.9.0")
 
 Adding a vulnerability scanner upgraded the operator's _runtime_ HTTP/2
-stack, `golang.org/x/net`, from v0.59.0 to v0.61.0, along with `x/sys` and
+stack, `golang.org/x/net`, from v0.60.0 to v0.61.0, along with `x/sys` and
 `x/text`. In this case the upgrade happens to be welcome (@sec-tc-gates shows
 why), but a pull request titled "add govulncheck" should not change what runs
 in production. The more tools a module pins, the more of these interactions
@@ -835,7 +843,7 @@ reasons that apply to any large project in a shared repository.
   ("cd projects/watchtower && go list -m all | wc -l", "ch01/mod-count-wt.txt"),
 )
 
-The operator needs 179 modules, most of them Kubernetes and its transitive
+The operator needs 183 modules, most of them Kubernetes and its transitive
 dependencies. In one module, a developer working on `sweep` would download
 them, every `go.mod` change would involve them, and MVS would apply
 Kubernetes' requirements to the CLI's build. Worse, Kubernetes libraries move
@@ -955,7 +963,7 @@ the CPU lacks exits at startup with a message saying so, rather than crashing
 on an illegal instruction later.
 
 For I/O-bound platform tools, the gain is negligible: `sweep` shrinks by
-about 14 KB and its speed is set by the network. The FMA change also means
+about 15 KB and its speed is set by the network. The FMA change also means
 floating-point results can differ in the last bits between `v1` and `v3`
 builds, which matters if a test compares floats exactly. For CPU-heavy components
 (compression in a log shipper, the time-series engine in Chapter 26) measure
@@ -1221,7 +1229,7 @@ The four advisories left over sit in packages watchtower imports, or modules
 it requires, but in functions its code never calls. `govulncheck` mentions
 them and exits 0. That reachability analysis is the difference between a
 scanner teams keep in CI and one they mute: a dependency scanner that fails
-the build for every vulnerable function anywhere in a 179-module graph gets
+the build for every vulnerable function anywhere in a 183-module graph gets
 switched off within a month. The repository's CI runs this scan for both
 modules on every push and weekly on a schedule.
 
@@ -1243,10 +1251,12 @@ laptops agree through the mechanism of @sec-tc-toolchain. The linter version
 is pinned in both places. The other jobs repeat the pattern for
 `watchtower` (plus a check that generated code is up to date, the CI half of
 the `go generate` advice above) and for the book itself, whose build fails if
-a listing's source region disappears. Two gates are missing from this
-workflow, and adding them is Exercise 3: `govulncheck` on every module, and
+a listing's source region disappears. The first step after `setup-go` is
 `go mod tidy -diff`, which fails if `go.mod` or `go.sum` is out of date
-without modifying them.
+without modifying them. The last gate this chapter argued for runs as its own
+job: the pinned `govulncheck` against both modules, on every push and on a
+weekly schedule, so a new advisory fails the build even in a week when nobody
+pushes.
 
 == Dependency hygiene at 200 engineers <sec-tc-scale>
 
@@ -1332,7 +1342,7 @@ platform's threat model.
 #exercises(
   [*A toolchain matrix.* Add a CI job that runs the root module's tests with `GOTOOLCHAIN=go1.26.10` and expect it to fail. Then make it pass by lowering the `go` line of a copy of `pkg/buildinfo` to the oldest version it supports. Which language or library features stop you, and how does `go vet`'s `stdversion` analyzer help find them?],
   [*Extend the universe.* Add `example.com/log` v1.3.0 to `universe.txtar`, requiring `codec` v1.6.0, which does not exist. What do `go get example.com/log@v1.3.0` and `go mod tidy` report? Then add a module whose `go.mod` declares `go 1.28` and observe how toolchain switching interacts with the file proxy (hint: the toolchain module is not in it).],
-  [*Close the CI gaps.* Add `govulncheck` (using the pinned tool module) and `go mod tidy -diff` to `.github/workflows/ci.yml` for both modules, plus a scheduled nightly run on the default branch. Decide what should happen when a vulnerability has no fixed version yet.],
+  [*An escape hatch for the vulnerability gate.* The `vuln` job fails on any reachable vulnerability, including one with no fixed version yet. Add an allowlist file of advisory IDs, each with an owner, a reason and an expiry date; filter `govulncheck -format json` through it so allowed findings pass until they expire and then fail the build again. Decide who may approve entries, and how the weekly run reports expiring ones.],
   [*Adopt buildinfo in sweep.* Replace `sweep`'s `version` variable with `pkg/buildinfo`, add `-version -o json`, and send `User-Agent: sweep/<version>` on HTTP checks. Write a test that proves the header is sent, using the fake server from Chapter 4.],
   [*A build_info inventory.* Write a command that walks a directory of binaries (or the layers of a container image), runs `debug.ReadBuildInfo`'s file equivalent (`debug/buildinfo.ReadFile`) on each, and prints a table of binary, main module version, Go version, `vcs.modified`, and the version of a given dependency. Use it to answer "which binaries contain `golang.org/x/net` older than v0.60.0".],
   [*Reproducibility in CI.* Add a job that builds `sweep` twice, in two different directories and on two runner images, and fails if the SHA-256 hashes differ. Then break it deliberately three ways (drop `-trimpath`, build from a dirty tree, enable cgo) and explain each failure.],

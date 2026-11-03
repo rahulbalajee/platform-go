@@ -984,7 +984,7 @@ and so that a crash report doesn't reveal the build machine's user name.
 #newingo("1.24", title: [Version stamping from version control])[
   `go build` now sets the main module's version from the VCS tag or commit,
   with a `+dirty` suffix when the working tree has uncommitted changes. That
-  is the `v0.0.0-20261103081532-b0977b0a7e31+dirty` in the report above,
+  is the `v0.0.0-20261103092110-f4030eafc9cc+dirty` in the report above,
   read with `debug.ReadBuildInfo`. Before Go 1.24, a binary built from a
   checkout reported `(devel)` and you had to stamp a version yourself with
   `-ldflags "-X main.version=..."`. `-buildvcs=false` turns the stamping off.

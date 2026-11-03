@@ -1,8 +1,8 @@
 deploying checkout v1.4.2 to 4 targets
   sa-east-1   failed   0s
-  eu-west-1   failed   80ms
   us-west-2   deployed 100ms
   us-east-1   deployed 100ms
+  eu-west-1   failed   230ms
 deployctl: deploy of v1.4.2 failed on 2 of 4 targets [DPL-PARTIAL]
   - sa-east-1: deploy already in progress, started by ci-bot (HTTP 409)
   - eu-west-1: health check failing on 3/3 replicas (HTTP 503, 3 attempts)

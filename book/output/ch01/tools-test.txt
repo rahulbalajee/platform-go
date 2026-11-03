@@ -1,1 +1,1 @@
-ok  	github.com/rahulbalajee/platform-go/examples/ch01/tools/rollout	0.190s
+ok  	github.com/rahulbalajee/platform-go/examples/ch01/tools/rollout	0.424s

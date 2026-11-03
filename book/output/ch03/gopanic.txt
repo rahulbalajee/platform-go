@@ -1,9 +1,9 @@
 panic: assignment to entry in nil map [recovered, repanicked]
 
-goroutine 19 [running]:
+goroutine 6 [running]:
 sync.(*WaitGroup).Go.func1.1()
 	sync/waitgroup.go:251 +0x48
-panic({0x104b59ed0?, 0x104b6d1e0?})
+panic({0x102cdded0?, 0x102cf11e0?})
 	runtime/panic.go:859 +0x120
 main.main.func2()
 	github.com/rahulbalajee/platform-go/examples/ch03/gopanic/main.go:22 +0x34

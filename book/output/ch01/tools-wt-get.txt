@@ -1,5 +1,5 @@
 go: upgraded golang.org/x/mod v0.41.0 => v0.42.0
-go: upgraded golang.org/x/net v0.59.0 => v0.61.0
+go: upgraded golang.org/x/net v0.60.0 => v0.61.0
 go: upgraded golang.org/x/sync v0.23.0 => v0.24.0
 go: upgraded golang.org/x/sys v0.48.0 => v0.49.0
 go: added golang.org/x/telemetry v0.0.0-20261010193011-f71dc92da45e

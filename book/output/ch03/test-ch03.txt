@@ -1,2 +1,2 @@
-ok  	github.com/rahulbalajee/platform-go/pkg/clierr	1.304s
-ok  	github.com/rahulbalajee/platform-go/examples/ch03/deployctl	2.775s
+ok  	github.com/rahulbalajee/platform-go/pkg/clierr	1.604s
+ok  	github.com/rahulbalajee/platform-go/examples/ch03/deployctl	3.307s

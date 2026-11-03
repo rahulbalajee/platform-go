@@ -1,1 +1,1 @@
-real 0.70s   user 0.55s   sys 0.27s
+real 0.45s   user 0.51s   sys 0.48s

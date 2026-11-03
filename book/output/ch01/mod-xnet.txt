@@ -1,7 +1,5 @@
-   1 golang.org/x/net@v0.48.0
    2 golang.org/x/net@v0.49.0
-   1 golang.org/x/net@v0.50.0
-   1 golang.org/x/net@v0.53.0
-   1 golang.org/x/net@v0.55.0
-   8 golang.org/x/net@v0.57.0
-   3 golang.org/x/net@v0.59.0
+   2 golang.org/x/net@v0.55.0
+  10 golang.org/x/net@v0.57.0
+   2 golang.org/x/net@v0.59.0
+   1 golang.org/x/net@v0.60.0

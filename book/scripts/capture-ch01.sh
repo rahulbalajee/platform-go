@@ -67,8 +67,8 @@ cap tc-path.txt 'GOTOOLCHAIN=path go version'
 # ---- The build list of this repository -----------------------------------------
 cap mod-graph.txt 'go mod graph'
 cap mod-list.txt 'go list -m all'
-cap mod-sys-graph.txt 'go mod graph | grep golang.org/x/sys@'
-cap mod-sys-list.txt 'go list -m golang.org/x/sys'
+cap mod-go-graph.txt "go mod graph | grep ' go@'"
+cap mod-go-list.txt 'go list -m go'
 cap mod-count-root.txt 'go list -m all | wc -l'
 (
 	cd projects/watchtower
