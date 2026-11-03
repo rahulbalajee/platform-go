@@ -1,0 +1,1 @@
+vet: internal/sweep/line_test.go:10:21: undefined: sweep.parseTarget

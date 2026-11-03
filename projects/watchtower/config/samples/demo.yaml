@@ -1,15 +1,19 @@
 # A small "shop" to watch: one in-cluster service, one public site, one
-# endpoint that always fails, and one check whose Service doesn't exist yet.
+# endpoint that always fails (it answers 503), and one check whose Service
+# doesn't exist yet. The app objects carry demo=app, so they can be applied
+# first with `kubectl apply -l demo=app`.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: shop
+  labels: {demo: app}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: storefront
   namespace: shop
+  labels: {demo: app}
 spec:
   replicas: 2
   selector:
@@ -30,6 +34,7 @@ kind: Service
 metadata:
   name: storefront
   namespace: shop
+  labels: {demo: app}
 spec:
   selector: {app: storefront}
   ports: [{port: 80, targetPort: 8080}]
@@ -69,7 +74,7 @@ metadata:
   namespace: shop
 spec:
   target:
-    url: https://httpbin.org/status/503
+    service: {name: storefront, port: 80, path: /status/503}
   interval: 10s
   failureThreshold: 3
   alert:

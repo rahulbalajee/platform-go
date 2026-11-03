@@ -1,0 +1,5 @@
+--- FAIL: TestWriteFailureLeavesOldFileAndNoDebris (0.01s)
+    atomic_test.go:58: directory has 2 entries, want only state.json: [- .state.json.tmp-1258226598 - state.json]
+FAIL
+FAIL    oskit/fsx       2.125s
+FAIL

@@ -1,0 +1,9 @@
+go: downloading example.com/codec/v2 v2.0.0
+go: downloading example.com/log v1.2.0
+go: downloading example.com/metrics v1.2.0
+go: example.com/app imports
+	example.com/codec/v2: unrecognized import path "example.com/codec/v2": reading https://example.com/codec/v2?go-get=1: 404 Not Found
+go: example.com/app imports
+	example.com/log: unrecognized import path "example.com/log": reading https://example.com/log?go-get=1: 404 Not Found
+go: example.com/app imports
+	example.com/metrics: unrecognized import path "example.com/metrics": reading https://example.com/metrics?go-get=1: 404 Not Found

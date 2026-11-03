@@ -1,0 +1,1 @@
+    clierr_test.go:211: secret leaked: [REDACTED] [REDACTED] "[REDACTED]" 5b52454441435445445d "ghp_live_0123456789" [REDACTED]

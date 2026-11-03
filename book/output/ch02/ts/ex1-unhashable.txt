@@ -1,0 +1,2 @@
+panic: runtime error: hash of unhashable type platformapi_test.multiError [recovered, repanicked]
+platformapi.(*APIError).Is(0x…, {0x…, 0x…})

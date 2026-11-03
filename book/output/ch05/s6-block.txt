@@ -1,0 +1,55 @@
+panic: test timed out after 10s
+        running tests:
+                TestTryLockIsExclusiveWithinOneProcess (10s)
+
+goroutine 20 [running]:
+testing.(*M).startAlarm.func1()
+        $GOROOT/src/testing/testing.go:2961 +0x2c4
+created by time.goFunc
+        $GOROOT/src/time/sleep.go:182 +0x38
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x…, {0x…?, 0x…?}, 0x…)
+        $GOROOT/src/testing/testing.go:2268 +0x3cc
+testing.runTests.func1(0x…)
+        $GOROOT/src/testing/testing.go:2744 +0x38
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+testing.runTests({0x…, 0x5}, {0x…, 0x9}, 0x…, {0x…, 0x8, 0x8}, {0x…?, 0x…?, ...})
+        $GOROOT/src/testing/testing.go:2742 +0x400
+testing.(*M).Run(0x…)
+        $GOROOT/src/testing/testing.go:2602 +0x578
+go.uber.org/goleak.VerifyTestMain({0x…?, 0x…?}, {0x0, 0x0, 0x0})
+        ~/go/pkg/mod/go.uber.org/goleak@v1.3.0/testmain.go:53 +0x44
+oskit/fsx_test.TestMain(0x…)
+        ~/broken/fsx/main_test.go:16 +0x50
+main.main()
+        _testmain.go:64 +0x88
+
+goroutine 19 [syscall]:
+syscall.syscalln(0x…, {0x…, 0x3, 0x3})
+        $GOROOT/src/runtime/sys_darwin.go:27 +0x20
+syscall.syscall(0x…?, 0x…?, 0x…?, 0x…?)
+        $GOROOT/src/syscall/syscall_darwin.go:384 +0x24
+golang.org/x/sys/unix.Flock(0x…?, 0x…?)
+        ~/go/pkg/mod/golang.org/x/sys@v0.49.0/unix/zsyscall_darwin_arm64.go:1349 +0x34
+oskit/fsx.flock.func1(0x6)
+        ~/broken/fsx/lock_unix.go:30 +0x38
+internal/poll.(*FD).RawControl(0x37ed3122?, 0x6ae9dc79?)
+        $GOROOT/src/internal/poll/fd_posix.go:61 +0xf8
+os.(*rawConn).Control(0x…, 0x43?)
+        $GOROOT/src/os/rawconn.go:22 +0x60
+oskit/fsx.flock(0x…?, 0x7f?)
+        ~/broken/fsx/lock_unix.go:28 +0xa0
+oskit/fsx.lockFile(...)
+        ~/broken/fsx/lock_unix.go:16
+oskit/fsx.TryLock({0x…, 0x7f})
+        ~/broken/fsx/lock.go:55 +0x64
+oskit/fsx_test.TestTryLockIsExclusiveWithinOneProcess(0x…)
+        ~/broken/fsx/lock_test.go:42 +0x90
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    oskit/fsx       10.434s
+FAIL

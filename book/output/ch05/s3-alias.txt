@@ -1,0 +1,7 @@
+--- FAIL: TestLinesTruncatesLongLinesAndKeepsGoing (0.00s)
+    scan_test.go:66: lines = ["short" "xxxx\nafter\nlastx" "after" "last"], want ["short" "xxxxxxxxxxxxxxxx" "after" "last"]
+--- FAIL: TestStreamSurvivesLongLines (0.00s)
+    scan_test.go:108: stream: {Lines:6 Bytes:65661 Status:[0 0 3 0 1 1] Truncated:1 Malformed:1 Sum:[]}, <nil>
+FAIL
+FAIL    oskit/cmd/logscan       0.459s
+FAIL

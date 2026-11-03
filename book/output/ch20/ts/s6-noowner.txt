@@ -1,0 +1,2 @@
+    prometheus_test.go:40: controller = nil, want the HealthCheck
+    healthcheck_controller_test.go:278: controller of the rule = nil, want HealthCheck orders-8516

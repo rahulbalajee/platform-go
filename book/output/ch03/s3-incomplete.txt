@@ -1,0 +1,2 @@
+deployctl: config file incomplete.json is incomplete: "api" is empty
+"targets" is empty

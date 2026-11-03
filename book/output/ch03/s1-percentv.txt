@@ -1,0 +1,5 @@
+--- FAIL: TestMissingConfigIsNotExist (0.00s)
+    run_test.go:81: err = load config: open /tmp/TestMissingConfigIsNotExist2516364039/001/nope.json: no such file or directory, want one that wraps fs.ErrNotExist
+FAIL
+FAIL    deployctl/cmd/deployctl 2.081s
+FAIL

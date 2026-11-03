@@ -1,0 +1,5 @@
+--- FAIL: TestWriteFileCreatesAndReplaces (0.02s)
+    atomic_test.go:34: mode = -rw-------, <nil>; want 0640
+FAIL
+FAIL    oskit/fsx       2.167s
+FAIL

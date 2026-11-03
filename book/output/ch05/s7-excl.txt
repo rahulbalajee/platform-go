@@ -1,0 +1,6 @@
+--- FAIL: TestExtractTarRejectsEscapes (0.00s)
+    --- FAIL: TestExtractTarRejectsEscapes/duplicate_name (0.00s)
+        extract_test.go:109: extraction succeeded, want an error
+FAIL
+FAIL    oskit/fsx       3.541s
+FAIL

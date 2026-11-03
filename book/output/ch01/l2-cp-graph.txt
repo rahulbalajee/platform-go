@@ -1,0 +1,12 @@
+example.com/app example.com/codec@v1.5.0
+example.com/app example.com/codec/v2@v2.0.0
+example.com/app example.com/log@v1.2.0
+example.com/app example.com/metrics@v1.3.0
+example.com/app go@1.27.0
+example.com/codec@v1.5.0 go@1.27.0
+example.com/codec/v2@v2.0.0 go@1.27.0
+example.com/log@v1.2.0 example.com/codec@v1.3.0
+example.com/log@v1.2.0 go@1.27.0
+example.com/metrics@v1.3.0 example.com/codec@v1.5.0
+example.com/metrics@v1.3.0 go@1.27.0
+go@1.27.0 toolchain@go1.27.0

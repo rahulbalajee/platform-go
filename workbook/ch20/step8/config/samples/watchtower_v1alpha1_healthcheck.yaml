@@ -1,0 +1,11 @@
+apiVersion: watchtower.platformgo.dev/v1alpha1
+kind: HealthCheck
+metadata:
+  labels:
+    app.kubernetes.io/name: watchtower
+    app.kubernetes.io/managed-by: kustomize
+  name: healthcheck-sample
+spec:
+  target:
+    url: https://go.dev/
+  interval: 30s

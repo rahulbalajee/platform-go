@@ -1,0 +1,5 @@
+{
+  "api": "http://127.0.0.1:8787",
+  "service": "checkout",
+  "targets": ["us-east-1", "us-west-2", "eu-west-1", "sa-east-1"]
+}

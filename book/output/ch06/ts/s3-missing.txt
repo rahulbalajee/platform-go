@@ -1,0 +1,1 @@
+        report_test.go:102: open testdata/golden/report-table.golden: no such file or directory (run 'go test -update' to create it)

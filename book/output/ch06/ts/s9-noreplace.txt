@@ -1,0 +1,1 @@
+go: sweep/containers: malformed module path "sweep": missing dot in first path element

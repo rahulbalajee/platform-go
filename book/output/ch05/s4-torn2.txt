@@ -1,0 +1,1 @@
+naive  writes=25981  reads=27270   torn=5225 (empty 4449, short 776, mixed 0)

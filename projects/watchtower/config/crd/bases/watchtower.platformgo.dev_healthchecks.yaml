@@ -42,7 +42,6 @@ spec:
     schema:
       openAPIV3Schema:
         description: |-
-          START kind OMIT
           HealthCheck continuously probes an endpoint, reports its health through
           status conditions and metrics, and keeps an alert rule in sync.
         properties:
@@ -65,7 +64,6 @@ spec:
             type: object
           spec:
             description: |-
-              START spec OMIT
               HealthCheckSpec is the desired state: what to probe, how often, and what
               counts as healthy.
             properties:

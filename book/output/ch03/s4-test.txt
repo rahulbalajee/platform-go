@@ -1,0 +1,6 @@
+ok      deployctl/cmd/deployctl 1.888s
+?       deployctl/cmd/fakeapi   [no test files]
+?       deployctl/internal/fakeapi      [no test files]
+?       deployctl/lab/chain     [no test files]
+?       deployctl/lab/exitcount [no test files]
+ok      deployctl/pkg/clierr    0.178s

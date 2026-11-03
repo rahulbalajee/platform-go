@@ -1,0 +1,1 @@
+    client_test.go:73: platformapi: GET /v1/environments/staging: decoding response: json: Unmarshal(non-pointer platformapi.Environment)

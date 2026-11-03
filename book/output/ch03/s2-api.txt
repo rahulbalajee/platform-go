@@ -1,0 +1,7 @@
+18:24:53.366632 fake deploy API on http://127.0.0.1:8787
+18:24:54.864051 GET "/v1/whoami"
+18:24:54.864814 POST "/v1/deploy/us-east-1"
+18:24:54.965740 POST "/v1/deploy/us-west-2"
+18:24:55.066289 POST "/v1/deploy/eu-west-1"
+18:24:55.167631 POST "/v1/deploy/eu-west-1"
+18:24:55.368615 POST "/v1/deploy/eu-west-1"

@@ -1,0 +1,20 @@
+deployctl crash report
+
+module:       deployctl@v0.0.0-20261103125623-7d166e1c5528
+go:           go1.27.3
+GOARCH:       arm64
+GOOS:         darwin
+vcs.revision: 7d166e1c55282d80b2cfec50e5569a93fd1ee2f2
+vcs.time:     2026-11-03T12:56:23Z
+vcs.modified: false
+panic:        runtime error: invalid memory address or nil pointer dereference
+
+goroutine 1 [running]:
+runtime/debug.Stack()
+        runtime/debug/stack.go:26 +0x64
+deployctl/pkg/clierr.(*Program).Run.func1()
+        deployctl/pkg/clierr/program.go:62 +0x44
+panic({0x…?, 0x…?})
+        runtime/panic.go:859 +0x120
+main.status({0x…, 0x…}, {{0x…, 0xc}, {0x…, 0x4}, {0x0, 0x0}}, 0x…, 0x…, ...)
+        deployctl/cmd/deployctl/status.go:37 +0x1dc

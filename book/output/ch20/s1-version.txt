@@ -1,0 +1,5 @@
+KubeBuilder:          v4.16.0
+Kubernetes:           1.37.0
+Git Commit:           4d01fcdf146e4d832fc973ef95684a00bcf0f0c0
+Build Date:           2026-09-10T09:30:36Z
+Go OS/Arch:           darwin/arm64

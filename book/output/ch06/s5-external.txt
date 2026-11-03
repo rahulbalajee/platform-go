@@ -1,0 +1,3 @@
+# sweep/internal/sweep_test
+# [sweep/internal/sweep_test]
+vet: internal/sweep/probe_fuzz_test.go:22:12: undefined: parseRetryAfter

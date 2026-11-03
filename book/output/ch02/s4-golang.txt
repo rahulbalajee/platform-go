@@ -1,0 +1,2 @@
+# platformapi
+./transport.go:231:23: generic method requires go1.27 or later (-lang was set to go1.26; check go.mod)

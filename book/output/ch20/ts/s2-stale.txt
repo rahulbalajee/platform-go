@@ -1,0 +1,1 @@
+        healthcheck_controller_test.go:84: err = <nil>; want Invalid containing "spec.target.url"

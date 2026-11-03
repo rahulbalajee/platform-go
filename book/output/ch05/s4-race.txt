@@ -1,0 +1,75 @@
+==================
+WARNING: DATA RACE
+Read at 0x… by main goroutine:
+  main.run()
+      ~/broken/cmd/torn/main.go:94 +0x674
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+
+Previous write at 0x… by goroutine 7:
+  main.run.func1()
+      ~/broken/cmd/torn/main.go:73 +0xa4
+
+Goroutine 7 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+==================
+==================
+WARNING: DATA RACE
+Read at 0x… by main goroutine:
+  main.run()
+      ~/broken/cmd/torn/main.go:94 +0x6a4
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+
+Previous write at 0x… by goroutine 7:
+  main.run.func1()
+      ~/broken/cmd/torn/main.go:76 +0xdc
+
+Goroutine 7 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+==================
+==================
+WARNING: DATA RACE
+Read at 0x… by main goroutine:
+  main.run()
+      ~/broken/cmd/torn/main.go:94 +0x6b8
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+
+Previous write at 0x… by goroutine 7:
+  main.run.func1()
+      ~/broken/cmd/torn/main.go:78 +0x114
+
+Goroutine 7 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+==================
+==================
+WARNING: DATA RACE
+Read at 0x… by main goroutine:
+  main.run()
+      ~/broken/cmd/torn/main.go:94 +0x6cc
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+
+Previous write at 0x… by goroutine 7:
+  main.run.func1()
+      ~/broken/cmd/torn/main.go:80 +0x1d8
+
+Goroutine 7 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+  main.main()
+      ~/broken/cmd/torn/main.go:29 +0x154
+==================
+naive  writes=729    reads=427     torn=81 (empty 68, short 6, mixed 7)
+Found 4 data race(s)
+exit status 66

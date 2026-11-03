@@ -45,7 +45,8 @@ func results(n int) []sweep.Result {
 		}
 		if i%10 == 0 {
 			rs[i].Status, rs[i].Attempts = sweep.StatusDown, 3
-			rs[i].Error = "unhealthy status 503 Service Unavailable (after 3 attempts)"
+			rs[i].Error = "unhealthy status 503 Service Unavailable" +
+				" (after 3 attempts)"
 		}
 	}
 	return rs

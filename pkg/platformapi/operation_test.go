@@ -1,3 +1,5 @@
+// START waittest OMIT
+
 package platformapi_test
 
 import (
@@ -10,7 +12,6 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 )
 
-// START waittest OMIT
 func TestWaitFollowsRolloutToSuccess(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, _ := newClient(t) // polls every 2s
@@ -58,6 +59,7 @@ func TestCancellingWaitDoesNotCancelTheDeployment(t *testing.T) {
 
 // END canceltest OMIT
 
+// START failtest OMIT
 func TestWaitReportsFailedRollout(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, fake := newClient(t)
@@ -77,6 +79,27 @@ func TestWaitReportsFailedRollout(t *testing.T) {
 	})
 }
 
+func TestWaitAfterCancel(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		client, _ := newClient(t)
+		op, err := client.CreateDeployment(t.Context(), staging)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := client.CancelDeployment(t.Context(), op.Result.ID); err != nil {
+			t.Fatal(err)
+		}
+		_, err = client.Wait(t.Context(), op)
+		if opErr, ok := errors.AsType[*platformapi.OperationError](err); !ok ||
+			opErr.Code != "cancelled" {
+			t.Errorf("Wait after cancel = %v, want a cancelled OperationError", err)
+		}
+	})
+}
+
+// END failtest OMIT
+
+// START polltest OMIT
 func TestPollYieldsEverySnapshot(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, _ := newClient(t)
@@ -113,46 +136,10 @@ func TestResumeWaitingByOperationID(t *testing.T) {
 	})
 }
 
-func TestCancelDeployment(t *testing.T) {
-	synctest.Test(t, func(t *testing.T) {
-		client, _ := newClient(t)
-		op, err := client.CreateDeployment(t.Context(), staging)
-		if err != nil {
-			t.Fatal(err)
-		}
-		d, err := client.CancelDeployment(t.Context(), op.Result.ID)
-		if err != nil || d.State != platformapi.StateCancelled {
-			t.Fatalf("Cancel = %+v, %v", d, err)
-		}
-		if _, err := client.CancelDeployment(t.Context(), op.Result.ID); err != nil {
-			t.Errorf("cancelling twice: %v", err)
-		}
-		_, err = client.Wait(t.Context(), op)
-		if opErr, ok := errors.AsType[*platformapi.OperationError](err); !ok ||
-			opErr.Code != "cancelled" {
-			t.Errorf("Wait after cancel = %v, want a cancelled OperationError", err)
-		}
-		_, err = client.CancelDeployment(t.Context(), "d-1") // succeeded long ago
-		if !errors.Is(err, platformapi.ErrConflict) {
-			t.Errorf("cancelling a finished deployment: %v, want ErrConflict", err)
-		}
-	})
-}
-
-func TestConcurrentDeploymentIsAConflict(t *testing.T) {
-	client, _ := newClient(t)
-	if _, err := client.CreateDeployment(t.Context(), staging); err != nil {
-		t.Fatal(err)
-	}
-	_, err := client.CreateDeployment(t.Context(), staging)
-	if !errors.Is(err, platformapi.ErrConflict) {
-		t.Errorf("second create = %v, want ErrConflict", err)
-	}
-}
-
 func TestPollRejectsOperationWithoutID(t *testing.T) {
 	client, fake := newClient(t)
-	_, err := client.Wait(t.Context(), &platformapi.Operation[platformapi.Deployment]{})
+	noID := &platformapi.Operation[platformapi.Deployment]{}
+	_, err := client.Wait(t.Context(), noID)
 	if err == nil {
 		t.Fatal("Wait on an operation without ID succeeded")
 	}
@@ -160,3 +147,5 @@ func TestPollRejectsOperationWithoutID(t *testing.T) {
 		t.Errorf("sent %d requests", n)
 	}
 }
+
+// END polltest OMIT

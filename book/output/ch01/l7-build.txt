@@ -1,0 +1,16 @@
+path           stamp/cmd/stamp
+main module    stamp v0.0.0-20261102140731-8e8d97b64ebd
+-buildmode     exe
+-compiler      gc
+CGO_ENABLED    1
+CGO_CFLAGS     
+CGO_CPPFLAGS   
+CGO_CXXFLAGS   
+CGO_LDFLAGS    
+GOARCH         arm64
+GOOS           darwin
+GOARM64        v8.0
+vcs            git
+vcs.revision   8e8d97b64ebd36245540f3755725a28ea7fd6b74
+vcs.time       2026-11-02T14:07:31Z
+vcs.modified   false

@@ -1,0 +1,14 @@
+package platformapi // import "platformapi"
+
+func (c *Client) ListDeployments(ctx context.Context, f DeploymentFilter,
+        opts ...CallOption) iter.Seq2[Deployment, error]
+    ListDeployments returns an iterator over the deployments that match f,
+    newest first. Pages are fetched as the loop consumes them:
+
+        for d, err := range client.ListDeployments(ctx, f) {
+                if err != nil {
+                        return err
+                }
+                fmt.Println(d.ID, d.State)
+        }
+

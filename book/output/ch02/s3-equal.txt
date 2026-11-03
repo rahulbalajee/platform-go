@@ -1,0 +1,5 @@
+errors_test.go:18:5: comparing with != will fail on wrapped errors. Use errors.Is to check for a specific error (errorlint)
+        if err != platformapi.ErrNotFound {
+           ^
+1 issues:
+* errorlint: 1

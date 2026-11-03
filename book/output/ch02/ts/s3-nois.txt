@@ -1,0 +1,1 @@
+    errors_test.go:19: err = GET /v1/deployments/d-404: 404 not_found: deployment "d-404" not found (request srv-1), want ErrNotFound

@@ -1,9 +1,13 @@
+// START head OMIT
+
 // Package rollout models the phases of a progressive rollout. It exists to
 // show a code generator pinned with the go.mod tool directive: the String
 // method in phase_string.go is written by stringer, run through go tool.
 package rollout
 
 import "fmt"
+
+// END head OMIT
 
 // START phase OMIT
 //go:generate go tool stringer -type=Phase -linecomment
@@ -23,6 +27,8 @@ const (
 
 // END phase OMIT
 
+// START parse OMIT
+
 // Phases lists every phase in order.
 func Phases() []Phase {
 	return []Phase{PhasePending, PhaseCanary, PhaseProgressing,
@@ -38,6 +44,10 @@ func ParsePhase(s string) (Phase, error) {
 	}
 	return 0, fmt.Errorf("rollout: unknown phase %q", s)
 }
+
+// END parse OMIT
+
+// START text OMIT
 
 // MarshalText makes phases readable in JSON and YAML.
 func (p Phase) MarshalText() ([]byte, error) {
@@ -56,3 +66,5 @@ func (p *Phase) UnmarshalText(b []byte) error {
 	*p = v
 	return nil
 }
+
+// END text OMIT

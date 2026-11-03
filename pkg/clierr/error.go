@@ -1,3 +1,4 @@
+// START imports OMIT
 package clierr
 
 import (
@@ -6,6 +7,7 @@ import (
 	"log/slog"
 )
 
+// END imports OMIT
 // START error OMIT
 // Error is a failure the program can explain to the person who ran it.
 // Message, Hint and Docs are written for that person. Err is the cause
@@ -36,7 +38,6 @@ func (e *Error) Error() string {
 func (e *Error) Unwrap() error { return e.Err }
 
 // END error OMIT
-
 // START usermsg OMIT
 // UserMessage returns the text to show a person for err: the Message of the
 // first *Error in the tree, or err.Error() when nobody wrote one.
@@ -62,7 +63,6 @@ func details(cause error) []string {
 }
 
 // END usermsg OMIT
-
 // START chain OMIT
 // Chain lists the dynamic types in err's tree in the order errors.Is visits
 // them (depth first), for operator logs: "*url.Error" tells you which layer
@@ -89,7 +89,6 @@ func Chain(err error) []string {
 }
 
 // END chain OMIT
-
 // START secret OMIT
 // Secret is a string that fmt, log/slog and encoding/json print as
 // "[REDACTED]". Code that needs the value writes string(s), visibly.

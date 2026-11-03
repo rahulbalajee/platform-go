@@ -1,0 +1,15 @@
+File: sweep.test
+Type: alloc_objects
+Time: 2026-11-03 18:30:17 IST
+Showing nodes accounting for 9870850, 99.24% of 9946540 total
+Dropped 32 nodes (cum <= 49732)
+Showing top 8 nodes out of 20
+      flat  flat%   sum%        cum   cum%
+   6750310 67.87% 67.87%    9862574 99.16%  sweep/internal/sweep.(*tableReporter).Close
+   1785198 17.95% 85.81%    1785198 17.95%  text/tabwriter.(*Writer).addLine
+    646691  6.50% 92.32%     646691  6.50%  sweep/internal/sweep.truncate (inline)
+    622601  6.26% 98.57%     622601  6.26%  time.Duration.String
+     66050  0.66% 99.24%      66050  0.66%  runtime.mallocgc
+         0     0% 99.24%     622601  6.26%  fmt.(*pp).doPrintf
+         0     0% 99.24%     622601  6.26%  fmt.(*pp).handleMethods
+         0     0% 99.24%     622601  6.26%  fmt.(*pp).printArg

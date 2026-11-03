@@ -1,3 +1,5 @@
+// START helpers OMIT
+
 package fsx_test
 
 import (
@@ -62,6 +64,9 @@ func sandbox(t *testing.T) (string, *os.Root) {
 	return parent, root
 }
 
+// END helpers OMIT
+
+// START good OMIT
 func TestExtractTarGoodArchive(t *testing.T) {
 	_, root := sandbox(t)
 	archive := makeTar(t,
@@ -79,6 +84,8 @@ func TestExtractTarGoodArchive(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// END good OMIT
 
 // START attacks OMIT
 func TestExtractTarRejectsEscapes(t *testing.T) {
@@ -111,6 +118,7 @@ func TestExtractTarRejectsEscapes(t *testing.T) {
 
 // END attacks OMIT
 
+// START planted OMIT
 // TestExtractTarRefusesPlantedSymlink covers a symlink that already exists
 // in the destination (planted by an earlier step or another user): os.Root
 // refuses to follow it outside the root.
@@ -132,7 +140,8 @@ func TestExtractTarRefusesPlantedSymlink(t *testing.T) {
 
 func TestExtractTarLimits(t *testing.T) {
 	_, root := sandbox(t)
-	big := makeTar(t, entry{Name: "a", Body: "12345"}, entry{Name: "b", Body: "67890"})
+	big := makeTar(t,
+		entry{Name: "a", Body: "12345"}, entry{Name: "b", Body: "67890"})
 	err := fsx.ExtractTar(big, root, fsx.Limits{MaxBytes: 8})
 	if !errors.Is(err, fsx.ErrArchiveTooLarge) {
 		t.Fatalf("byte limit: err = %v, want ErrArchiveTooLarge", err)
@@ -145,3 +154,5 @@ func TestExtractTarLimits(t *testing.T) {
 		t.Fatalf("file limit: err = %v, want ErrArchiveTooLarge", err)
 	}
 }
+
+// END planted OMIT

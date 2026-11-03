@@ -1,0 +1,3 @@
+# sweep/internal/sweep_test
+# [sweep/internal/sweep_test]
+vet: internal/sweep/target_test.go:75:26: invalid operation: p != tc.want (slice can only be compared to nil)

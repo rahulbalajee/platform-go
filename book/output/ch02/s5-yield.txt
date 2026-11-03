@@ -1,0 +1,23 @@
+--- FAIL: TestBreakStopsFetchingPages (0.00s)
+panic: runtime error: range function continued iteration after function for loop body returned false [recovered, repanicked]
+
+goroutine 142 [running]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+platformapi_test.TestBreakStopsFetchingPages-range1(...)
+        ~/broken/list_test.go:47
+platformapi.(*Client).list[...].func1(...)
+        ~/broken/list.go:42
+platformapi_test.TestBreakStopsFetchingPages(0x…)
+        ~/broken/list_test.go:47 +0xac8
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    platformapi     1.311s
+ok      platformapi/platformapifake     1.954s
+FAIL

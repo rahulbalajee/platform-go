@@ -1,0 +1,10 @@
+    extract_test.go:111: extract "../escaped.txt": mkdirat ..: path escapes from parent
+    extract_test.go:111: extract "/tmp/escaped.txt": mkdirat /tmp: path escapes from parent
+    extract_test.go:111: extract "logs": symlink to "../" leaves the destination
+    extract_test.go:111: extract "logs": symlink to "/etc" leaves the destination
+    extract_test.go:111: extract "a/logs": symlink to "../b/../../etc" leaves the destination
+    extract_test.go:111: extract "a.txt": openat a.txt: file exists
+--- PASS: TestExtractTarRejectsEscapes (0.02s)
+    extract_test.go:135: extract "cache/escaped.txt": mkdirat cache: statat cache: path escapes from parent
+--- PASS: TestExtractTarRefusesPlantedSymlink (0.00s)
+ok      oskit/fsx       0.280s

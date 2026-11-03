@@ -1,0 +1,1 @@
+    retry_test.go:146: after rotation: GET /v1/services/checkout: 401 unauthenticated: invalid or expired token (request 01a1a183…)

@@ -1,0 +1,30 @@
+==================
+WARNING: DATA RACE
+Read at 0x… by goroutine 95:
+  deployctl/cmd/deployctl.rollout.func1.1()
+      ~/broken/cmd/deployctl/deploy.go:79 +0x10c
+
+Previous write at 0x… by goroutine 93:
+  deployctl/cmd/deployctl.rollout.func1.1()
+      ~/broken/cmd/deployctl/deploy.go:79 +0x11c
+
+Goroutine 95 (running) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+
+Goroutine 93 (finished) created at:
+  sync.(*WaitGroup).Go()
+      $GOROOT/src/sync/waitgroup.go:238 +0x6c
+==================
+--- FAIL: TestPartialFailureReportsEveryTarget (0.31s)
+    run_test.go:151: 3 targets deployed, want 2:
+        deploying checkout v1.4.2 to 4 targets
+          sa-east-1   failed   0s
+          us-east-1   deployed 0s
+          us-west-2   deployed 0s
+          eu-west-1   failed   310ms
+        2 deployed
+    testing.go:1867: race detected during execution of test
+FAIL
+FAIL    deployctl/cmd/deployctl 1.410s
+FAIL

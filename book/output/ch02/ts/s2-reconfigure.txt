@@ -1,0 +1,1 @@
+vet: ./reconfigure_test.go:12:43: cannot use client (variable of type *platformapi.Client) as *platformapi.config value in argument to platformapi.WithToken("other-token")

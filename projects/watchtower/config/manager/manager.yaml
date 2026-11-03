@@ -63,8 +63,6 @@ spec:
         args:
           - --leader-elect
           - --health-probe-bind-address=:8081
-          - --alert-backend=prometheus
-          - --max-concurrent-reconciles=16
         image: controller:latest
         name: manager
         ports:

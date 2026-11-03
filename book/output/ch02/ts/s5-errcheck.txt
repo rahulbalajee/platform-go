@@ -1,0 +1,1 @@
+list_test.go:47:2: Error return value of `client.ListDeployments` is not checked (errcheck)

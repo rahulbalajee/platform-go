@@ -1,0 +1,2 @@
+    --- FAIL: TestExtractTarRejectsEscapes/dot-dot (0.00s)
+        extract_test.go:109: extraction succeeded, want an error

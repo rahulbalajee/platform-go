@@ -1,0 +1,6 @@
+$ bin/lockdemo -pidfile -lock /tmp/lockdemo.pid -name F -hold 60s & sleep 1; kill -9 $!
+18:36:56.805 F: acquired lock (pid 54533), working for 1m0s
+Killed: 9               bin/lockdemo -pidfile -lock /tmp/lockdemo.pid -name F -hold 60s
+$ bin/lockdemo -pidfile -lock /tmp/lockdemo.pid -name G; echo "exit status $?"
+18:36:57.952 G: pid file exists (pid 54533): open /tmp/lockdemo.pid: file exists
+exit status 75

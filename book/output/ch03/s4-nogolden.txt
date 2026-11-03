@@ -1,0 +1,6 @@
+--- FAIL: TestReportGolden (0.00s)
+    --- FAIL: TestReportGolden/partial.text (0.00s)
+        clierr_test.go:118: open testdata/partial.text.golden: no such file or directory
+FAIL
+FAIL    deployctl/pkg/clierr    0.411s
+FAIL

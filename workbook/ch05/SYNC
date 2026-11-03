@@ -1,0 +1,57 @@
+# Chapter 5's last build step is the production code: pkg/fsx, pkg/procx,
+# pkg/sysinfo and the example programs under examples/ch05. The
+# book/scripts/check_workbook.py sync check keeps each pair below identical
+# apart from OMIT markers, blank lines and these import paths.
+@import oskit/fsx = github.com/rahulbalajee/platform-go/pkg/fsx
+@import oskit/procx = github.com/rahulbalajee/platform-go/pkg/procx
+@import oskit/sysinfo = github.com/rahulbalajee/platform-go/pkg/sysinfo
+
+workbook/ch05/step13/cmd/atomicput/main.go = examples/ch05/atomicput/main.go
+workbook/ch05/step13/cmd/limits/main.go = examples/ch05/limits/main.go
+workbook/ch05/step13/cmd/lockdemo/main.go = examples/ch05/lockdemo/main.go
+workbook/ch05/step13/cmd/loggen/copy_test.go = examples/ch05/loggen/copy_test.go
+workbook/ch05/step13/cmd/loggen/count.go = examples/ch05/loggen/count.go
+workbook/ch05/step13/cmd/loggen/gen.go = examples/ch05/loggen/gen.go
+workbook/ch05/step13/cmd/loggen/gen_test.go = examples/ch05/loggen/gen_test.go
+workbook/ch05/step13/cmd/loggen/main.go = examples/ch05/loggen/main.go
+workbook/ch05/step13/cmd/logscan/main.go = examples/ch05/logscan/main.go
+workbook/ch05/step13/cmd/logscan/naive.go = examples/ch05/logscan/naive.go
+workbook/ch05/step13/cmd/logscan/rss_darwin.go = examples/ch05/logscan/rss_darwin.go
+workbook/ch05/step13/cmd/logscan/rss_linux.go = examples/ch05/logscan/rss_linux.go
+workbook/ch05/step13/cmd/logscan/rss_other.go = examples/ch05/logscan/rss_other.go
+workbook/ch05/step13/cmd/logscan/scan.go = examples/ch05/logscan/scan.go
+workbook/ch05/step13/cmd/logscan/scan_test.go = examples/ch05/logscan/scan_test.go
+workbook/ch05/step13/cmd/logscan/stats.go = examples/ch05/logscan/stats.go
+workbook/ch05/step13/cmd/orphans/main.go = examples/ch05/orphans/main.go
+workbook/ch05/step13/cmd/reload/main.go = examples/ch05/reload/main.go
+workbook/ch05/step13/cmd/sigpipe/main.go = examples/ch05/sigpipe/main.go
+workbook/ch05/step13/cmd/torn/main.go = examples/ch05/torn/main.go
+workbook/ch05/step13/cmd/ttydemo/main.go = examples/ch05/ttydemo/main.go
+workbook/ch05/step13/cmd/ttydemo/term_darwin.go = examples/ch05/ttydemo/term_darwin.go
+workbook/ch05/step13/cmd/ttydemo/term_linux.go = examples/ch05/ttydemo/term_linux.go
+workbook/ch05/step13/cmd/ttydemo/term_other.go = examples/ch05/ttydemo/term_other.go
+workbook/ch05/step13/cmd/untar/main.go = examples/ch05/untar/main.go
+workbook/ch05/step13/cmd/zombies/main.go = examples/ch05/zombies/main.go
+workbook/ch05/step13/fsx/atomic.go = pkg/fsx/atomic.go
+workbook/ch05/step13/fsx/atomic_test.go = pkg/fsx/atomic_test.go
+workbook/ch05/step13/fsx/extract.go = pkg/fsx/extract.go
+workbook/ch05/step13/fsx/extract_test.go = pkg/fsx/extract_test.go
+workbook/ch05/step13/fsx/lock.go = pkg/fsx/lock.go
+workbook/ch05/step13/fsx/lock_other.go = pkg/fsx/lock_other.go
+workbook/ch05/step13/fsx/lock_test.go = pkg/fsx/lock_test.go
+workbook/ch05/step13/fsx/lock_unix.go = pkg/fsx/lock_unix.go
+workbook/ch05/step13/fsx/lock_windows.go = pkg/fsx/lock_windows.go
+workbook/ch05/step13/fsx/main_test.go = pkg/fsx/main_test.go
+workbook/ch05/step13/fsx/syncdir_unix.go = pkg/fsx/syncdir_unix.go
+workbook/ch05/step13/fsx/syncdir_windows.go = pkg/fsx/syncdir_windows.go
+workbook/ch05/step13/procx/group_other.go = pkg/procx/group_other.go
+workbook/ch05/step13/procx/group_unix.go = pkg/procx/group_unix.go
+workbook/ch05/step13/procx/procx.go = pkg/procx/procx.go
+workbook/ch05/step13/procx/procx_test.go = pkg/procx/procx_test.go
+workbook/ch05/step13/scratch.Dockerfile = examples/ch05/scratch.Dockerfile
+workbook/ch05/step13/sysinfo/cgroup.go = pkg/sysinfo/cgroup.go
+workbook/ch05/step13/sysinfo/proc.go = pkg/sysinfo/proc.go
+workbook/ch05/step13/sysinfo/rlimit_other.go = pkg/sysinfo/rlimit_other.go
+workbook/ch05/step13/sysinfo/rlimit_unix.go = pkg/sysinfo/rlimit_unix.go
+workbook/ch05/step13/sysinfo/sysinfo_linux_test.go = pkg/sysinfo/sysinfo_linux_test.go
+workbook/ch05/step13/sysinfo/sysinfo_test.go = pkg/sysinfo/sysinfo_test.go

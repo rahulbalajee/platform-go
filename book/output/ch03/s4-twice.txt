@@ -1,0 +1,8 @@
+invalid value "many" for flag -parallel: parse error
+Usage of deploy:
+  -only string
+        comma-separated subset of targets
+  -parallel int
+        targets deployed at once (default 4)
+deployctl: invalid value "many" for flag -parallel: parse error
+  hint: run "deployctl deploy -h" for usage

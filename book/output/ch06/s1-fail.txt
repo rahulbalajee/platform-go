@@ -1,0 +1,15 @@
+--- FAIL: TestParseTargets (0.00s)
+    --- FAIL: TestParseTargets/tcp/ipv6_literal (0.00s)
+        target_test.go:76: ParseTargets("tcp://[::1]:5432") mismatch (-want +got):
+              []sweep_test.parsed{
+                {
+                        Index: 0,
+                        Kind:  "tcp",
+            -           Host:  "::1",
+            +           Host:  "[::1]:5432",
+                        Raw:   "tcp://[::1]:5432",
+                },
+              }
+FAIL
+FAIL    sweep/internal/sweep    0.483s
+FAIL

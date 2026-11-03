@@ -1,0 +1,5 @@
+ok      platformapi     1.225s
+ok      platformapi/examples/promote    1.707s
+ok      platformapi/examples/tour       4.526s
+ok      platformapi/platformapifake     3.190s
+?       platformapi/retry       [no test files]

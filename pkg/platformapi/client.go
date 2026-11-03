@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package platformapi
 
 import (
@@ -17,6 +19,8 @@ import (
 // which SDK versions are still in use before removing anything.
 const sdkVersion = "1.0.0"
 
+// END imports OMIT
+
 // START client OMIT
 
 // Client calls the platform API. Create it with New; the zero value is not
@@ -34,9 +38,9 @@ type config struct {
 	tokens    TokenSource // nil: send no Authorization header
 	limiter   Limiter     // nil: no client-side rate limit
 	userAgent string
-	retry     retry.Policy
 	log       *slog.Logger
 	poll      time.Duration
+	retry     retry.Policy
 }
 
 // END client OMIT
@@ -53,10 +57,10 @@ type Option func(*config) error
 func New(baseURL string, opts ...Option) (*Client, error) {
 	cfg := config{
 		hc:        &http.Client{}, // no Client.Timeout: contexts own deadlines
-		userAgent: "platformapi-go/" + sdkVersion,
-		retry:     retry.Policy{MaxAttempts: 4, BaseDelay: 200 * time.Millisecond},
+		userAgent: "github.com/rahulbalajee/platform-go/pkg/platformapi-go/" + sdkVersion,
 		log:       slog.New(slog.DiscardHandler),
 		poll:      2 * time.Second,
+		retry:     retry.Policy{MaxAttempts: 4, BaseDelay: 200 * time.Millisecond},
 	}
 	var errs []error
 	base, err := parseBaseURL(baseURL)
@@ -69,7 +73,7 @@ func New(baseURL string, opts ...Option) (*Client, error) {
 		}
 	}
 	if err := errors.Join(errs...); err != nil {
-		return nil, fmt.Errorf("platformapi.New: %w", err)
+		return nil, fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi.New: %w", err)
 	}
 	return &Client{base: base, config: cfg}, nil
 }
@@ -121,6 +125,8 @@ func WithUserAgent(product string) Option {
 
 // END options OMIT
 
+// START tokenoptions OMIT
+
 // WithTokenSource authenticates every request with a bearer token from ts.
 func WithTokenSource(ts TokenSource) Option {
 	return func(c *config) error {
@@ -144,6 +150,42 @@ func WithToken(token string) Option {
 	}
 }
 
+// END tokenoptions OMIT
+
+// START logger OMIT
+
+// WithLogger logs every request at debug level and every retry at warn
+// level. The default discards logs.
+func WithLogger(l *slog.Logger) Option {
+	return func(c *config) error {
+		if l == nil {
+			return errors.New("WithLogger: nil *slog.Logger")
+		}
+		c.log = l
+		return nil
+	}
+}
+
+// END logger OMIT
+
+// START poll OMIT
+
+// WithPollInterval sets how often Poll and Wait fetch an operation. The
+// default is 2s.
+func WithPollInterval(d time.Duration) Option {
+	return func(c *config) error {
+		if d <= 0 {
+			return fmt.Errorf("WithPollInterval: interval %v is not positive", d)
+		}
+		c.poll = d
+		return nil
+	}
+}
+
+// END poll OMIT
+
+// START withretry OMIT
+
 // WithRetry sets the retry policy for transient failures (network errors,
 // 429, 502, 503 and 504). The default is 4 attempts with a 200ms base
 // delay. Use retry.Policy{MaxAttempts: 1} to disable retries. The client
@@ -158,29 +200,7 @@ func WithRetry(p retry.Policy) Option {
 	}
 }
 
-// WithLogger logs every request at debug level and every retry at warn
-// level. The default discards logs.
-func WithLogger(l *slog.Logger) Option {
-	return func(c *config) error {
-		if l == nil {
-			return errors.New("WithLogger: nil *slog.Logger")
-		}
-		c.log = l
-		return nil
-	}
-}
-
-// WithPollInterval sets how often Poll and Wait fetch an operation. The
-// default is 2s.
-func WithPollInterval(d time.Duration) Option {
-	return func(c *config) error {
-		if d <= 0 {
-			return fmt.Errorf("WithPollInterval: interval must be positive, got %v", d)
-		}
-		c.poll = d
-		return nil
-	}
-}
+// END withretry OMIT
 
 // START limiter OMIT
 
@@ -190,8 +210,6 @@ type Limiter interface {
 	// Wait blocks until the next request may proceed or ctx is done.
 	Wait(ctx context.Context) error
 }
-
-// END limiter OMIT
 
 // WithLimiter makes the client wait on l before every attempt, including
 // retries, so retries spend from the same budget as first attempts.
@@ -204,3 +222,5 @@ func WithLimiter(l Limiter) Option {
 		return nil
 	}
 }
+
+// END limiter OMIT

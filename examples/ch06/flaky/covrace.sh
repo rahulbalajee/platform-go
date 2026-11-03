@@ -3,7 +3,7 @@
 # coverage-instrumented processes that exit at the same moment into one
 # fresh GOCOVERDIR can collide on a temporary file name. Starts eight at a
 # time until one reports the failed write, then shows what was written.
-# Usage: examples/ch06/flaky/covrace.sh   (from the repository root)
+# Run it from the root of the module that holds cmd/sweep.
 set -euo pipefail
 bin=$(mktemp -d)
 dir=$(mktemp -d)
@@ -22,7 +22,7 @@ for round in $(seq 1 500); do
     sed -E -e "s#$dir#\$GOCOVERDIR#g" -e 's/[0-9a-f]{32}/<hash>/g' \
       "$dir.err" | fold -s -w 88
     echo "files written:"
-    ls "$dir" | sed -E 's/[0-9a-f]{32}/<hash>/' 
+    ls "$dir" | sed -E 's/[0-9a-f]{32}/<hash>/'
     exit 0
   fi
 done

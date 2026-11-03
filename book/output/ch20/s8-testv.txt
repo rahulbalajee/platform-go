@@ -1,0 +1,3 @@
+--- PASS: TestReconcileKeepsProbeCadence (2.03s)
+PASS
+ok      watchtower/internal/controller  5.778s

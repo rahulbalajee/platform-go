@@ -1,0 +1,25 @@
+2026/11/03 18:27:58 http: TLS handshake error from 127.0.0.1:PORT: remote error: tls: bad certificate
+--- FAIL: TestParseTargets (0.00s)
+    --- FAIL: TestParseTargets/http/path_and_query (0.00s)
+    --- FAIL: TestParseTargets/inventory/comments,_blanks_and_indentation (0.00s)
+panic: testing: test using t.Setenv, t.Chdir, or cryptotest.SetGlobalRandom can not use t.Parallel [recovered, repanicked]
+
+goroutine 351 [running]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+testing.(*T).checkParallel(...)
+        $GOROOT/src/testing/testing.go:1994
+testing.(*T).Setenv(0x…?, {0x…?, 0x…?}, {0x…?, 0x…?})
+        $GOROOT/src/testing/testing.go:2008 +0x74
+sweep/internal/sweep_test.TestParseTargets.func1(0x…)
+        ~/broken/internal/sweep/target_test.go:71 +0x4c
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 350
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    sweep/internal/sweep    0.586s
+FAIL

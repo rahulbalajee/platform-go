@@ -1,3 +1,5 @@
+// START resources OMIT
+
 package platformapi
 
 import "time"
@@ -18,10 +20,7 @@ type Service struct {
 	Replicas int    `json:"replicas"`
 }
 
-// ServiceFilter selects services. The zero value selects all of them.
-type ServiceFilter struct {
-	Team string // only services owned by this team
-}
+// END resources OMIT
 
 // START state OMIT
 
@@ -45,6 +44,8 @@ func (s DeploymentState) Done() bool {
 
 // END state OMIT
 
+// START deployment OMIT
+
 // Deployment is one rollout of a service version to an environment.
 type Deployment struct {
 	ID              string          `json:"id"`
@@ -58,6 +59,10 @@ type Deployment struct {
 	CreatedAt       time.Time       `json:"created_at"`
 }
 
+// END deployment OMIT
+
+// START create OMIT
+
 // CreateDeploymentRequest asks for version of Service to be rolled out to
 // Environment. Service, Environment and Version are required.
 type CreateDeploymentRequest struct {
@@ -67,7 +72,14 @@ type CreateDeploymentRequest struct {
 	Reason      string `json:"reason,omitempty"` // shown in the audit log
 }
 
+// END create OMIT
+
 // START filter OMIT
+
+// ServiceFilter selects services. The zero value selects all of them.
+type ServiceFilter struct {
+	Team string // only services owned by this team
+}
 
 // DeploymentFilter selects deployments. The zero value selects all of
 // them; set fields to narrow the result.

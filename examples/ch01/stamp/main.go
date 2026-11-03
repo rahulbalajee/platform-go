@@ -1,5 +1,7 @@
-// Command stamp prints how it was built. It is the smallest real user of
-// pkg/buildinfo and the subject of the build-stamping demos in Chapter 1.
+// START head OMIT
+
+// Command stamp prints how it was built. It is the smallest real user of the
+// buildinfo package, and Chapter 1's labs build it three times.
 //
 //	stamp -version          one line for humans
 //	stamp -version -json    the same information as JSON
@@ -9,6 +11,9 @@
 // usage error.
 package main
 
+// END head OMIT
+
+// START imports OMIT
 import (
 	"errors"
 	"flag"
@@ -24,6 +29,9 @@ func main() {
 	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr))
 }
 
+// END imports OMIT
+
+// START run OMIT
 func run(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("stamp", flag.ContinueOnError)
 	fs.SetOutput(stderr)
@@ -35,21 +43,26 @@ func run(args []string, stdout, stderr io.Writer) int {
 		}
 		return 2
 	}
-
-	info := buildinfo.Get()
 	if *showVersion {
 		format := "text"
 		if *asJSON {
 			format = "json"
 		}
-		if err := info.Write(stdout, format); err != nil {
+		if err := buildinfo.Get().Write(stdout, format); err != nil {
 			fmt.Fprintln(stderr, "stamp:", err)
 			return 1
 		}
 		return 0
 	}
+	return printSettings(stdout, stderr)
+}
 
-	// Without -version, show the raw material: what the toolchain embedded.
+// END run OMIT
+
+// START settings OMIT
+
+// printSettings shows the raw material: what the toolchain embedded.
+func printSettings(stdout, stderr io.Writer) int {
 	bi, ok := debug.ReadBuildInfo()
 	if !ok {
 		fmt.Fprintln(stderr, "stamp: binary has no build information")
@@ -62,3 +75,5 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 	return 0
 }
+
+// END settings OMIT

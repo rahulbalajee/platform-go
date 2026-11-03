@@ -1,0 +1,3 @@
+# sweep/internal/sweep_test
+# [sweep/internal/sweep_test]
+vet: internal/sweep/fake_test.go:99:57: cannot use *fake (variable of struct type scriptedProber) as sweep.Prober value in map literal: scriptedProber does not implement sweep.Prober (method Probe has pointer receiver)

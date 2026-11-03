@@ -1,3 +1,5 @@
+// START types OMIT
+
 // Package probe performs single HTTP health probes. It knows nothing about
 // Kubernetes, which keeps it trivially testable and reusable.
 package probe
@@ -44,7 +46,10 @@ type ProberFunc func(ctx context.Context, s Spec) Result
 // Probe implements Prober.
 func (f ProberFunc) Probe(ctx context.Context, s Spec) Result { return f(ctx, s) }
 
+// END types OMIT
+
 // START http OMIT
+
 // HTTP probes with GET requests.
 type HTTP struct {
 	Client    *http.Client // no Client.Timeout: Spec.Timeout bounds each probe
@@ -86,6 +91,7 @@ func (p HTTP) Probe(ctx context.Context, s Spec) Result {
 
 // END http OMIT
 
+// START helpers OMIT
 func healthyCode(code int, want []int32) bool {
 	if len(want) == 0 {
 		return code >= 200 && code < 400
@@ -106,3 +112,5 @@ func describe(err error, timeout time.Duration) string {
 	}
 	return err.Error()
 }
+
+// END helpers OMIT

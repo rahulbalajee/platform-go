@@ -1,0 +1,2 @@
+2026/11/03 18:35:31 container logs (wait until ready: container exited with code 255):
+exec /fleet: exec format error

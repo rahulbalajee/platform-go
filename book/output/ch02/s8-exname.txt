@@ -1,0 +1,1 @@
+example_test.go:57:1: ExampleClient_Deployments refers to unknown field or method: Client.Deployments

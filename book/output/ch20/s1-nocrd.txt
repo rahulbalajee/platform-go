@@ -1,0 +1,3 @@
+starting envtest: unable to install CRDs onto control plane: unable to read CRD files: stat ../../config/crd/bases: no such file or directory
+FAIL    watchtower/internal/controller  2.213s
+FAIL

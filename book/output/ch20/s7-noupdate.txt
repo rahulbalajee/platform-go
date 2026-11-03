@@ -1,0 +1,5 @@
+--- FAIL: TestDatadogFinalizer (0.02s)
+    healthcheck_controller_test.go:387: HealthCheck still present after finalizer removal: <nil>
+FAIL
+FAIL    watchtower/internal/controller  18.937s
+FAIL

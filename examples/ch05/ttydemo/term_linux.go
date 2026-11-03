@@ -10,6 +10,7 @@ import (
 // terminal (or pseudo-terminal) has them; for a pipe, file or /dev/null
 // the ioctl fails with ENOTTY.
 func isTerminal(f *os.File) bool {
-	_, err := unix.IoctlGetTermios(int(f.Fd()), unix.TCGETS) //nolint:gosec // fd fits in int
+	fd := int(f.Fd()) //nolint:gosec // descriptors fit in an int
+	_, err := unix.IoctlGetTermios(fd, unix.TCGETS)
 	return err == nil
 }

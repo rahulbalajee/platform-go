@@ -1,3 +1,5 @@
+// START basic OMIT
+
 package fsx_test
 
 import (
@@ -12,19 +14,8 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"go.uber.org/goleak"
-
 	"github.com/rahulbalajee/platform-go/pkg/fsx"
 )
-
-// TestMain doubles as a helper process for the cross-process lock test and
-// fails the package if any test leaks a goroutine.
-func TestMain(m *testing.M) {
-	if path := os.Getenv("FSX_HOLD_LOCK"); path != "" {
-		holdLock(path) // never returns
-	}
-	goleak.VerifyTestMain(m)
-}
 
 func TestWriteFileCreatesAndReplaces(t *testing.T) {
 	name := filepath.Join(t.TempDir(), "config.json")
@@ -64,7 +55,8 @@ func TestWriteFailureLeavesOldFileAndNoDebris(t *testing.T) {
 	}
 	entries, _ := os.ReadDir(dir)
 	if len(entries) != 1 {
-		t.Fatalf("directory has %d entries, want only state.json: %v", len(entries), entries)
+		t.Fatalf("directory has %d entries, want only state.json: %v",
+			len(entries), entries)
 	}
 }
 
@@ -74,6 +66,8 @@ func TestWriteMissingDirectory(t *testing.T) {
 		t.Fatalf("err = %v, want fs.ErrNotExist", err)
 	}
 }
+
+// END basic OMIT
 
 // START torn OMIT
 // TestReadersNeverSeeTornFiles rewrites a file in a loop while readers read

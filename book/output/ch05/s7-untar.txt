@@ -1,0 +1,17 @@
+$ ../bin/untar -make-evil evil.tar
+$ ../bin/untar -naive evil.tar out
+wrote out/README.md
+wrote escaped.txt
+wrote out/logs
+wrote out/logs/via-symlink.txt
+$ find . -type f | sort
+./escaped.txt
+./evil.tar
+./out/README.md
+./via-symlink.txt
+$ ../bin/untar evil.tar out; echo "exit status $?"
+untar: extract "../escaped.txt": mkdirat ..: path escapes from parent
+exit status 1
+$ find . -type f | sort
+./evil.tar
+./out/README.md

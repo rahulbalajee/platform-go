@@ -1,0 +1,33 @@
+# Inventory mistakes are reported together, with line numbers, before any
+# target is contacted.
+exits 2 sweep bad.txt
+stderr 'line 2: "ftp://files.example.com": unsupported scheme "ftp"'
+stderr 'line 3: "tcp://db.example.com": tcp targets need host:port'
+stderr 'line 5: "tcp://cache.example.com:100000": invalid port "100000"'
+! stdout .
+
+# A missing file is a usage error too.
+exits 2 sweep nope.txt
+stderr 'open nope.txt: no such file or directory'
+
+# With no file arguments, sweep reads the inventory from stdin.
+envsubst a.txt b.txt
+stdin a.txt
+exec sweep -o jsonl
+stdout -count=1 '"status":"up"'
+
+# Several files are read in order, as one inventory.
+exec sweep -o json a.txt b.txt
+stdout '"total": 2'
+stdout '"index": 1,\s+"target": "tcp://127\.0\.0\.1:\d+"'
+
+-- bad.txt --
+https://ok.example.com/healthz
+ftp://files.example.com
+tcp://db.example.com
+# comments are fine
+tcp://cache.example.com:100000
+-- a.txt --
+$FLEET/ok
+-- b.txt --
+tcp://$FLEET_ADDR

@@ -1,0 +1,8 @@
+=== RUN   TestEveryCallHasARequestID
+--- PASS: TestEveryCallHasARequestID (0.01s)
+=== RUN   TestCancelledContextStopsTheCall
+--- PASS: TestCancelledContextStopsTheCall (0.00s)
+=== RUN   TestIdempotencyKeyMakesCreateRepeatable
+--- PASS: TestIdempotencyKeyMakesCreateRepeatable (0.00s)
+PASS
+ok      platformapi     0.929s

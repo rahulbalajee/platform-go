@@ -1,0 +1,5 @@
+--- FAIL: TestTryLockIsExclusiveWithinOneProcess (0.00s)
+    lock_test.go:43: second TryLock: err = <nil>, want ErrLocked
+FAIL
+FAIL    oskit/fsx       1.749s
+FAIL

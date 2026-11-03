@@ -1,0 +1,2 @@
+ok      platformapi     1.420s
+ok      platformapi/platformapifake     0.629s

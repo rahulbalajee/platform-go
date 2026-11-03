@@ -1,0 +1,1 @@
+pkg/clierr/program.go:214:12: G303: File creation in shared tmp directory without using ioutil.Tempfile (gosec)

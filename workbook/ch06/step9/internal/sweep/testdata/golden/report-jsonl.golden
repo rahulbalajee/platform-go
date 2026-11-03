@@ -1,0 +1,5 @@
+{"index":2,"target":"tcp://db.test:5432","kind":"tcp","status":"up","attempts":1,"latency_ns":3000000,"detail":"connected to 10.0.3.7:5432"}
+{"index":0,"target":"https://api.test/healthz","kind":"http","status":"up","attempts":1,"latency_ns":42000000,"detail":"200 OK"}
+{"index":4,"target":"dns://gone.test","kind":"dns","status":"down","attempts":1,"latency_ns":12000000,"error":"lookup gone.test: no such host"}
+{"index":1,"target":"https://web.test/healthz","kind":"http","status":"down","attempts":3,"latency_ns":2000000000,"detail":"503 Service Unavailable","error":"unhealthy status 503 Service Unavailable (after 3 attempts)"}
+{"index":3,"target":"tls://legacy.test:443","kind":"tls","status":"down","attempts":1,"latency_ns":81000000,"detail":"cert \"legacy.test\" expires in 6d","error":"certificate expires in 6d (minimum 14d)"}

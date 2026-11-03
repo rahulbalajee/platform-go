@@ -1,0 +1,5 @@
+18:35:05 Building image <id>:<id>
+18:35:07 Built image <id>:<id>
+18:35:07 Creating container for image <id>:<id>
+18:35:07 Creating container for image testcontainers/ryuk:0.14.0
+18:35:09 Creating container for image postgres:17-alpine

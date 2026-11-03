@@ -1,0 +1,6 @@
+envtest binaries not found (set KUBEBUILDER_ASSETS or run `make test`); envtest tests will be skipped
+=== RUN   TestHealthCheckKindIsServed
+    healthcheck_controller_test.go:20: envtest not available: set KUBEBUILDER_ASSETS or run `make test`
+--- SKIP: TestHealthCheckKindIsServed (0.00s)
+PASS
+ok      watchtower/internal/controller  0.702s

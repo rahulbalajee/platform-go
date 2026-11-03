@@ -1,0 +1,4 @@
+script-exit_status
+script-help
+script-interrupt
+script-inventory

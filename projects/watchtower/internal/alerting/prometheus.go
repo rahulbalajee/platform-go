@@ -1,3 +1,5 @@
+// START head OMIT
+
 package alerting
 
 import (
@@ -40,63 +42,19 @@ type PrometheusRules struct {
 	Labels map[string]string
 }
 
-func (p *PrometheusRules) Name() string   { return "prometheus" }
+// Name implements Backend.
+func (p *PrometheusRules) Name() string { return "prometheus" }
+
+// External implements Backend: rules live in the cluster.
 func (p *PrometheusRules) External() bool { return false }
 
 // RuleName is the PrometheusRule name for hc.
 func RuleName(hc *v1alpha1.HealthCheck) string { return "watchtower-" + hc.Name }
 
-// START ensure OMIT
-// Ensure applies the rule only if it is missing or differs from the desired
-// state. The read comes from the informer cache, so steady state costs no
-// API calls. Because the controller watches the rules it owns, a rule
-// deleted or edited by hand is restored on the next reconcile.
-func (p *PrometheusRules) Ensure(
-	ctx context.Context, hc *v1alpha1.HealthCheck,
-) (string, error) {
-	desired, err := p.Render(hc)
-	if err != nil {
-		return "", err
-	}
-	current := &unstructured.Unstructured{}
-	current.SetGroupVersionKind(PrometheusRuleGVK)
-	err = p.Client.Get(ctx, client.ObjectKeyFromObject(desired), current)
-	switch {
-	case meta.IsNoMatchError(err):
-		return "", fmt.Errorf("%w: PrometheusRule CRD (monitoring.coreos.com/v1) "+
-			"is not installed", ErrUnavailable)
-	case err == nil && upToDate(current, desired):
-		return desired.GetName(), nil
-	case err != nil && !apierrors.IsNotFound(err):
-		return "", err
-	}
-	// Server-side apply: we declare the fields we own; other managers'
-	// fields (labels added by a policy engine, say) are left alone.
-	apply := client.ApplyConfigurationFromUnstructured(desired)
-	if err := p.Client.Apply(ctx, apply, client.FieldOwner(FieldOwner),
-		client.ForceOwnership); err != nil {
-		return "", fmt.Errorf("applying PrometheusRule: %w", err)
-	}
-	return desired.GetName(), nil
-}
-
-// END ensure OMIT
-
-// Remove deletes the rule. Owner references would do this on HealthCheck
-// deletion; Remove covers the case where alerting is turned off in the spec.
-func (p *PrometheusRules) Remove(ctx context.Context, hc *v1alpha1.HealthCheck) error {
-	rule := &unstructured.Unstructured{}
-	rule.SetGroupVersionKind(PrometheusRuleGVK)
-	rule.SetNamespace(hc.Namespace)
-	rule.SetName(RuleName(hc))
-	err := p.Client.Delete(ctx, rule)
-	if apierrors.IsNotFound(err) || meta.IsNoMatchError(err) {
-		return nil
-	}
-	return err
-}
+// END head OMIT
 
 // START render OMIT
+
 // Render builds the desired PrometheusRule for hc.
 func (p *PrometheusRules) Render(
 	hc *v1alpha1.HealthCheck,
@@ -148,7 +106,54 @@ func (p *PrometheusRules) Render(
 	return u, nil
 }
 
+// promDuration formats d the way Prometheus writes durations ("2m", "90s").
+func promDuration(d time.Duration) string {
+	switch {
+	case d%time.Hour == 0 && d >= time.Hour:
+		return fmt.Sprintf("%dh", d/time.Hour)
+	case d%time.Minute == 0 && d >= time.Minute:
+		return fmt.Sprintf("%dm", d/time.Minute)
+	default:
+		return fmt.Sprintf("%ds", d/time.Second)
+	}
+}
+
 // END render OMIT
+
+// START ensure OMIT
+
+// Ensure applies the rule only if it is missing or differs from the desired
+// state. The read comes from the informer cache, so steady state costs no
+// API calls. Because the controller watches the rules it owns, a rule
+// deleted or edited by hand is restored on the next reconcile.
+func (p *PrometheusRules) Ensure(
+	ctx context.Context, hc *v1alpha1.HealthCheck,
+) (string, error) {
+	desired, err := p.Render(hc)
+	if err != nil {
+		return "", err
+	}
+	current := &unstructured.Unstructured{}
+	current.SetGroupVersionKind(PrometheusRuleGVK)
+	err = p.Client.Get(ctx, client.ObjectKeyFromObject(desired), current)
+	switch {
+	case meta.IsNoMatchError(err):
+		return "", fmt.Errorf("%w: PrometheusRule CRD (monitoring.coreos.com/v1) "+
+			"is not installed", ErrUnavailable)
+	case err == nil && upToDate(current, desired):
+		return desired.GetName(), nil
+	case err != nil && !apierrors.IsNotFound(err):
+		return "", err
+	}
+	// Server-side apply: we declare the fields we own; other managers'
+	// fields (labels added by a policy engine, say) are left alone.
+	apply := client.ApplyConfigurationFromUnstructured(desired)
+	if err := p.Client.Apply(ctx, apply, client.FieldOwner(FieldOwner),
+		client.ForceOwnership); err != nil {
+		return "", fmt.Errorf("applying PrometheusRule: %w", err)
+	}
+	return desired.GetName(), nil
+}
 
 // upToDate compares only what we manage: the spec, our labels, and the
 // controller reference (a rule left behind by a deleted-and-recreated
@@ -166,14 +171,24 @@ func upToDate(current, desired *unstructured.Unstructured) bool {
 	return equality.Semantic.DeepEqual(current.Object["spec"], desired.Object["spec"])
 }
 
-// promDuration formats d the way Prometheus writes durations ("2m", "90s").
-func promDuration(d time.Duration) string {
-	switch {
-	case d%time.Hour == 0 && d >= time.Hour:
-		return fmt.Sprintf("%dh", d/time.Hour)
-	case d%time.Minute == 0 && d >= time.Minute:
-		return fmt.Sprintf("%dm", d/time.Minute)
-	default:
-		return fmt.Sprintf("%ds", d/time.Second)
+// END ensure OMIT
+
+// START remove OMIT
+
+// Remove deletes the rule. Owner references would do this on HealthCheck
+// deletion; Remove covers the case where alerting is turned off in the spec.
+func (p *PrometheusRules) Remove(
+	ctx context.Context, hc *v1alpha1.HealthCheck,
+) error {
+	rule := &unstructured.Unstructured{}
+	rule.SetGroupVersionKind(PrometheusRuleGVK)
+	rule.SetNamespace(hc.Namespace)
+	rule.SetName(RuleName(hc))
+	err := p.Client.Delete(ctx, rule)
+	if apierrors.IsNotFound(err) || meta.IsNoMatchError(err) {
+		return nil
 	}
+	return err
 }
+
+// END remove OMIT

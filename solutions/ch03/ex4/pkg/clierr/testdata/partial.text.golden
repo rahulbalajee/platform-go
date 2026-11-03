@@ -1,0 +1,4 @@
+deployctl: deploy of v1.4.2 failed on 2 of 3 targets [DPL-PARTIAL]
+  - eu-west-1: health check failing (HTTP 503)
+  - sa-east-1: deploy already in progress
+  hint: re-run with -only eu-west-1,sa-east-1

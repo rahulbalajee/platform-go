@@ -1,18 +1,11 @@
-// Command fakeapi serves the fake deployment API on a local address so the
-// deployctl example can be run by hand:
-//
-//	go run ./examples/ch03/fakeapi/cmd/fakeapi -addr 127.0.0.1:8787
+// Command fakeapi serves the fake deployment API on a local address, so
+// deployctl can be run by hand against it. It logs every request it gets.
 package main
 
 import (
-	"context"
-	"errors"
 	"flag"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/rahulbalajee/platform-go/examples/ch03/fakeapi"
@@ -21,31 +14,18 @@ import (
 func main() {
 	addr := flag.String("addr", "127.0.0.1:8787", "listen address")
 	flag.Parse()
-	if err := serve(*addr); err != nil {
-		log.Print(err)
-		os.Exit(1)
-	}
-}
+	log.SetFlags(log.Ltime | log.Lmicroseconds)
 
-func serve(addr string) error {
-	ctx, stop := signal.NotifyContext(context.Background(),
-		syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
+	api := fakeapi.New(fakeapi.Options{})
 	srv := &http.Server{
-		Addr:              addr,
-		Handler:           fakeapi.New(fakeapi.Options{}),
+		Addr: *addr,
+		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// %q escapes control characters, so a path can't forge a line.
+			log.Printf("%s %q", r.Method, r.URL.Path) //nolint:gosec // see above
+			api.ServeHTTP(w, r)
+		}),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
-	go func() {
-		<-ctx.Done()
-		shutdown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		_ = srv.Shutdown(shutdown)
-	}()
-	log.Printf("fake deploy API on http://%s", addr)
-	if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		return err
-	}
-	return nil
+	log.Printf("fake deploy API on http://%s", *addr)
+	log.Fatal(srv.ListenAndServe())
 }

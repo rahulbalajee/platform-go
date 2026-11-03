@@ -1,0 +1,9 @@
+=== RUN   TestNewReportsEveryProblem
+    options_test.go:27: platformapi.New: base URL "ftp://platform.internal": scheme 
+must be http or https
+        WithUserAgent: invalid product ""
+        WithToken: empty token
+        WithHTTPClient: nil *http.Client
+--- PASS: TestNewReportsEveryProblem (0.00s)
+PASS
+ok      platformapi     0.456s

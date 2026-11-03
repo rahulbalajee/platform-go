@@ -1,0 +1,9 @@
+--- FAIL: TestGetDeploymentDecodesEveryField (0.00s)
+    client_test.go:93: GetDeployment(d-2) =
+        {ID:d-2 Service:checkout Environment:staging Version:v1.3.0 State:succeeded Replicas:4 UpdatedReplicas:0 Reason: CreatedAt:2026-09-01 10:00:00 +0000 UTC}
+        want
+        {ID:d-2 Service:checkout Environment:staging Version:v1.3.0 State:succeeded Replicas:4 UpdatedReplicas:4 Reason: CreatedAt:2026-09-01 10:00:00 +0000 UTC}
+FAIL
+FAIL    platformapi     0.667s
+?       platformapi/platformapifake     [no test files]
+FAIL

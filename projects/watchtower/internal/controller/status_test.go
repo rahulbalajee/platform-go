@@ -1,3 +1,5 @@
+// START head OMIT
+
 package controller
 
 import (
@@ -10,7 +12,10 @@ import (
 	"github.com/rahulbalajee/platform-go/projects/watchtower/internal/probe"
 )
 
+// END head OMIT
+
 // START statetest OMIT
+
 // TestApplyProbeStateMachine feeds a sequence of probe results through
 // applyProbe and checks the condition, counter and events after each step.
 func TestApplyProbeStateMachine(t *testing.T) {
@@ -57,6 +62,10 @@ func TestApplyProbeStateMachine(t *testing.T) {
 
 // END statetest OMIT
 
+// START saturated OMIT
+
+// TestSaturatedFailureCausesNoStatusChange: a long outage must not rewrite
+// status on every probe.
 func TestSaturatedFailureCausesNoStatusChange(t *testing.T) {
 	hc := &v1alpha1.HealthCheck{Spec: v1alpha1.HealthCheckSpec{FailureThreshold: 2}}
 	bad := probe.Result{Message: "timed out after 5s"}
@@ -65,13 +74,13 @@ func TestSaturatedFailureCausesNoStatusChange(t *testing.T) {
 	before := hc.Status.DeepCopy()
 	applyProbe(hc, bad) // the outage continues
 	if !equalStatus(before, &hc.Status) {
-		t.Fatalf("status changed during a steady outage:\n%+v\n%+v", before, hc.Status)
+		t.Fatalf("status changed in a steady outage:\n%+v\n%+v", before, hc.Status)
 	}
 }
 
 func equalStatus(a, b *v1alpha1.HealthCheckStatus) bool {
-	if a.ConsecutiveFailures != b.ConsecutiveFailures || a.LastFailure != b.LastFailure ||
-		len(a.Conditions) != len(b.Conditions) {
+	if a.ConsecutiveFailures != b.ConsecutiveFailures ||
+		a.LastFailure != b.LastFailure || len(a.Conditions) != len(b.Conditions) {
 		return false
 	}
 	for i := range a.Conditions {
@@ -83,3 +92,5 @@ func equalStatus(a, b *v1alpha1.HealthCheckStatus) bool {
 	}
 	return true
 }
+
+// END saturated OMIT

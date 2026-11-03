@@ -1,0 +1,1 @@
+¹ need >= 6 samples for confidence interval at level 0.95

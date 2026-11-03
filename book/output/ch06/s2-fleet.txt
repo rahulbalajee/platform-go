@@ -1,0 +1,8 @@
+=== RUN   TestFleetBehaviours
+--- PASS: TestFleetBehaviours (0.00s)
+=== RUN   TestWaitForUnblocksOnRequest
+--- PASS: TestWaitForUnblocksOnRequest (0.00s)
+=== RUN   TestWaitForHonoursContext
+--- PASS: TestWaitForHonoursContext (0.00s)
+PASS
+ok      sweep/internal/sweep/sweeptest  0.468s

@@ -1,0 +1,15 @@
+?       oskit/cmd/atomicput     [no test files]
+?       oskit/cmd/limits        [no test files]
+?       oskit/cmd/lockdemo      [no test files]
+ok      oskit/cmd/loggen        (cached)
+ok      oskit/cmd/logscan       (cached)
+?       oskit/cmd/orphans       [no test files]
+?       oskit/cmd/reload        [no test files]
+?       oskit/cmd/sigpipe       [no test files]
+?       oskit/cmd/torn  [no test files]
+?       oskit/cmd/ttydemo       [no test files]
+?       oskit/cmd/untar [no test files]
+?       oskit/cmd/zombies       [no test files]
+ok      oskit/fsx       (cached)
+ok      oskit/procx     (cached)
+ok      oskit/sysinfo   0.557s

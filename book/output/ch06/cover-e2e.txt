@@ -1,1 +1,0 @@
-ok      examples/ch06/sweepscript       1.478s

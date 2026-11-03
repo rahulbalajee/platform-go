@@ -1,0 +1,1 @@
+cmd/stamp/main.go:62:30: fmt.Fprintf format %s reads arg #2, but call has 1 arg

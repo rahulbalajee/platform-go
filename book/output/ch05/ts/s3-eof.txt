@@ -1,0 +1,2 @@
+--- FAIL: TestLinesTruncatesLongLinesAndKeepsGoing (0.00s)
+    scan_test.go:59: EOF

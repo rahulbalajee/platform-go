@@ -1,0 +1,22 @@
+# The first Ctrl-C cancels in-flight checks, and sweep still reports what
+# it saw. Two checks run at a time (-c 2): /ok finishes, two /slow checks
+# hang, and the last target never starts.
+envsubst slow.txt
+! exec sweep -c 2 slow.txt &sweep&
+waitreq /slow 2
+kill -INT sweep
+wait sweep
+stdout '^UP +\S+/ok '
+stdout -count=2 '^CANCELLED +\S+/slow '
+stderr '1 up, 0 down, 2 cancelled \(interrupted; 1 never started\)$'
+
+# An overall -deadline also cancels, but it is not an interrupt: the
+# status is 1 (unhealthy), not 130, and the cause says why.
+exits 1 sweep -deadline 300ms slow.txt
+stdout -count=3 '^CANCELLED .* sweep deadline of 300ms exceeded$'
+
+-- slow.txt --
+$FLEET/ok
+$FLEET/slow
+$FLEET/slow
+$FLEET/slow

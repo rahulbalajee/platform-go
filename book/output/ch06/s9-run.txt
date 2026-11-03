@@ -1,0 +1,7 @@
+=== RUN   TestSweepAgainstFleetContainer
+--- PASS: TestSweepAgainstFleetContainer (4.45s)
+=== RUN   TestTCPProbeSeesPostgresStop
+    containers_test.go:169: dial tcp [::1]:PORT: connect: connection refused (after 3 attempts)
+--- PASS: TestTCPProbeSeesPostgresStop (2.18s)
+PASS
+ok      sweep/containers        7.001s

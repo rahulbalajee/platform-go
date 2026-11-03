@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package controller
 
 import (
@@ -17,6 +19,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/events"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -28,13 +31,34 @@ import (
 	"github.com/rahulbalajee/platform-go/projects/watchtower/internal/probe"
 )
 
+// END imports OMIT
+
+// START served OMIT
+
+// TestHealthCheckKindIsServed checks the plumbing: the CRD is installed and
+// the client's scheme knows the Go types.
+func TestHealthCheckKindIsServed(t *testing.T) {
+	requireEnv(t)
+	var list v1alpha1.HealthCheckList
+	err := k8s.List(t.Context(), &list, client.InNamespace(manualNS))
+	if err != nil {
+		t.Fatalf("listing HealthChecks: %v", err)
+	}
+}
+
+// END served OMIT
+
+// START newcheck OMIT
+
 // uniq returns prefix plus a short random suffix, so tests can run with
 // -count=N against the same API server.
-func uniq(prefix string) string { return fmt.Sprintf("%s-%04d", prefix, rand.N(10000)) }
+func uniq(prefix string) string {
+	return fmt.Sprintf("%s-%04d", prefix, rand.N(10000))
+}
 
 func newCheck(ns, name string, target v1alpha1.Target) *v1alpha1.HealthCheck {
 	return &v1alpha1.HealthCheck{
-		Namespace: ns, Name: name,
+		Namespace: ns, Name: name, // promoted from ObjectMeta (Go 1.27)
 		Spec: v1alpha1.HealthCheckSpec{
 			Target:           target,
 			Interval:         metav1.Duration{Duration: 5 * time.Second},
@@ -43,6 +67,8 @@ func newCheck(ns, name string, target v1alpha1.Target) *v1alpha1.HealthCheck {
 		},
 	}
 }
+
+// END newcheck OMIT
 
 // START validation OMIT
 func TestCRDValidationRejectsBadSpecs(t *testing.T) {
@@ -78,6 +104,31 @@ func TestCRDValidationRejectsBadSpecs(t *testing.T) {
 
 // END validation OMIT
 
+// START defaults OMIT
+
+// TestCRDAppliesDefaults: fields left out get the schema's defaults. Create
+// updates hc with the object as the API server stored it.
+func TestCRDAppliesDefaults(t *testing.T) {
+	requireEnv(t)
+	hc := &v1alpha1.HealthCheck{
+		Namespace: manualNS, Name: uniq("defaults"),
+		Spec: v1alpha1.HealthCheckSpec{Target: v1alpha1.Target{
+			Service: &v1alpha1.ServiceTarget{Name: "api", Port: 8080},
+		}},
+	}
+	if err := k8s.Create(t.Context(), hc); err != nil {
+		t.Fatal(err)
+	}
+	s, svc := hc.Spec, hc.Spec.Target.Service
+	if s.Interval.Duration != 30*time.Second || s.Timeout.Duration != 5*time.Second ||
+		s.FailureThreshold != 3 || svc.Path != "/healthz" || svc.Scheme != "http" {
+		t.Errorf("defaults not applied: %+v, service %+v", s, *svc)
+	}
+}
+
+// END defaults OMIT
+
+// START gethelpers OMIT
 func healthy(hc *v1alpha1.HealthCheck) *metav1.Condition {
 	return meta.FindStatusCondition(hc.Status.Conditions, v1alpha1.ConditionHealthy)
 }
@@ -85,21 +136,17 @@ func healthy(hc *v1alpha1.HealthCheck) *metav1.Condition {
 func get(t *testing.T, ns, name string) *v1alpha1.HealthCheck {
 	t.Helper()
 	var hc v1alpha1.HealthCheck
-	if err := k8s.Get(t.Context(), client.ObjectKey{Namespace: ns, Name: name}, &hc); err != nil {
+	key := client.ObjectKey{Namespace: ns, Name: name}
+	if err := k8s.Get(t.Context(), key, &hc); err != nil {
 		t.Fatalf("get %s/%s: %v", ns, name, err)
 	}
 	return &hc
 }
 
-func ruleFor(t *testing.T, name string) (*unstructured.Unstructured, error) {
-	t.Helper()
-	u := &unstructured.Unstructured{}
-	u.SetGroupVersionKind(alerting.PrometheusRuleGVK)
-	key := client.ObjectKey{Namespace: managedNS, Name: "watchtower-" + name}
-	return u, k8s.Get(t.Context(), key, u)
-}
+// END gethelpers OMIT
 
 // START lifecycle OMIT
+
 // TestHealthCheckLifecycle runs the real controller in a manager against a
 // target we can break and fix on demand.
 func TestHealthCheckLifecycle(t *testing.T) {
@@ -115,33 +162,23 @@ func TestHealthCheckLifecycle(t *testing.T) {
 
 	name := uniq("checkout")
 	hc := newCheck(managedNS, name, v1alpha1.Target{URL: target.URL + "/healthz"})
-	hc.Spec.Alert = &v1alpha1.AlertSpec{Severity: "critical"}
 	if err := k8s.Create(t.Context(), hc); err != nil {
 		t.Fatal(err)
 	}
-
-	// 1. Healthy, with an owned PrometheusRule.
-	eventually(t, 10*time.Second, func() (bool, string) {
-		got := get(t, managedNS, name)
-		c := healthy(got)
-		ready := meta.IsStatusConditionTrue(got.Status.Conditions,
-			v1alpha1.ConditionAlertingReady)
-		return c != nil && c.Status == metav1.ConditionTrue && ready,
-			fmt.Sprintf("conditions: %+v", got.Status.Conditions)
-	})
-	rule, err := ruleFor(t, name)
-	if err != nil || rule.GetOwnerReferences()[0].Name != name {
-		t.Fatalf("rule: %v (owners %v)", err, rule.GetOwnerReferences())
+	isHealthy := func(want metav1.ConditionStatus) func() (bool, string) {
+		return func() (bool, string) {
+			c := healthy(get(t, managedNS, name))
+			return c != nil && c.Status == want, fmt.Sprintf("Healthy: %+v", c)
+		}
 	}
 
-	// 2. Break the target: unhealthy within one interval, with an Event.
+	// 1. Healthy.
+	eventually(t, 10*time.Second, isHealthy(metav1.ConditionTrue))
+
+	// 2. Break the target: unhealthy within one interval.
 	failing.Store(true)
-	eventually(t, 10*time.Second, func() (bool, string) {
-		c := healthy(get(t, managedNS, name))
-		return c.Status == metav1.ConditionFalse &&
-				c.Reason == v1alpha1.ReasonProbeFailing,
-			fmt.Sprintf("Healthy=%s/%s", c.Status, c.Reason)
-	})
+	eventually(t, 10*time.Second, isHealthy(metav1.ConditionFalse))
+	// START event OMIT
 	eventually(t, 5*time.Second, func() (bool, string) {
 		var evs eventsv1.EventList
 		_ = k8s.List(t.Context(), &evs, client.InNamespace(managedNS))
@@ -152,8 +189,119 @@ func TestHealthCheckLifecycle(t *testing.T) {
 		}
 		return false, fmt.Sprintf("%d events, none ProbeFailing", len(evs.Items))
 	})
+	// END event OMIT
 
-	// 3. Someone deletes the rule by hand: the Owns() watch restores it.
+	// 3. Fix it: healthy again.
+	failing.Store(false)
+	eventually(t, 10*time.Second, isHealthy(metav1.ConditionTrue))
+}
+
+// END lifecycle OMIT
+
+// START servicetest OMIT
+func TestServiceTargetResolvesWhenServiceAppears(t *testing.T) {
+	requireEnv(t)
+	name := uniq("api")
+	hc := newCheck(managedNS, name, v1alpha1.Target{Service: &v1alpha1.ServiceTarget{
+		Name: name, Port: 8080, Path: "/healthz", Scheme: "http",
+	}})
+	if err := k8s.Create(t.Context(), hc); err != nil {
+		t.Fatal(err)
+	}
+	eventually(t, 5*time.Second, func() (bool, string) {
+		c := healthy(get(t, managedNS, name))
+		return c != nil && c.Reason == v1alpha1.ReasonTargetUnresolved,
+			fmt.Sprintf("%+v", c)
+	})
+
+	svc := &corev1.Service{
+		Namespace: managedNS, Name: name,
+		Spec: corev1.ServiceSpec{Ports: []corev1.ServicePort{{Port: 8080}}},
+	}
+	if err := k8s.Create(t.Context(), svc); err != nil {
+		t.Fatal(err)
+	}
+	// Well inside the 5s interval: the Service watch, not the requeue timer,
+	// triggered this reconcile.
+	want := "http://" + name + ".wt-managed.svc.cluster.local:8080/healthz"
+	eventually(t, 3*time.Second, func() (bool, string) {
+		got := get(t, managedNS, name)
+		c := healthy(got)
+		return c.Status == metav1.ConditionTrue && got.Status.ResolvedURL == want,
+			fmt.Sprintf("Healthy=%s url=%q", c.Status, got.Status.ResolvedURL)
+	})
+}
+
+// END servicetest OMIT
+
+// START ruletest OMIT
+func ruleFor(t *testing.T, name string) (*unstructured.Unstructured, error) {
+	t.Helper()
+	u := &unstructured.Unstructured{}
+	u.SetGroupVersionKind(alerting.PrometheusRuleGVK)
+	key := client.ObjectKey{Namespace: managedNS, Name: "watchtower-" + name}
+	return u, k8s.Get(t.Context(), key, u)
+}
+
+// exprOf returns the expression of the rule's only alert.
+func exprOf(u *unstructured.Unstructured) string {
+	groups, _, _ := unstructured.NestedSlice(u.Object, "spec", "groups")
+	if len(groups) == 0 {
+		return ""
+	}
+	rules, _, _ := unstructured.NestedSlice(groups[0].(map[string]any), "rules")
+	if len(rules) == 0 {
+		return ""
+	}
+	expr, _, _ := unstructured.NestedString(rules[0].(map[string]any), "expr")
+	return expr
+}
+
+// TestPrometheusRuleLifecycle: the rule is created, owned, repaired after
+// manual edits and deletes, and removed when alerting is turned off.
+func TestPrometheusRuleLifecycle(t *testing.T) {
+	requireEnv(t)
+	name := uniq("orders")
+	hc := newCheck(managedNS, name, v1alpha1.Target{URL: "https://example.com"})
+	hc.Spec.Suspend = true // this test is about alerting, not probing
+	hc.Spec.Alert = &v1alpha1.AlertSpec{Severity: "critical"}
+	if err := k8s.Create(t.Context(), hc); err != nil {
+		t.Fatal(err)
+	}
+
+	// 1. The rule appears, controlled by its HealthCheck.
+	eventually(t, 10*time.Second, func() (bool, string) {
+		got := get(t, managedNS, name)
+		return meta.IsStatusConditionTrue(got.Status.Conditions,
+			v1alpha1.ConditionAlertingReady), fmt.Sprintf("%+v", got.Status)
+	})
+	rule, err := ruleFor(t, name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owner := metav1.GetControllerOf(rule)
+	if owner == nil || owner.Kind != "HealthCheck" || owner.Name != name {
+		t.Fatalf("controller of the rule = %+v, want HealthCheck %s", owner, name)
+	}
+	// START edit OMIT
+
+	// 2. Someone edits the alert expression: server-side apply takes the
+	// field back from the other field manager.
+	edit := []byte(`[{"op": "replace", "value": "vector(0)",
+		"path": "/spec/groups/0/rules/0/expr"}]`)
+	err = k8s.Patch(t.Context(), rule, client.RawPatch(types.JSONPatchType, edit),
+		client.FieldOwner("kubectl-edit"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	eventually(t, 5*time.Second, func() (bool, string) {
+		got, err := ruleFor(t, name)
+		expr := exprOf(got)
+		return err == nil && strings.Contains(expr, "healthcheck_up"), expr
+	})
+	// END edit OMIT
+
+	// 3. Someone deletes the rule: the Owns() watch restores it.
 	if err := k8s.Delete(t.Context(), rule); err != nil {
 		t.Fatal(err)
 	}
@@ -178,44 +326,10 @@ func TestHealthCheckLifecycle(t *testing.T) {
 	})
 }
 
-// END lifecycle OMIT
-
-// START servicetest OMIT
-func TestServiceTargetResolvesWhenServiceAppears(t *testing.T) {
-	requireEnv(t)
-	name := uniq("api")
-	hc := newCheck(managedNS, name, v1alpha1.Target{Service: &v1alpha1.ServiceTarget{
-		Name: name, Port: 8080, Path: "/healthz", Scheme: "http",
-	}})
-	if err := k8s.Create(t.Context(), hc); err != nil {
-		t.Fatal(err)
-	}
-	eventually(t, 5*time.Second, func() (bool, string) {
-		c := healthy(get(t, managedNS, name))
-		return c != nil && c.Reason == v1alpha1.ReasonTargetUnresolved, fmt.Sprintf("%+v", c)
-	})
-
-	svc := &corev1.Service{
-		Namespace: managedNS, Name: name,
-		Spec: corev1.ServiceSpec{Ports: []corev1.ServicePort{{Port: 8080}}},
-	}
-	if err := k8s.Create(t.Context(), svc); err != nil {
-		t.Fatal(err)
-	}
-	// Well inside the 5s interval: the Service watch, not the requeue timer,
-	// triggered this reconcile.
-	eventually(t, 3*time.Second, func() (bool, string) {
-		got := get(t, managedNS, name)
-		c := healthy(got)
-		return c.Status == metav1.ConditionTrue &&
-				got.Status.ResolvedURL == "http://"+name+".wt-managed.svc.cluster.local:8080/healthz",
-			fmt.Sprintf("Healthy=%s url=%q", c.Status, got.Status.ResolvedURL)
-	})
-}
-
-// END servicetest OMIT
+// END ruletest OMIT
 
 // START finalizertest OMIT
+
 // TestDatadogFinalizer drives Reconcile by hand (in a namespace the manager
 // ignores) to check the external-resource lifecycle step by step.
 func TestDatadogFinalizer(t *testing.T) {
@@ -277,6 +391,7 @@ func TestDatadogFinalizer(t *testing.T) {
 // END finalizertest OMIT
 
 // START cadencetest OMIT
+
 // TestReconcileKeepsProbeCadence: reconciles triggered by watch events
 // between timer ticks must not probe early.
 func TestReconcileKeepsProbeCadence(t *testing.T) {

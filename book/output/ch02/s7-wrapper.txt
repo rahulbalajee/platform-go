@@ -1,0 +1,8 @@
+--- FAIL: TestRejectedTokenIsRefreshedOnce (0.00s)
+    retry_test.go:146: after rotation: GET /v1/services/checkout: 401 unauthenticated: invalid or expired token (request 01a1a183-7fed-7b6c-af28-78b346e45913)
+FAIL
+FAIL    platformapi     1.319s
+ok      platformapi/examples/promote    0.576s
+ok      platformapi/platformapifake     (cached)
+?       platformapi/retry       [no test files]
+FAIL

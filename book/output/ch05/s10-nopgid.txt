@@ -1,0 +1,11 @@
+--- FAIL: TestCancelKillsTheWholeGroup (5.01s)
+    procx_test.go:139: exit code 137 (signal: killed), want 143
+--- FAIL: TestWaitKillsAbandonedDescendants (3.02s)
+    procx_test.go:180: process 56724 is still running
+--- FAIL: TestWaitDoesNotHangOnInheritedPipes (3.31s)
+    procx_test.go:197: process 56753 is still running
+--- FAIL: TestForwardRelaysSignals (10.01s)
+    procx_test.go:236: child said "timeout\n"
+FAIL
+FAIL    oskit/procx     22.189s
+FAIL

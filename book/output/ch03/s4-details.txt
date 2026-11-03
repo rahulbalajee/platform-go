@@ -1,0 +1,15 @@
+--- FAIL: TestReportGolden (0.00s)
+    --- FAIL: TestReportGolden/partial.text (0.00s)
+        clierr_test.go:121: stderr mismatch (-update to accept)
+            got:
+            deployctl: deploy of v1.4.2 failed on 2 of 3 targets [DPL-PARTIAL]
+              hint: re-run with -only eu-west-1,sa-east-1
+            
+            want:
+            deployctl: deploy of v1.4.2 failed on 2 of 3 targets [DPL-PARTIAL]
+              - eu-west-1: health check failing (HTTP 503)
+              - sa-east-1: deploy already in progress
+              hint: re-run with -only eu-west-1,sa-east-1
+FAIL
+FAIL    deployctl/pkg/clierr    0.605s
+FAIL

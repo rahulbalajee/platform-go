@@ -1,0 +1,4 @@
+https://proxy.golang.org,direct
+
+~/go/pkg/mod
+

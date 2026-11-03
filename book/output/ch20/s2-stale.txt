@@ -1,0 +1,28 @@
+--- FAIL: TestCRDValidationRejectsBadSpecs (2.01s)
+    --- FAIL: TestCRDValidationRejectsBadSpecs/not_a_URL (2.01s)
+        healthcheck_controller_test.go:84: err = <nil>; want Invalid containing "spec.target.url"
+    --- FAIL: TestCRDValidationRejectsBadSpecs/both_url_and_service (0.00s)
+        healthcheck_controller_test.go:84: err = healthchecks.watchtower.platformgo.dev "invalid" already exists; want Invalid containing "exactly one of url or service must be set"
+    --- FAIL: TestCRDValidationRejectsBadSpecs/interval_too_short (0.00s)
+        healthcheck_controller_test.go:84: err = healthchecks.watchtower.platformgo.dev "invalid" already exists; want Invalid containing "interval must be at least 5s"
+    --- FAIL: TestCRDValidationRejectsBadSpecs/timeout_>=_interval (0.00s)
+        healthcheck_controller_test.go:84: err = healthchecks.watchtower.platformgo.dev "invalid" already exists; want Invalid containing "timeout must be shorter than interval"
+--- FAIL: TestCRDAppliesDefaults (0.00s)
+panic: runtime error: invalid memory address or nil pointer dereference [recovered, repanicked]
+[signal SIGSEGV: segmentation violation code=0x2 addr=0x0 pc=0x103e29d08]
+
+goroutine 91 [running]:
+testing.tRunner.func1.2({0x105023e88, 0x1051d5db0})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x105023e88?, 0x1051d5db0?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+watchtower/internal/controller.TestCRDAppliesDefaults(0x5206eb82efc8)
+        ~/broken/internal/controller/healthcheck_controller_test.go:110 +0x218
+testing.tRunner(0x5206eb82efc8, 0x105164d28)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    watchtower/internal/controller  5.766s
+FAIL

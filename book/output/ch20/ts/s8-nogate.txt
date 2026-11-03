@@ -1,0 +1,1 @@
+    healthcheck_controller_test.go:421: 4 probes, want 1: early reconciles must not probe

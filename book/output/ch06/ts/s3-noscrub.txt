@@ -1,0 +1,1 @@
+    golden_test.go:84: ~/broken/cmd/sweep/testdata/golden/run-stderr.golden mismatch (-want +got):

@@ -1,0 +1,3 @@
+        main_test.go:147: stderr differs from testdata/noconfig.golden (-update to accept):
+            deployctl: no config file at deployctl.json [DPL-CONFIG]
+            deployctl: config file deployctl.json not found [DPL-CONFIG]

@@ -1,0 +1,5 @@
+--- FAIL: TestTemporaryFailuresAreRetried (0.30s)
+    run_test.go:110: the last attempt's *APIError is lost: deploy v1.4.2 to eu-west-1: 3 attempts, last: HTTP 503: health check failing on 3/3 replicas (request req-RXXP4IPSGY)
+FAIL
+FAIL    deployctl/cmd/deployctl 1.074s
+FAIL

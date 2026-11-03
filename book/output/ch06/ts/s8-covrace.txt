@@ -1,0 +1,1 @@
+error: coverage meta-data emit failed: writing $GOCOVERDIR/covmeta.<hash>: rename from 

@@ -1,0 +1,7 @@
+./api/v1alpha1/groupversion_info.go
+./api/v1alpha1/healthcheck_types.go
+./api/v1alpha1/zz_generated.deepcopy.go
+./cmd/main.go
+./internal/controller/healthcheck_controller_test.go
+./internal/controller/healthcheck_controller.go
+./internal/controller/suite_test.go

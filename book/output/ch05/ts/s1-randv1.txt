@@ -1,0 +1,1 @@
+cmd/loggen/gen.go:28:24: undefined: rand.NewPCG

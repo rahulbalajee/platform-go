@@ -1,0 +1,2 @@
+go: example.com/codec@v1.3.0: verifying go.mod: example.com/codec@v1.3.0/go.mod: reading https://sum.golang.org/lookup/example.com/codec@v1.3.0: 404 Not Found
+	server response: not found: example.com/codec@v1.3.0: unrecognized import path "example.com/codec": reading https://example.com/codec?go-get=1: 404 Not Found

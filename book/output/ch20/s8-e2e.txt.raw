@@ -1,0 +1,41 @@
+customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com serverside-applied
+sha256:d5683ca820bb8d3be5459d65b3a54982c1f185662a992e5cd8344be435f8f7f3
+sha256:9924dc946367366bb18b67b73ce54d5c9cdbd19c2987e7c4db2fcbad43af0d70
+Image: "watchtower:dev" with ID "sha256:d5683ca820bb8d3be5459d65b3a54982c1f185662a992e5cd8344be435f8f7f3" not yet present on node "watchtower-control-plane", loading...
+Image: "watchtower-demoapp:dev" with ID "sha256:9924dc946367366bb18b67b73ce54d5c9cdbd19c2987e7c4db2fcbad43af0d70" not yet present on node "watchtower-control-plane", loading...
+"/Users/rahulbalajee/.hermes/cache/scratch/ch20.WtG5JQ/watchtower/bin/controller-gen" rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+cd config/manager && "/Users/rahulbalajee/.hermes/cache/scratch/ch20.WtG5JQ/watchtower/bin/kustomize" edit set image controller=watchtower:dev
+"/Users/rahulbalajee/.hermes/cache/scratch/ch20.WtG5JQ/watchtower/bin/kustomize" build config/default | "kubectl" apply -f -
+namespace/watchtower-system unchanged
+customresourcedefinition.apiextensions.k8s.io/healthchecks.watchtower.platformgo.dev unchanged
+serviceaccount/watchtower-controller-manager unchanged
+role.rbac.authorization.k8s.io/watchtower-leader-election-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-healthcheck-admin-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-healthcheck-editor-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-healthcheck-viewer-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-manager-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-metrics-auth-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-metrics-reader unchanged
+rolebinding.rbac.authorization.k8s.io/watchtower-leader-election-rolebinding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/watchtower-manager-rolebinding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/watchtower-metrics-auth-rolebinding unchanged
+service/watchtower-controller-manager-metrics-service unchanged
+deployment.apps/watchtower-controller-manager configured
+deployment.apps/watchtower-controller-manager restarted
+Waiting for deployment "watchtower-controller-manager" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "watchtower-controller-manager" rollout to finish: 1 old replicas are pending termination...
+deployment "watchtower-controller-manager" successfully rolled out
+namespace "shop" deleted
+namespace/shop created
+deployment.apps/storefront created
+service/storefront created
+Waiting for deployment "storefront" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "storefront" rollout to finish: 1 of 2 updated replicas are available...
+deployment "storefront" successfully rolled out
+namespace/shop unchanged
+deployment.apps/storefront unchanged
+service/storefront unchanged
+healthcheck.watchtower.platformgo.dev/storefront created
+healthcheck.watchtower.platformgo.dev/go-dev created
+healthcheck.watchtower.platformgo.dev/payments-api created
+healthcheck.watchtower.platformgo.dev/inventory created

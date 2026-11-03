@@ -1,0 +1,1 @@
+    scan_test.go:66: lines = ["short" "xxxx\nafter\nlastx" "after" "last"], want ["short" "xxxxxxxxxxxxxxxx" "after" "last"]

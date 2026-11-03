@@ -4,8 +4,8 @@
 // the process table as zombies until PID 1 calls wait for them, and a Go
 // program never does that for processes it did not start.
 //
-//	docker run --rm pgo-ch05 /zombies          # Go binary is PID 1
-//	docker run --rm --init pgo-ch05 /zombies   # docker-init (tini) is PID 1
+//	docker run --rm oskit /zombies          # Go binary is PID 1
+//	docker run --rm --init oskit /zombies   # docker-init (tini) is PID 1
 package main
 
 import (
@@ -39,7 +39,8 @@ func main() {
 
 	fmt.Printf("zombies is PID %d\n", os.Getpid())
 	// Run reaps the spawner itself: os/exec always waits for its own child.
-	if err := exec.Command(self, "-role=spawner").Run(); err != nil { //nolint:gosec,noctx // demo
+	spawner := exec.Command(self, "-role=spawner") //nolint:gosec,noctx // demo
+	if err := spawner.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

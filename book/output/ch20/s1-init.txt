@@ -1,0 +1,6 @@
+[36mINFO[0m Writing kustomize manifests for you to edit... 
+[36mINFO[0m Writing scaffold for you to edit... 
+[36mINFO[0m Get controller runtime 
+[36mINFO[0m Update dependencies 
+Next: define a resource with:
+$ kubebuilder create api

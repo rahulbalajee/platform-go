@@ -1,0 +1,5 @@
+--- PASS: TestPrometheusRuleRender (0.00s)
+ok      watchtower/internal/alerting    0.284s
+--- PASS: TestPrometheusRuleLifecycle (2.95s)
+ok      watchtower/internal/controller  7.139s
+ok      watchtower/internal/probe       0.191s [no tests to run]

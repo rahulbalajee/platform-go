@@ -1,0 +1,3 @@
+# platformapi_test
+# [platformapi_test]
+vet: ./client_test.go:21:28: cannot use *fake (variable of struct type platformapifake.Server) as http.Handler value in argument to httptest.NewServer: platformapifake.Server does not implement http.Handler (method ServeHTTP has pointer receiver)

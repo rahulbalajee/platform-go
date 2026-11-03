@@ -1,0 +1,37 @@
+2026/11/03 18:35:27 github.com/testcontainers/testcontainers-go - Connected to docker: 
+  Server Version: 29.5.3
+  API Version: 1.54
+  Operating System: Docker Desktop
+  Total Memory: 7936 MB
+  Labels:
+    com.docker.desktop.address=unix://~/Library/Containers/com.docker.docker/Data/docker-cli.sock
+  Testcontainers for Go Version: v0.44.0
+  Resolved Docker Host: unix:///var/run/docker.sock
+  Resolved Docker Socket Path: /var/run/docker.sock
+  Test SessionID: <hash><hash>
+  Test ProcessID: 17bce8d5-203e-4291-821a-400e3f104416
+2026/11/03 18:35:28 🐳 Building image beff47b5-b853-4542-b23b-d2e58f648332:c99b19f8-8655-4730-88c5-96f76fa94324
+2026/11/03 18:35:30 ✅ Built image 5ee1731b-d61d-4618-a2bf-4eb9f7066675:4d01b153-1b3e-429e-82a7-0098bb6b49ba
+2026/11/03 18:35:30 🐳 Creating container for image 5ee1731b-d61d-4618-a2bf-4eb9f7066675:4d01b153-1b3e-429e-82a7-0098bb6b49ba
+2026/11/03 18:35:30 🐳 Creating container for image testcontainers/ryuk:0.14.0
+2026/11/03 18:35:31 ✅ Container created: 8b5f5c52b67b
+2026/11/03 18:35:31 🐳 Starting container: 8b5f5c52b67b
+2026/11/03 18:35:31 ✅ Container started: 8b5f5c52b67b
+2026/11/03 18:35:31 ⏳ Waiting for container id 8b5f5c52b67b image: testcontainers/ryuk:0.14.0. Waiting for: all of: [log message "Started", port 8080/tcp to be listening]
+2026/11/03 18:35:31 Shell not found in container
+2026/11/03 18:35:31 🔔 Container is ready: 8b5f5c52b67b
+2026/11/03 18:35:31 ✅ Container created: 7fe4d20172ff
+2026/11/03 18:35:31 🐳 Starting container: 7fe4d20172ff
+2026/11/03 18:35:31 ✅ Container started: 7fe4d20172ff
+2026/11/03 18:35:31 ⏳ Waiting for container id 7fe4d20172ff image: 5ee1731b-d61d-4618-a2bf-4eb9f7066675:4d01b153-1b3e-429e-82a7-0098bb6b49ba. Waiting for: all of: [HTTP GET request on port 8080 path "/ok"]
+2026/11/03 18:35:31 container logs (wait until ready: container exited with code 255):
+exec /fleet: exec format error
+2026/11/03 18:35:31 🐳 Stopping container: 7fe4d20172ff
+2026/11/03 18:35:31 ✅ Container stopped: 7fe4d20172ff
+2026/11/03 18:35:31 🐳 Terminating container: 7fe4d20172ff
+2026/11/03 18:35:32 🚫 Container terminated: 7fe4d20172ff
+--- FAIL: TestSweepAgainstFleetContainer (4.76s)
+    containers_test.go:111: generic container: start container: started hook: wait until ready: container exited with code 255
+FAIL
+FAIL    sweep/containers        5.471s
+FAIL

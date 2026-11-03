@@ -1,0 +1,1 @@
+	example.com/codec/v2: unrecognized import path "example.com/codec/v2": reading https://example.com/codec/v2?go-get=1: 404 Not Found

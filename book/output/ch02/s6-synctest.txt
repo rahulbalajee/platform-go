@@ -1,0 +1,9 @@
+=== RUN   TestWaitFollowsRolloutToSuccess
+--- PASS: TestWaitFollowsRolloutToSuccess (0.01s)
+=== RUN   TestCancellingWaitDoesNotCancelTheDeployment
+--- PASS: TestCancellingWaitDoesNotCancelTheDeployment (0.00s)
+=== RUN   TestWaitReportsFailedRollout
+--- PASS: TestWaitReportsFailedRollout (0.00s)
+=== RUN   TestWaitAfterCancel
+--- PASS: TestWaitAfterCancel (0.00s)
+ok      platformapi     2.124s

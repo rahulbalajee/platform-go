@@ -1,0 +1,3 @@
+# platformapi/examples/promote
+# [platformapi/examples/promote]
+vet: examples/promote/promote_test.go:91:33: cannot use client (variable of type *platformapi.Client) as Platform value in argument to Promote: *platformapi.Client does not implement Platform (missing method WaitDeployment)

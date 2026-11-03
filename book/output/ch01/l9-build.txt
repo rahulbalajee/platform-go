@@ -1,0 +1,10 @@
+{
+  "name": "stamp",
+  "version": "v0.2.1-0.20261102162005-e3dfd1265fa1",
+  "revision": "e3dfd1265fa1224f384e0f40c69c46d5cad149d8",
+  "time": "2026-11-02T16:20:05Z",
+  "modified": false,
+  "module": "stamp",
+  "goVersion": "go1.27.3",
+  "platform": "darwin/arm64"
+}

@@ -15,8 +15,8 @@ import (
 //
 // BUG(ch03): status dereferences Previous without checking it, so it
 // panics for a target that has only ever had one release. The bug is
-// deliberate: Chapter 3 uses it to show what a panic looks like to a user
-// when clierr.Program.Run is in charge.
+// deliberate: it shows what a panic looks like to a user when
+// clierr.Program.Run is in charge.
 func status(ctx context.Context, g globals, getenv func(string) string,
 	log *slog.Logger, stdout io.Writer) error {
 

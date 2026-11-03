@@ -1,0 +1,50 @@
+=== RUN   TestSweepAgainstFleetContainer
+2026/11/03 18:35:05 github.com/testcontainers/testcontainers-go - Connected to docker: 
+  Server Version: 29.5.3
+  API Version: 1.54
+  Operating System: Docker Desktop
+  Total Memory: 7936 MB
+  Labels:
+    com.docker.desktop.address=unix://~/Library/Containers/com.docker.docker/Data/docker-cli.sock
+  Testcontainers for Go Version: v0.44.0
+  Resolved Docker Host: unix:///var/run/docker.sock
+  Resolved Docker Socket Path: /var/run/docker.sock
+  Test SessionID: <hash><hash>
+  Test ProcessID: 85560bee-e1aa-4e32-bc52-ff041319dbea
+2026/11/03 18:35:05 Building image 164b1df2-d0d8-4f66-a6f9-6f57b6c988fe:d8637add-8d1c-4ec8-81b2-f3d43c55cdbb
+2026/11/03 18:35:07 Built image 3c33c43e-fda6-4a21-953c-e1a8d29e5075:513561c6-8a6d-43f2-ab0b-6e094e3f7c3b
+2026/11/03 18:35:07 Creating container for image 3c33c43e-fda6-4a21-953c-e1a8d29e5075:513561c6-8a6d-43f2-ab0b-6e094e3f7c3b
+2026/11/03 18:35:07 Creating container for image testcontainers/ryuk:0.14.0
+2026/11/03 18:35:08 Container created: 709a51066888
+2026/11/03 18:35:08 Starting container: 709a51066888
+2026/11/03 18:35:08 Container started: 709a51066888
+2026/11/03 18:35:08 Waiting for container id 709a51066888 image: testcontainers/ryuk:0.14.0. Waiting for: all of: [log message "Started", port 8080/tcp to be listening]
+2026/11/03 18:35:08 Shell not found in container
+2026/11/03 18:35:08 Container is ready: 709a51066888
+2026/11/03 18:35:08 Container created: e37ea534935b
+2026/11/03 18:35:08 Starting container: e37ea534935b
+2026/11/03 18:35:08 Container started: e37ea534935b
+2026/11/03 18:35:08 Waiting for container id e37ea534935b image: 3c33c43e-fda6-4a21-953c-e1a8d29e5075:513561c6-8a6d-43f2-ab0b-6e094e3f7c3b. Waiting for: all of: [HTTP GET request on port 8080 path "/ok"]
+2026/11/03 18:35:08 Container is ready: e37ea534935b
+2026/11/03 18:35:09 Stopping container: e37ea534935b
+2026/11/03 18:35:09 Container stopped: e37ea534935b
+2026/11/03 18:35:09 Terminating container: e37ea534935b
+2026/11/03 18:35:09 Container terminated: e37ea534935b
+--- PASS: TestSweepAgainstFleetContainer (4.45s)
+=== RUN   TestTCPProbeSeesPostgresStop
+2026/11/03 18:35:09 Creating container for image postgres:17-alpine
+2026/11/03 18:35:09 Container created: af94268ac42a
+2026/11/03 18:35:09 Starting container: af94268ac42a
+2026/11/03 18:35:09 Container started: af94268ac42a
+2026/11/03 18:35:09 Waiting for container id af94268ac42a image: postgres:17-alpine. Waiting for: all of: [log message "database system is ready to accept connections" (occurrence: 2)]
+2026/11/03 18:35:11 Container is ready: af94268ac42a
+2026/11/03 18:35:11 Stopping container: af94268ac42a
+2026/11/03 18:35:11 Container stopped: af94268ac42a
+    containers_test.go:169: dial tcp [::1]:PORT: connect: connection refused (after 3 attempts)
+2026/11/03 18:35:11 Stopping container: af94268ac42a
+2026/11/03 18:35:11 Container stopped: af94268ac42a
+2026/11/03 18:35:11 Terminating container: af94268ac42a
+2026/11/03 18:35:11 Container terminated: af94268ac42a
+--- PASS: TestTCPProbeSeesPostgresStop (2.18s)
+PASS
+ok      sweep/containers        7.001s

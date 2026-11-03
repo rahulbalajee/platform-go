@@ -1,0 +1,5 @@
+# sweep/internal/sweep
+# [sweep/internal/sweep]
+internal/sweep/probe_fuzz_test.go:18:8: mismatched type in call to (*testing.F).Add: int, fuzz target expects string
+FAIL    sweep/internal/sweep [build failed]
+FAIL

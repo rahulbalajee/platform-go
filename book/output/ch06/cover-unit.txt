@@ -1,5 +1,0 @@
-ok      cmd/sweep       1.610s  coverage: 72.1% of statements
-ok      internal/sweep  0.804s  coverage: 58.2% of statements
-ok      pkg/conc        0.343s  coverage: 98.5% of statements
-ok      pkg/retry       0.893s  coverage: 88.7% of statements
-ok      pkg/lifecycle   1.012s  coverage: 92.6% of statements

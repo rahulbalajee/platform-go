@@ -1,9 +1,12 @@
+// START fakehead OMIT
+
 // Package ddfake is an in-memory fake of the slice of the Datadog Monitors
 // API that watchtower uses, for tests (in the spirit of net/http/httptest).
 package ddfake
 
 import (
 	"encoding/json"
+	"fmt"
 	"maps"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +16,10 @@ import (
 	"testing"
 )
 
+// END fakehead OMIT
+
 // START fake OMIT
+
 // Server implements list (filtered by monitor_tags), create, update and
 // delete for /api/v1/monitor, and rejects requests without both API keys.
 type Server struct {
@@ -40,7 +46,8 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	id, _ := strconv.ParseInt(strings.TrimPrefix(r.URL.Path, "/api/v1/monitor/"), 10, 64)
+	idStr := strings.TrimPrefix(r.URL.Path, "/api/v1/monitor/")
+	id, _ := strconv.ParseInt(idStr, 10, 64)
 	switch {
 	case r.Method == http.MethodGet && r.URL.Path == "/api/v1/monitor":
 		tag := r.URL.Query().Get("monitor_tags")
@@ -69,13 +76,15 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(m)
 	case r.Method == http.MethodDelete && s.monitors[id] != nil:
 		delete(s.monitors, id)
-		_, _ = w.Write([]byte(`{"deleted_monitor_id":` + strconv.FormatInt(id, 10) + `}`))
+		_, _ = fmt.Fprintf(w, `{"deleted_monitor_id":%d}`, id)
 	default:
 		http.Error(w, `{"errors":["Monitor not found"]}`, http.StatusNotFound)
 	}
 }
 
 // END fake OMIT
+
+// START fakeapi OMIT
 
 // Monitors returns a snapshot of the stored monitors keyed by ID.
 func (s *Server) Monitors() map[int64]map[string]any {
@@ -97,3 +106,5 @@ func (s *Server) DeleteAll() {
 	defer s.mu.Unlock()
 	clear(s.monitors)
 }
+
+// END fakeapi OMIT

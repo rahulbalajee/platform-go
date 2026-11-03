@@ -1,0 +1,2 @@
+"~/watchtower/bin/controller-gen" rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+customresourcedefinition.apiextensions.k8s.io "healthchecks.watchtower.platformgo.dev" deleted

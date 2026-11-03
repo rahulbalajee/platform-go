@@ -1,0 +1,35 @@
+# Chapter 2's final build step is the production SDK that later chapters
+# (the ship CLI in Part V) import. book/scripts/check_workbook.py checks
+# that each pair below is identical apart from OMIT markers and these
+# import paths. The retry rewrite must come first.
+@import platformapi/retry = github.com/rahulbalajee/platform-go/pkg/retry
+@import platformapi = github.com/rahulbalajee/platform-go/pkg/platformapi
+
+workbook/ch02/step9/doc.go = pkg/platformapi/doc.go
+workbook/ch02/step9/types.go = pkg/platformapi/types.go
+workbook/ch02/step9/client.go = pkg/platformapi/client.go
+workbook/ch02/step9/token.go = pkg/platformapi/token.go
+workbook/ch02/step9/errors.go = pkg/platformapi/errors.go
+workbook/ch02/step9/transport.go = pkg/platformapi/transport.go
+workbook/ch02/step9/api.go = pkg/platformapi/api.go
+workbook/ch02/step9/list.go = pkg/platformapi/list.go
+workbook/ch02/step9/operation.go = pkg/platformapi/operation.go
+workbook/ch02/step9/client_test.go = pkg/platformapi/client_test.go
+workbook/ch02/step9/options_test.go = pkg/platformapi/options_test.go
+workbook/ch02/step9/errors_test.go = pkg/platformapi/errors_test.go
+workbook/ch02/step9/calls_test.go = pkg/platformapi/calls_test.go
+workbook/ch02/step9/list_test.go = pkg/platformapi/list_test.go
+workbook/ch02/step9/operation_test.go = pkg/platformapi/operation_test.go
+workbook/ch02/step9/retry_test.go = pkg/platformapi/retry_test.go
+workbook/ch02/step9/example_test.go = pkg/platformapi/example_test.go
+workbook/ch02/step9/platformapifake/fake.go = pkg/platformapi/platformapifake/fake.go
+workbook/ch02/step9/platformapifake/resources.go = pkg/platformapi/platformapifake/resources.go
+workbook/ch02/step9/platformapifake/deployments.go = pkg/platformapi/platformapifake/deployments.go
+workbook/ch02/step9/platformapifake/fake_test.go = pkg/platformapi/platformapifake/fake_test.go
+workbook/ch02/step9/retry/retry.go = pkg/retry/retry.go
+workbook/ch02/step9/examples/promote/promote.go = examples/ch02/promote/promote.go
+workbook/ch02/step9/examples/promote/promote_test.go = examples/ch02/promote/promote_test.go
+workbook/ch02/step9/examples/tour/main.go = examples/ch02/tour/main.go
+workbook/ch02/step9/examples/tour/main_test.go = examples/ch02/tour/main_test.go
+workbook/ch02/step9/evolve/before/platform.go = examples/ch02/evolve/before/platform.go
+workbook/ch02/step9/evolve/after/platform.go = examples/ch02/evolve/after/platform.go

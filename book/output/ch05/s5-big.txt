@@ -1,0 +1,3 @@
+atomicput: atomic write deploy.json: input exceeds 10 bytes
+exit status 1
+{"replicas": 3}

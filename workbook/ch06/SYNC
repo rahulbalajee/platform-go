@@ -1,0 +1,36 @@
+# Chapter 6's last lab is the test suite the repository runs against the
+# production sweep. book/scripts/check_workbook.py checks that each pair
+# below is identical apart from OMIT markers and these import paths.
+@import sweep/internal/sweep = github.com/rahulbalajee/platform-go/internal/sweep
+@import sweep/retry = github.com/rahulbalajee/platform-go/pkg/retry
+@import sweep/cmd/sweep = github.com/rahulbalajee/platform-go/cmd/sweep
+@import sweep/cmd/fleet = github.com/rahulbalajee/platform-go/examples/ch04/fleet
+
+workbook/ch06/step9/cmd/sweep/golden_test.go = cmd/sweep/golden_test.go
+workbook/ch06/step9/cmd/sweep/testdata/golden/run-json.golden = cmd/sweep/testdata/golden/run-json.golden
+workbook/ch06/step9/cmd/sweep/testdata/golden/run-stderr.golden = cmd/sweep/testdata/golden/run-stderr.golden
+workbook/ch06/step9/containers/containers_test.go = examples/ch06/containers/containers_test.go
+workbook/ch06/step9/containers/doc.go = examples/ch06/containers/doc.go
+workbook/ch06/step9/flaky/covrace.sh = examples/ch06/flaky/covrace.sh
+workbook/ch06/step9/flaky/doc.go = examples/ch06/flaky/doc.go
+workbook/ch06/step9/flaky/flaky_test.go = examples/ch06/flaky/flaky_test.go
+workbook/ch06/step9/flaky/registry.go = examples/ch06/flaky/registry.go
+workbook/ch06/step9/internal/sweep/bench_test.go = internal/sweep/bench_test.go
+workbook/ch06/step9/internal/sweep/fake_test.go = internal/sweep/fake_test.go
+workbook/ch06/step9/internal/sweep/probe_fuzz_test.go = internal/sweep/probe_fuzz_test.go
+workbook/ch06/step9/internal/sweep/report_test.go = internal/sweep/report_test.go
+workbook/ch06/step9/internal/sweep/sweeptest/fleet.go = internal/sweep/sweeptest/fleet.go
+workbook/ch06/step9/internal/sweep/sweeptest/fleet_test.go = internal/sweep/sweeptest/fleet_test.go
+workbook/ch06/step9/internal/sweep/target_fuzz_test.go = internal/sweep/target_fuzz_test.go
+workbook/ch06/step9/internal/sweep/target_test.go = internal/sweep/target_test.go
+workbook/ch06/step9/internal/sweep/testdata/fuzz/FuzzParseRetryAfter/50a7fd29d8f9ea0b = internal/sweep/testdata/fuzz/FuzzParseRetryAfter/50a7fd29d8f9ea0b
+workbook/ch06/step9/internal/sweep/testdata/fuzz/FuzzParseTargets/1c0eab32cf38a6eb = internal/sweep/testdata/fuzz/FuzzParseTargets/1c0eab32cf38a6eb
+workbook/ch06/step9/internal/sweep/testdata/golden/report-json.golden = internal/sweep/testdata/golden/report-json.golden
+workbook/ch06/step9/internal/sweep/testdata/golden/report-jsonl.golden = internal/sweep/testdata/golden/report-jsonl.golden
+workbook/ch06/step9/internal/sweep/testdata/golden/report-table.golden = internal/sweep/testdata/golden/report-table.golden
+workbook/ch06/step9/internal/sweep/testdata/golden/report-wide.golden = internal/sweep/testdata/golden/report-wide.golden
+workbook/ch06/step9/sweepscript/script_test.go = examples/ch06/sweepscript/script_test.go
+workbook/ch06/step9/sweepscript/testdata/script/exit_status.txtar = examples/ch06/sweepscript/testdata/script/exit_status.txtar
+workbook/ch06/step9/sweepscript/testdata/script/help.txtar = examples/ch06/sweepscript/testdata/script/help.txtar
+workbook/ch06/step9/sweepscript/testdata/script/interrupt.txtar = examples/ch06/sweepscript/testdata/script/interrupt.txtar
+workbook/ch06/step9/sweepscript/testdata/script/inventory.txtar = examples/ch06/sweepscript/testdata/script/inventory.txtar

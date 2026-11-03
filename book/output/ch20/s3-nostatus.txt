@@ -1,0 +1,5 @@
+--- FAIL: TestHealthCheckLifecycle (10.12s)
+    healthcheck_controller_test.go:165: condition not met within 10s: Healthy: nil
+FAIL
+FAIL    watchtower/internal/controller  14.037s
+FAIL

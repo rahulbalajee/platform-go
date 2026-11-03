@@ -1,0 +1,3 @@
+            -           max targets checked concurrently (default 32)
+            +           max targets checked concurrently (default 16)
+            FAIL: testdata/script/help.txtar:5: stderr and usage.txt differ

@@ -1,0 +1,1 @@
+    run_test.go:277: the log lacks the failure record:

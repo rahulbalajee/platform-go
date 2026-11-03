@@ -1,0 +1,1 @@
+        clierr_test.go:65: CodeOf(read tcp 10.0.0.1:443: i/o timeout) = 75 (tempfail), want 1 (failure)

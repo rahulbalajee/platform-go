@@ -1,0 +1,3 @@
+ok      platformapi     1.487s
+ok      platformapi/examples/promote    0.693s
+ok      platformapi/platformapifake     1.901s

@@ -1,0 +1,1 @@
+    sysinfo_test.go:25: stat field "3)": strconv.ParseInt: parsing "3)": invalid syntax

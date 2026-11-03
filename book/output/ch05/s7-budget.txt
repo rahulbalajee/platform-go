@@ -1,0 +1,5 @@
+--- FAIL: TestExtractTarLimits (0.00s)
+    extract_test.go:147: byte limit: err = <nil>, want ErrArchiveTooLarge
+FAIL
+FAIL    oskit/fsx       2.774s
+FAIL

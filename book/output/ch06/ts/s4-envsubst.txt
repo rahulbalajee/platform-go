@@ -1,0 +1,2 @@
+              line 2: "$FLEET/ok": unsupported scheme "" (want http, https, tcp, tls, dns)
+            FAIL: testdata/script/exit_status.txtar:5: sweep exited with status 2, want 0

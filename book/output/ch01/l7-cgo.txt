@@ -1,0 +1,108 @@
+# runtime/cgo
+gcc_amd64.S:27:8: error: unknown token in expression
+ pushq %rbx
+       ^
+gcc_amd64.S:27:8: error: invalid operand
+ pushq %rbx
+       ^
+gcc_amd64.S:28:8: error: unknown token in expression
+ pushq %rbp
+       ^
+gcc_amd64.S:28:8: error: invalid operand
+ pushq %rbp
+       ^
+gcc_amd64.S:29:8: error: unknown token in expression
+ pushq %r12
+       ^
+gcc_amd64.S:29:8: error: invalid operand
+ pushq %r12
+       ^
+gcc_amd64.S:30:8: error: unknown token in expression
+ pushq %r13
+       ^
+gcc_amd64.S:30:8: error: invalid operand
+ pushq %r13
+       ^
+gcc_amd64.S:31:8: error: unknown token in expression
+ pushq %r14
+       ^
+gcc_amd64.S:31:8: error: invalid operand
+ pushq %r14
+       ^
+gcc_amd64.S:32:8: error: unknown token in expression
+ pushq %r15
+       ^
+gcc_amd64.S:32:8: error: invalid operand
+ pushq %r15
+       ^
+gcc_amd64.S:39:7: error: unknown token in expression
+ movq %rdi, %rbx
+      ^
+gcc_amd64.S:39:7: error: invalid operand
+ movq %rdi, %rbx
+      ^
+gcc_amd64.S:40:7: error: unknown token in expression
+ movq %rdx, %rdi
+      ^
+gcc_amd64.S:40:7: error: invalid operand
+ movq %rdx, %rdi
+      ^
+gcc_amd64.S:41:7: error: invalid token in expression
+ call *%rsi
+      ^
+gcc_amd64.S:41:7: error: invalid operand
+ call *%rsi
+      ^
+gcc_amd64.S:42:7: error: invalid token in expression
+ call *%rbx
+      ^
+gcc_amd64.S:42:7: error: invalid operand
+ call *%rbx
+      ^
+gcc_amd64.S:45:7: error: unknown token in expression
+ popq %r15
+      ^
+gcc_amd64.S:45:7: error: invalid operand
+ popq %r15
+      ^
+gcc_amd64.S:46:7: error: unknown token in expression
+ popq %r14
+      ^
+gcc_amd64.S:46:7: error: invalid operand
+ popq %r14
+      ^
+gcc_amd64.S:47:7: error: unknown token in expression
+ popq %r13
+      ^
+gcc_amd64.S:47:7: error: invalid operand
+ popq %r13
+      ^
+gcc_amd64.S:48:7: error: unknown token in expression
+ popq %r12
+      ^
+gcc_amd64.S:48:7: error: invalid operand
+ popq %r12
+      ^
+gcc_amd64.S:49:7: error: unknown token in expression
+ popq %rbp
+      ^
+gcc_amd64.S:49:7: error: invalid operand
+ popq %rbp
+      ^
+gcc_amd64.S:50:7: error: unknown token in expression
+ popq %rbx
+      ^
+gcc_amd64.S:50:7: error: invalid operand
+ popq %rbx
+      ^
+# runtime/cgo
+gcc_clearenv.c:16:2: error: implicit declaration of function 'clearenv' [-Werror,-Wimplicit-function-declaration]
+gcc_clearenv.c:16:2: note: did you mean 'clearerr'?
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdio.h:232:7: note: 'clearerr' declared here
+# runtime/cgo
+linux_syscall.c:67:13: error: implicit declaration of function 'setresgid' [-Werror,-Wimplicit-function-declaration]
+linux_syscall.c:67:13: note: did you mean 'setregid'?
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h:607:6: note: 'setregid' declared here
+linux_syscall.c:73:13: error: implicit declaration of function 'setresuid' [-Werror,-Wimplicit-function-declaration]
+linux_syscall.c:73:13: note: did you mean 'setreuid'?
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h:609:6: note: 'setreuid' declared here

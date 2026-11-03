@@ -1,0 +1,33 @@
+# Chapter 20's final build step is the watchtower operator in
+# projects/watchtower. book/scripts/check_workbook.py checks that each pair
+# below is identical apart from OMIT markers, blank lines and the module path.
+# Not synced: go.mod/go.sum and PROJECT (module path), and the scaffold files
+# projects/watchtower adapted for the repository's CI (Makefile tool versions,
+# Dockerfile, .golangci.yml, README).
+@import watchtower/ = github.com/rahulbalajee/platform-go/projects/watchtower/
+
+workbook/ch20/step8/api/v1alpha1/groupversion_info.go = projects/watchtower/api/v1alpha1/groupversion_info.go
+workbook/ch20/step8/api/v1alpha1/healthcheck_types.go = projects/watchtower/api/v1alpha1/healthcheck_types.go
+workbook/ch20/step8/cmd/main.go = projects/watchtower/cmd/main.go
+workbook/ch20/step8/internal/probe/probe.go = projects/watchtower/internal/probe/probe.go
+workbook/ch20/step8/internal/probe/probe_test.go = projects/watchtower/internal/probe/probe_test.go
+workbook/ch20/step8/internal/controller/healthcheck_controller.go = projects/watchtower/internal/controller/healthcheck_controller.go
+workbook/ch20/step8/internal/controller/healthcheck_controller_test.go = projects/watchtower/internal/controller/healthcheck_controller_test.go
+workbook/ch20/step8/internal/controller/status.go = projects/watchtower/internal/controller/status.go
+workbook/ch20/step8/internal/controller/status_test.go = projects/watchtower/internal/controller/status_test.go
+workbook/ch20/step8/internal/controller/metrics.go = projects/watchtower/internal/controller/metrics.go
+workbook/ch20/step8/internal/controller/suite_test.go = projects/watchtower/internal/controller/suite_test.go
+workbook/ch20/step8/internal/controller/testdata/crds/prometheusrules.yaml = projects/watchtower/internal/controller/testdata/crds/prometheusrules.yaml
+workbook/ch20/step8/internal/alerting/alerting.go = projects/watchtower/internal/alerting/alerting.go
+workbook/ch20/step8/internal/alerting/prometheus.go = projects/watchtower/internal/alerting/prometheus.go
+workbook/ch20/step8/internal/alerting/prometheus_test.go = projects/watchtower/internal/alerting/prometheus_test.go
+workbook/ch20/step8/internal/alerting/datadog.go = projects/watchtower/internal/alerting/datadog.go
+workbook/ch20/step8/internal/alerting/datadog_test.go = projects/watchtower/internal/alerting/datadog_test.go
+workbook/ch20/step8/internal/alerting/ddfake/ddfake.go = projects/watchtower/internal/alerting/ddfake/ddfake.go
+workbook/ch20/step8/hack/demoapp/main.go = projects/watchtower/hack/demoapp/main.go
+workbook/ch20/step8/hack/e2e-kind.sh = projects/watchtower/hack/e2e-kind.sh
+workbook/ch20/step8/hack/scratch.Dockerfile = projects/watchtower/hack/scratch.Dockerfile
+workbook/ch20/step8/config/samples/demo.yaml = projects/watchtower/config/samples/demo.yaml
+workbook/ch20/step8/config/samples/watchtower_v1alpha1_healthcheck.yaml = projects/watchtower/config/samples/watchtower_v1alpha1_healthcheck.yaml
+workbook/ch20/step8/config/manager/manager.yaml = projects/watchtower/config/manager/manager.yaml
+workbook/ch20/step8/config/rbac/role.yaml = projects/watchtower/config/rbac/role.yaml

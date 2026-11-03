@@ -1,0 +1,4 @@
+go: warning: example.com/codec@v1.5.0: retracted by module author: drops zero-valued fields
+go: to switch to the latest unretracted version, run:
+	go get example.com/codec@latest
+go: downgraded example.com/codec v1.5.1 => v1.5.0

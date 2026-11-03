@@ -1,0 +1,1 @@
+error: opening output meta-data file cov/nowhere/covmeta.<hash>: open cov/nowhere/covmeta.<hash>: no such file or directory

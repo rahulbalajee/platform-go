@@ -1,0 +1,8 @@
+--- FAIL: TestExtractTarRejectsEscapes (0.00s)
+    --- FAIL: TestExtractTarRejectsEscapes/symlink_out (0.00s)
+        extract_test.go:109: extraction succeeded, want an error
+    --- FAIL: TestExtractTarRejectsEscapes/absolute_symlink (0.00s)
+        extract_test.go:109: extraction succeeded, want an error
+FAIL
+FAIL    oskit/fsx       3.022s
+FAIL

@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package platformapi
 
 import (
@@ -18,6 +20,8 @@ import (
 
 	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
+
+// END imports OMIT
 
 // START calloption OMIT
 
@@ -40,8 +44,6 @@ func IdempotencyKey(key string) CallOption {
 	return func(c *callConfig) { c.idempotencyKey = key }
 }
 
-// END calloption OMIT
-
 // RequestID sets the X-Request-Id sent with every attempt of the call.
 // By default each call gets a new UUIDv7. Pass your own ID to correlate
 // the platform's logs with yours.
@@ -54,6 +56,10 @@ func RequestID(id string) CallOption {
 func PageSize(n int) CallOption {
 	return func(c *callConfig) { c.pageSize = n }
 }
+
+// END calloption OMIT
+
+// START request OMIT
 
 // request describes one logical API call. It may take several attempts.
 type request struct {
@@ -74,8 +80,10 @@ func newRequest(method string, opts []CallOption, path ...string) request {
 	return r
 }
 
+// url builds base + /v1/ + path. Each segment is escaped on its own, so
+// an ID such as "../environments/prod" stays one segment.
 func (c *Client) url(r request) *url.URL {
-	u := c.base.Clone()
+	u := c.base.Clone() // URL.Clone is new in Go 1.27
 	esc := make([]string, len(r.path))
 	for i, s := range r.path {
 		esc[i] = url.PathEscape(s)
@@ -86,6 +94,8 @@ func (c *Client) url(r request) *url.URL {
 	return u
 }
 
+// END request OMIT
+
 // START do OMIT
 
 // do sends r, retrying transient failures, and returns a response with a
@@ -95,7 +105,7 @@ func (c *Client) do(ctx context.Context, r request) (*http.Response, error) {
 	if r.body != nil {
 		b, err := json.Marshal(r.body)
 		if err != nil {
-			return nil, fmt.Errorf("platformapi: encoding request: %w", err)
+			return nil, fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: encoding request: %w", err)
 		}
 		body = b
 	}
@@ -142,7 +152,7 @@ func (c *Client) attempt(ctx context.Context, r request, u *url.URL,
 	retryable := r.method == http.MethodGet || r.idempotent
 	if c.limiter != nil {
 		if err := c.limiter.Wait(ctx); err != nil {
-			return nil, retry.Permanent(fmt.Errorf("platformapi: %s: %w", call, err))
+			return nil, retry.Permanent(fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: %s: %w", call, err))
 		}
 	}
 	start := time.Now()
@@ -160,7 +170,9 @@ func (c *Client) attempt(ctx context.Context, r request, u *url.URL,
 	if resp.StatusCode < 300 {
 		return resp, nil
 	}
-	apiErr := decodeError(resp, call, r.call.requestID)
+	apiErr := decodeError(resp, call)
+	// A proxy may have dropped the header; we know the ID we sent.
+	apiErr.RequestID = cmp.Or(apiErr.RequestID, r.call.requestID)
 	switch {
 	case !retryable:
 		return nil, retry.Permanent(apiErr)
@@ -204,6 +216,9 @@ func (c *Client) send(ctx context.Context, r request, u *url.URL,
 
 // END send OMIT
 
+// START sendonce OMIT
+
+// sendOnce performs one HTTP exchange and reports the token it used.
 func (c *Client) sendOnce(ctx context.Context, r request, u *url.URL,
 	body []byte) (*http.Response, string, error) {
 
@@ -213,7 +228,7 @@ func (c *Client) sendOnce(ctx context.Context, r request, u *url.URL,
 	}
 	req, err := http.NewRequestWithContext(ctx, r.method, u.String(), rd)
 	if err != nil {
-		return nil, "", retry.Permanent(fmt.Errorf("platformapi: %w", err))
+		return nil, "", retry.Permanent(fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: %w", err))
 	}
 	req.Header.Set("User-Agent", c.userAgent)
 	req.Header.Set("Accept", "application/json")
@@ -228,16 +243,20 @@ func (c *Client) sendOnce(ctx context.Context, r request, u *url.URL,
 	if c.tokens != nil {
 		token, err = c.tokens.Token(ctx)
 		if err != nil {
-			return nil, "", retry.Permanent(fmt.Errorf("platformapi: getting token: %w", err))
+			err = fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: getting token: %w", err)
+			return nil, "", retry.Permanent(err)
 		}
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
 	resp, err := c.hc.Do(req)
 	if err != nil {
-		return nil, "", fmt.Errorf("platformapi: %s %s: %w", r.method, u.EscapedPath(), err)
+		return nil, "", fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: %s %s: %w",
+			r.method, u.EscapedPath(), err)
 	}
 	return resp, token, nil
 }
+
+// END sendonce OMIT
 
 // drain reads and closes a response body we are discarding, so the
 // connection can be reused.
@@ -249,12 +268,12 @@ func drain(resp *http.Response) {
 // decodeError turns a non-2xx response into an *APIError and closes the
 // body. Servers and proxies do not always send the API's JSON error shape,
 // so it falls back to the status text.
-func decodeError(resp *http.Response, call, requestID string) *APIError {
+func decodeError(resp *http.Response, call string) *APIError {
 	defer drain(resp)
 	e := &APIError{
 		StatusCode: resp.StatusCode,
 		Op:         call,
-		RequestID:  cmp.Or(resp.Header.Get("X-Request-Id"), requestID),
+		RequestID:  resp.Header.Get("X-Request-Id"),
 	}
 	data, _ := io.ReadAll(io.LimitReader(resp.Body, 64<<10))
 	var wire struct {
@@ -268,7 +287,8 @@ func decodeError(resp *http.Response, call, requestID string) *APIError {
 	} else {
 		text := http.StatusText(resp.StatusCode)
 		e.Code = strings.ToLower(strings.ReplaceAll(text, " ", "_"))
-		e.Message = cmp.Or(strings.TrimSpace(string(data[:min(len(data), 200)])), text)
+		body := strings.TrimSpace(string(data[:min(len(data), 200)]))
+		e.Message = cmp.Or(body, text)
 	}
 	if ra := resp.Header.Get("Retry-After"); ra != "" {
 		if secs, err := strconv.Atoi(ra); err == nil && secs >= 0 {
@@ -280,12 +300,17 @@ func decodeError(resp *http.Response, call, requestID string) *APIError {
 	return e
 }
 
+// START errattr OMIT
+
+// errAttr logs an API error by its status and anything else by its text.
 func errAttr(err error) slog.Attr {
 	if e, ok := errors.AsType[*APIError](err); ok {
 		return slog.Int("status", e.StatusCode)
 	}
 	return slog.String("err", err.Error())
 }
+
+// END errattr OMIT
 
 // START call OMIT
 
@@ -300,7 +325,7 @@ func (c *Client) call[T any](ctx context.Context, r request) (T, error) {
 	}
 	defer drain(resp)
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
-		return out, fmt.Errorf("platformapi: %s %s: decoding response: %w",
+		return out, fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: %s %s: decoding response: %w",
 			r.method, c.url(r).EscapedPath(), err)
 	}
 	return out, nil

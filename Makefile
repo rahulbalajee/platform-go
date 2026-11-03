@@ -5,7 +5,7 @@
 
 GOLANGCI ?= golangci-lint
 
-.PHONY: default lint test all-tests watchtower-test e2e book widths capture
+.PHONY: default lint test all-tests watchtower-test e2e book widths capture workbook
 
 default: lint test
 
@@ -21,7 +21,7 @@ watchtower-test:
 all-tests: test watchtower-test
 
 e2e:
-	projects/watchtower/hack/e2e-kind.sh
+	bash projects/watchtower/hack/e2e-kind.sh
 
 widths:
 	python3 book/scripts/check_widths.py --max 86
@@ -29,6 +29,8 @@ widths:
 book: widths
 	typst compile --root . --font-path book/fonts book/main.typ platform-go.pdf
 
-capture:
-	book/scripts/capture-ch04.sh
-	OUT=../../book/output/wt projects/watchtower/hack/e2e-kind.sh
+capture: ## re-run every chapter's capture script (each runs from a copy; needs Docker, kind, network)
+	for s in book/scripts/capture-ch*.sh; do cp "$$s" "$${TMPDIR:-/tmp}/run-$$(basename $$s)" && bash "$${TMPDIR:-/tmp}/run-$$(basename $$s)" || exit 1; done
+
+workbook: ## verify the build track: coverage, step and solution modules, exercises, sync
+	python3 book/scripts/check_workbook.py --race

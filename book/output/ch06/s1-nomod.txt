@@ -1,0 +1,5 @@
+# sweep/internal/sweep
+internal/sweep/target_test.go:9:2: no required module provides package github.com/google/go-cmp/cmp; to add it:
+        go get github.com/google/go-cmp/cmp
+FAIL    sweep/internal/sweep [setup failed]
+FAIL

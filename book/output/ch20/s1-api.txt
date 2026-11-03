@@ -1,0 +1,16 @@
+[36mINFO[0m Writing kustomize manifests for you to edit... 
+[36mINFO[0m Writing scaffold for you to edit... 
+[33mWARN[0m unable to find boilerplate file. This file is used to generate the license header in the project.
+Note that controller-gen will also use this. Ensure that you add the license file or configure your project accordingly file_path=hack/boilerplate.go.txterror=open hack/boilerplate.go.txt: no such file or directory
+[36mINFO[0m api/v1alpha1/healthcheck_types.go 
+[36mINFO[0m api/v1alpha1/groupversion_info.go 
+[36mINFO[0m internal/controller/suite_test.go 
+[36mINFO[0m internal/controller/healthcheck_controller.go 
+[36mINFO[0m internal/controller/healthcheck_controller_test.go 
+[36mINFO[0m Update dependencies 
+[36mINFO[0m Running make 
+mkdir -p "~/watchtower/bin"
+Downloading sigs.k8s.io/controller-tools/cmd/controller-gen@v0.22.0
+"~/watchtower/bin/controller-gen" object paths="./..."
+Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
+$ make manifests

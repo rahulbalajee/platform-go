@@ -1,0 +1,1 @@
+vet: ./options_test.go:68:59: cannot use sealed (variable of type func(context.Context) (string, error)) as platformapi.TokenSource value in argument to platformapi.WithTokenSource: func(context.Context) (string, error) does not implement platformapi.TokenSource (missing method Token)

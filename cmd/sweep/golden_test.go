@@ -84,6 +84,9 @@ func goldenFile(t *testing.T, name string, got []byte) {
 	// Not a relative path: tests that call t.Chdir would look in the wrong place.
 	path := filepath.Join(testDir, "testdata", "golden", name+".golden")
 	if *update {
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
 		if err := os.WriteFile(path, got, 0o644); err != nil {
 			t.Fatal(err)
 		}

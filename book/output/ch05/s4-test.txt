@@ -1,0 +1,3 @@
+ok      oskit/cmd/loggen        (cached)
+ok      oskit/cmd/logscan       (cached)
+?       oskit/cmd/torn  [no test files]

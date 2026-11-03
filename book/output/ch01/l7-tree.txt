@@ -1,0 +1,2 @@
+./cmd/stamp/main_test.go
+./cmd/stamp/main.go

@@ -1,0 +1,1 @@
+api/v1alpha1/healthcheck_types.go:250:55: cannot use &HealthCheckList{} (value of type *HealthCheckList) as "k8s.io/apimachinery/pkg/runtime".Object value in argument to s.AddKnownTypes: *HealthCheckList does not implement "k8s.io/apimachinery/pkg/runtime".Object (missing method DeepCopyObject)

@@ -1,0 +1,7 @@
+deploying checkout v1.4.2 to 4 targets
+  sa-east-1   failed   0s
+  us-east-1   deployed 100ms
+  us-west-2   deployed 100ms
+  eu-west-1   failed   300ms
+deployctl: deploy of v1.4.2 failed on 2 of 4 targets: sa-east-1: HTTP 409: deploy already in progress, started by ci-bot (request req-NSOE54TWEM)
+eu-west-1: 3 attempts, last: HTTP 503: health check failing on 3/3 replicas (request req-UCKX4XQ2RV)

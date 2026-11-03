@@ -1,2 +1,0 @@
-covcounters.<hash>.85599.1793696410987054000
-covmeta.<hash>

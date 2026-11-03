@@ -1,0 +1,1 @@
+            FAIL: testdata/script/exit_status.txtar:7: no match for `^UP +http://127\.0\.0\.1:\d+/ok +\S+ +2 +200 OK$` found in stdout

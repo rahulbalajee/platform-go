@@ -1,0 +1,1 @@
+rollout/phase.go:32:8: p.String undefined (type Phase has no field or method String)

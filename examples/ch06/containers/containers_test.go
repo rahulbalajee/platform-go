@@ -31,26 +31,29 @@ func requireDocker(t *testing.T) {
 // END skip OMIT
 
 // START image OMIT
-// fleetImage cross-compiles fleetd for Linux on the host and returns a
-// build context holding the binary and a FROM scratch Dockerfile. Building
-// it needs no base image, so no registry pull can time out.
+// fleetPkg is the fake fleet from Chapter 4, which the image runs.
+const fleetPkg = "github.com/rahulbalajee/platform-go/examples/ch04/fleet"
+
+// fleetImage cross-compiles the fake fleet for Linux on the host and
+// returns a build context holding the binary and a FROM scratch
+// Dockerfile. Building it needs no base image, so no registry pull can
+// time out.
 func fleetImage(t *testing.T) testcontainers.FromDockerfile {
 	t.Helper()
 	dir := t.TempDir()
 	build := exec.CommandContext(t.Context(), "go", "build", "-trimpath",
-		"-o", filepath.Join(dir, "fleetd"), "./examples/ch06/fleetd")
-	build.Dir = "../../.." // the root module
+		"-o", filepath.Join(dir, "fleet"), fleetPkg)
 	build.Env = append(os.Environ(),
 		"CGO_ENABLED=0", "GOOS=linux", "GOARCH="+runtime.GOARCH)
 	if out, err := build.CombinedOutput(); err != nil {
-		t.Fatalf("building fleetd: %v\n%s", err, out)
+		t.Fatalf("building the fleet: %v\n%s", err, out)
 	}
 	dockerfile := strings.Join([]string{
 		"FROM scratch",
-		"COPY fleetd /fleetd",
+		"COPY fleet /fleet",
 		"USER 65532:65532",
 		"EXPOSE 8080",
-		`ENTRYPOINT ["/fleetd", "-addr", ":8080"]`,
+		`ENTRYPOINT ["/fleet", "-addr", ":8080"]`,
 	}, "\n")
 	err := os.WriteFile(filepath.Join(dir, "Dockerfile"), []byte(dockerfile), 0o600)
 	if err != nil {

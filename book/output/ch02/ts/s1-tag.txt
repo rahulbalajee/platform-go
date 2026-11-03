@@ -1,0 +1,2 @@
+--- FAIL: TestGetDeploymentDecodesEveryField (0.00s)
+    client_test.go:93: GetDeployment(d-2) =

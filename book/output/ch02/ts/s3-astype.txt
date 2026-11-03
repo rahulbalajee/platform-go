@@ -1,0 +1,1 @@
+vet: ./errors_test.go:24:30: platformapi.APIError does not satisfy error (method Error has pointer receiver)

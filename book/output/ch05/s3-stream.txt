@@ -1,0 +1,6 @@
+lines      30000000
+status     2xx=27598282 3xx=1501450 4xx=659997 5xx=240270
+anomalies  1 truncated, 1 malformed
+read       2187 MiB in 4.5s (483 MiB/s)
+sha256     a2d18370c920b822bcc69e78f55386ab4c234453d462a91fc63e3717534221ba
+peak RSS   4.8 MiB

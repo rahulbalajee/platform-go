@@ -1,0 +1,9 @@
+wrote deployctl.json
+{
+  "api": "http://127.0.0.1:8787",
+  "service": "checkout",
+  "targets": [
+    "us-east-1",
+    "eu-west-1"
+  ]
+}

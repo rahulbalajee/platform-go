@@ -1,0 +1,2 @@
+ok      oskit/cmd/loggen        0.773s
+ok      oskit/cmd/logscan       1.210s

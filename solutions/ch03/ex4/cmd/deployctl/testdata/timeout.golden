@@ -1,0 +1,3 @@
+deployctl: deploy did not finish within 300ms [DPL-TIMEOUT]
+  - ap-south-1: stopped before the API answered
+  hint: targets may still be converging: check "deployctl status", then re-run

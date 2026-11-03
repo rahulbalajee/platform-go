@@ -1,0 +1,1 @@
+buildinfo/buildinfo.go:47:2: struct field tag `json:goVersion` not compatible with reflect.StructTag.Get: bad syntax for struct tag value

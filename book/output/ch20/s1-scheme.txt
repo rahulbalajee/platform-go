@@ -1,0 +1,5 @@
+--- FAIL: TestHealthCheckKindIsServed (0.00s)
+    healthcheck_controller_test.go:24: listing HealthChecks: no kind is registered for the type v1alpha1.HealthCheckList in scheme "pkg/runtime/scheme.go:111"
+FAIL
+FAIL    watchtower/internal/controller  3.792s
+FAIL

@@ -184,8 +184,11 @@
 }
 
 // output: terminal block whose body is a captured file from book/output.
+// Captures may contain ANSI colour codes (kubebuilder, some linters); they
+// would print as boxes, so strip them.
+#let _ansi = regex("\u{1b}\[[0-9;]*[A-Za-z]")
 #let output(path, cmd: none, title: none, size: 7.2pt) = {
-  let body = read("/book/output/" + path).trim(at: end)
+  let body = read("/book/output/" + path).replace(_ansi, "").trim(at: end)
   let full = if cmd != none { "$ " + cmd + "\n" + body } else { body }
   terminal(full, title: title, size: size)
 }
@@ -197,7 +200,7 @@
   for (cmd, path) in steps.pos() {
     parts.push("$ " + cmd)
     if path != none {
-      let b = read("/book/output/" + path).trim(at: end)
+      let b = read("/book/output/" + path).replace(_ansi, "").trim(at: end)
       if b != "" { parts.push(b) }
     }
   }
@@ -360,7 +363,7 @@
 #let quote-output(path) = {
   show raw: set text(size: 6.5pt)
   set par(justify: false, leading: 0.42em)
-  block(breakable: false, raw(read("/book/output/" + path).trim(), block: true))
+  block(breakable: false, raw(read("/book/output/" + path).replace(_ansi, "").trim(), block: true))
 }
 
 // needspace: start a new page unless h of vertical space is left (e.g. before
@@ -625,8 +628,11 @@
   set enum(indent: 4pt, body-indent: 6pt, spacing: 0.75em)
 
   // Inline code
-  show raw.where(block: false): it => box(
-    fill: c.codebg, inset: (x: 1.8pt), outset: (y: 2.2pt), radius: 2pt,
+  // A highlight rather than a box: long spans can wrap at spaces instead of
+  // running into the margin, and paragraphs justify without big gaps.
+  show raw.where(block: false): it => highlight(
+    fill: c.codebg, extent: 1.8pt, radius: 2pt,
+    top-edge: "ascender", bottom-edge: "descender",
     text(font: fonts.mono, size: 0.84em, fill: rgb("#24292f"), it),
   )
   // Block code (inside listing() frames)

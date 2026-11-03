@@ -1,0 +1,8 @@
+--- FAIL: TestRetriesReuseTheIdempotencyKey (0.00s)
+    retry_test.go:29: POST /v1/deployments: 503 unavailable: injected failure (request 00dc6acf-ac00-7000-9c2f-65db9fd76bcf)
+FAIL
+FAIL    platformapi     3.429s
+ok      platformapi/examples/promote    2.550s
+ok      platformapi/platformapifake     2.008s
+?       platformapi/retry       [no test files]
+FAIL

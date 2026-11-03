@@ -1,0 +1,15 @@
+goos: darwin
+goarch: arm64
+pkg: sweep/internal/sweep
+cpu: Apple M5
+                │    old.txt    │               new.txt                │
+                │    sec/op     │    sec/op     vs base                │
+Report/table-10   1165.4µ ± 35%   290.7µ ± 27%  -75.05% (p=0.000 n=10)
+
+                │   old.txt    │               new.txt                │
+                │     B/op     │     B/op      vs base                │
+Report/table-10   717.6Ki ± 0%   252.7Ki ± 0%  -64.78% (p=0.000 n=10)
+
+                │   old.txt   │               new.txt               │
+                │  allocs/op  │  allocs/op   vs base                │
+Report/table-10   6.353k ± 0%   1.014k ± 0%  -84.04% (p=0.000 n=10)

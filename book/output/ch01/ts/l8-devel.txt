@@ -1,0 +1,3 @@
+--- FAIL: TestFrom/go_run (0.00s)
+- Version: "devel",
++ Version: "(devel)",

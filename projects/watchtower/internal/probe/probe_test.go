@@ -25,19 +25,30 @@ func TestHTTPProbe(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 	p := probe.HTTP{Client: srv.Client()}
+	spec := func(path string, timeout time.Duration) probe.Spec {
+		return probe.Spec{URL: srv.URL + path, Timeout: timeout}
+	}
+	codes := spec("/teapot", time.Second)
+	codes.StatusCodes = []int32{418}
+	budget := spec("/slow", time.Second)
+	budget.MaxLatency = 100 * time.Millisecond
 
 	for name, tc := range map[string]struct {
 		spec   probe.Spec
 		ok     bool
 		msgHas string
 	}{
-		"2xx is healthy":       {probe.Spec{URL: srv.URL + "/ok", Timeout: time.Second}, true, "HTTP 200"},
-		"418 is not":           {probe.Spec{URL: srv.URL + "/teapot", Timeout: time.Second}, false, "unexpected status 418"},
-		"explicit codes":       {probe.Spec{URL: srv.URL + "/teapot", Timeout: time.Second, StatusCodes: []int32{418}}, true, "HTTP 418"},
-		"timeout":              {probe.Spec{URL: srv.URL + "/slow", Timeout: 50 * time.Millisecond}, false, "timed out after 50ms"},
-		"latency budget":       {probe.Spec{URL: srv.URL + "/slow", Timeout: time.Second, MaxLatency: 100 * time.Millisecond}, false, "slower than maxLatency"},
-		"connection refused":   {probe.Spec{URL: "http://127.0.0.1:1/", Timeout: time.Second}, false, "dial"},
-		"unresolvable service": {probe.Spec{URL: "http://no-such-svc.invalid/", Timeout: time.Second}, false, "DNS lookup failed"},
+		"2xx is healthy": {spec("/ok", time.Second), true, "HTTP 200"},
+		"418 is not": {spec("/teapot", time.Second), false,
+			"unexpected status 418"},
+		"explicit codes": {codes, true, "HTTP 418"},
+		"timeout": {spec("/slow", 50*time.Millisecond), false,
+			"timed out after 50ms"},
+		"latency budget": {budget, false, "slower than maxLatency"},
+		"connection refused": {probe.Spec{URL: "http://127.0.0.1:1/",
+			Timeout: time.Second}, false, "dial"},
+		"unresolvable service": {probe.Spec{URL: "http://no-such-svc.invalid/",
+			Timeout: time.Second}, false, "DNS lookup failed"},
 	} {
 		t.Run(name, func(t *testing.T) {
 			res := p.Probe(t.Context(), tc.spec)

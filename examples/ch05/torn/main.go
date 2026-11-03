@@ -1,3 +1,5 @@
+// START imports OMIT
+
 // Command torn rewrites a config file in a loop while another goroutine
 // reads it, and counts how often the reader sees something that is neither
 // the old version nor the new one.
@@ -10,6 +12,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sync"
@@ -19,8 +22,11 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/fsx"
 )
 
+// END imports OMIT
+
+// START main OMIT
 func main() {
-	mode := flag.String("mode", "naive", "naive or atomic")
+	mode := flag.String("mode", "naive", "how to write: naive or atomic")
 	dur := flag.Duration("for", 2*time.Second, "how long to run")
 	flag.Parse()
 	if err := run(*mode, *dur); err != nil {
@@ -29,11 +35,29 @@ func main() {
 	}
 }
 
+// END main OMIT
+
+// START writer OMIT
+// writeFunc has the signature of os.WriteFile.
+type writeFunc func(name string, data []byte, perm fs.FileMode) error
+
+func writer(mode string) (writeFunc, error) {
+	switch mode {
+	case "naive":
+		return os.WriteFile, nil // truncate, then write: readers see the gap
+	case "atomic":
+		return fsx.WriteFile, nil // a new file, renamed over the old one
+	}
+	return nil, fmt.Errorf("unknown -mode %q", mode)
+}
+
+// END writer OMIT
+
 // START run OMIT
 func run(mode string, dur time.Duration) error {
-	write := os.WriteFile // truncate, then write: readers can see the gap
-	if mode == "atomic" {
-		write = fsx.WriteFile
+	write, err := writer(mode)
+	if err != nil {
+		return err
 	}
 	dir, err := os.MkdirTemp("", "torn-")
 	if err != nil {
@@ -47,7 +71,7 @@ func run(mode string, dur time.Duration) error {
 	}
 
 	var stop atomic.Bool
-	var reads, empty, short, mixed int
+	var reads, empty, short, mixed int // owned by the reader until wg.Wait
 	var wg sync.WaitGroup
 	wg.Go(func() { // the reader: a service polling its config file
 		for !stop.Load() {
@@ -80,9 +104,12 @@ func run(mode string, dur time.Duration) error {
 
 // END run OMIT
 
+// START payload OMIT
 // payload is a 256 KiB JSON-ish document whose every byte names its version.
 func payload(version byte) []byte {
 	b := bytes.Repeat([]byte{version}, 256<<10)
 	b[0], b[len(b)-1] = '{', '}'
 	return b
 }
+
+// END payload OMIT

@@ -1,0 +1,2 @@
+# runtime/cgo
+gcc_amd64.S:27:8: error: unknown token in expression

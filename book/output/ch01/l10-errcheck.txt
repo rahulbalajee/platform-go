@@ -1,0 +1,5 @@
+cmd/stamp/main.go:43:24: Error return value of `(stamp/buildinfo.Info).Write` is not checked (errcheck)
+		buildinfo.Get().Write(stdout, format)
+		                     ^
+1 issues:
+* errcheck: 1

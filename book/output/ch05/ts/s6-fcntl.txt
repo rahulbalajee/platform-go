@@ -1,0 +1,1 @@
+    lock_test.go:43: second TryLock: err = <nil>, want ErrLocked

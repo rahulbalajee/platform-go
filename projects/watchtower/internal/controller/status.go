@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package controller
 
 import (
@@ -10,6 +12,10 @@ import (
 	"github.com/rahulbalajee/platform-go/projects/watchtower/internal/probe"
 )
 
+// END imports OMIT
+
+// START transition OMIT
+
 // transition is a change in health worth telling humans about.
 type transition int
 
@@ -19,7 +25,10 @@ const (
 	recovered
 )
 
+// END transition OMIT
+
 // START apply OMIT
+
 // applyProbe folds one probe result into hc.Status and reports whether the
 // check crossed between healthy and unhealthy. It is a pure function of
 // (status, spec, result): no clients, no clocks beyond what
@@ -63,7 +72,13 @@ func applyProbe(hc *v1alpha1.HealthCheck, res probe.Result) transition {
 
 // END apply OMIT
 
-func setHealthy(hc *v1alpha1.HealthCheck, s metav1.ConditionStatus, reason, msg string) {
+// START sethealthy OMIT
+
+// setHealthy sets the Healthy condition. meta.SetStatusCondition only moves
+// lastTransitionTime when the status itself changes.
+func setHealthy(
+	hc *v1alpha1.HealthCheck, s metav1.ConditionStatus, reason, msg string,
+) {
 	meta.SetStatusCondition(&hc.Status.Conditions, metav1.Condition{
 		Type:               v1alpha1.ConditionHealthy,
 		Status:             s,
@@ -73,7 +88,14 @@ func setHealthy(hc *v1alpha1.HealthCheck, s metav1.ConditionStatus, reason, msg 
 	})
 }
 
-func setAlerting(hc *v1alpha1.HealthCheck, s metav1.ConditionStatus, reason, msg string) {
+// END sethealthy OMIT
+
+// START setalerting OMIT
+
+// setAlerting sets the AlertingReady condition.
+func setAlerting(
+	hc *v1alpha1.HealthCheck, s metav1.ConditionStatus, reason, msg string,
+) {
 	meta.SetStatusCondition(&hc.Status.Conditions, metav1.Condition{
 		Type:               v1alpha1.ConditionAlertingReady,
 		Status:             s,
@@ -83,10 +105,18 @@ func setAlerting(hc *v1alpha1.HealthCheck, s metav1.ConditionStatus, reason, msg
 	})
 }
 
+// END setalerting OMIT
+
+// START synced OMIT
+
 // alertingSynced reports whether the current generation's alert rule has
 // already been pushed to backend.
 func alertingSynced(hc *v1alpha1.HealthCheck, backend string) bool {
 	a := hc.Status.Alerting
-	return a != nil && a.Backend == backend && a.ObservedGeneration == hc.Generation &&
-		meta.IsStatusConditionTrue(hc.Status.Conditions, v1alpha1.ConditionAlertingReady)
+	return a != nil && a.Backend == backend &&
+		a.ObservedGeneration == hc.Generation &&
+		meta.IsStatusConditionTrue(hc.Status.Conditions,
+			v1alpha1.ConditionAlertingReady)
 }
+
+// END synced OMIT

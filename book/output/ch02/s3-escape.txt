@@ -1,0 +1,6 @@
+--- FAIL: TestIDsCannotEscapeTheirPath (0.00s)
+    errors_test.go:46: err = <nil>, want ErrNotFound
+FAIL
+FAIL    platformapi     1.446s
+ok      platformapi/platformapifake     0.676s
+FAIL

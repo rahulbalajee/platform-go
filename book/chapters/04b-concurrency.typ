@@ -234,8 +234,7 @@ work. Now replace `Run`:
 
 #src("workbook/ch04/step3/internal/sweep/runner.go", region: "run")
 
-`r.check` already has the shape `Stream` wants, `func(context.Context,
-Target) Result`, so the method value is passed directly. The `sync` import is
+`r.check` already has the shape `Stream` wants, `func(context.Context, Target) Result`, so the method value is passed directly. The `sync` import is
 gone, and so is every channel `Run` used to manage.
 
 `main.go` gets a `-c` flag. Replace `options` and `parseFlags`:
@@ -330,8 +329,7 @@ nothing about any of them: it talks to a one-method interface, and each
 protocol lives behind it.
 
 #goconcept(title: [Interfaces])[
-  An interface type lists methods: `type Prober interface { Probe(ctx, t)
-  (string, error) }`. Any type with those methods satisfies it automatically;
+  An interface type lists methods: `type Prober interface { Probe(ctx, t) (string, error) }`. Any type with those methods satisfies it automatically;
   there is no `implements` keyword, unlike Java or C\#. Code that accepts a
   `Prober` works with every prober, including fakes in tests. Keep interfaces
   small (one or two methods is normal) and define them where they are _used_,
@@ -690,8 +688,7 @@ wrappers:
 `Permanent` and `After` are _transparent_: `Error` returns the wrapped
 message, and `Unwrap` exposes it to `errors.Is` and `errors.As`, so callers can
 mark an error without changing what users see. `ExhaustedError` wraps the
-last attempt's error, so a caller can still ask `errors.Is(err,
-syscall.ECONNREFUSED)` after three attempts.
+last attempt's error, so a caller can still ask `errors.Is(err, syscall.ECONNREFUSED)` after three attempts.
 
 === Tests for `retry`
 

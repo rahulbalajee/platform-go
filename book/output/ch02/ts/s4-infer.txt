@@ -1,0 +1,1 @@
+./api.go:28:15: in call to c.call, cannot infer T (declared at ./transport.go:231:23)

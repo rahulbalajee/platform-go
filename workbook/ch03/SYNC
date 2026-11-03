@@ -1,0 +1,37 @@
+# Chapter 3's final build step is the production code: pkg/clierr, the
+# error and exit-code layer every CLI in the book shares, and the deployctl
+# example with its fake API and labs. book/scripts/check_workbook.py checks
+# that each pair below is identical apart from OMIT markers and these
+# import paths.
+@import deployctl/pkg/clierr = github.com/rahulbalajee/platform-go/pkg/clierr
+@import deployctl/internal/fakeapi = github.com/rahulbalajee/platform-go/examples/ch03/fakeapi
+
+workbook/ch03/step8/pkg/clierr/code.go = pkg/clierr/code.go
+workbook/ch03/step8/pkg/clierr/error.go = pkg/clierr/error.go
+workbook/ch03/step8/pkg/clierr/program.go = pkg/clierr/program.go
+workbook/ch03/step8/pkg/clierr/signal.go = pkg/clierr/signal.go
+workbook/ch03/step8/pkg/clierr/panic.go = pkg/clierr/panic.go
+workbook/ch03/step8/pkg/clierr/clierr_test.go = pkg/clierr/clierr_test.go
+workbook/ch03/step8/pkg/clierr/testdata/partial.text.golden = pkg/clierr/testdata/partial.text.golden
+workbook/ch03/step8/pkg/clierr/testdata/partial.json.golden = pkg/clierr/testdata/partial.json.golden
+workbook/ch03/step8/internal/fakeapi/fakeapi.go = examples/ch03/fakeapi/fakeapi.go
+workbook/ch03/step8/cmd/fakeapi/main.go = examples/ch03/fakeapi/cmd/fakeapi/main.go
+workbook/ch03/step8/cmd/deployctl/main.go = examples/ch03/deployctl/main.go
+workbook/ch03/step8/cmd/deployctl/config.go = examples/ch03/deployctl/config.go
+workbook/ch03/step8/cmd/deployctl/client.go = examples/ch03/deployctl/client.go
+workbook/ch03/step8/cmd/deployctl/deploy.go = examples/ch03/deployctl/deploy.go
+workbook/ch03/step8/cmd/deployctl/status.go = examples/ch03/deployctl/status.go
+workbook/ch03/step8/cmd/deployctl/run_test.go = examples/ch03/deployctl/run_test.go
+workbook/ch03/step8/cmd/deployctl/main_test.go = examples/ch03/deployctl/main_test.go
+workbook/ch03/step8/cmd/deployctl/testdata/badflag.golden = examples/ch03/deployctl/testdata/badflag.golden
+workbook/ch03/step8/cmd/deployctl/testdata/noconfig.golden = examples/ch03/deployctl/testdata/noconfig.golden
+workbook/ch03/step8/cmd/deployctl/testdata/partial.golden = examples/ch03/deployctl/testdata/partial.golden
+workbook/ch03/step8/cmd/deployctl/testdata/timeout.golden = examples/ch03/deployctl/testdata/timeout.golden
+workbook/ch03/step8/prod.json = examples/ch03/deployctl/testdata/prod.json
+workbook/ch03/step8/staging.json = examples/ch03/deployctl/testdata/staging.json
+workbook/ch03/step8/job.yaml = examples/ch03/deployctl/job.yaml
+workbook/ch03/step8/lab/chain/main.go = examples/ch03/chain/main.go
+workbook/ch03/step8/lab/exitcount/main.go = examples/ch03/exitcount/main.go
+workbook/ch03/step8/lab/gopanic/main.go = examples/ch03/gopanic/main.go
+workbook/ch03/step8/lab/httppanic/main.go = examples/ch03/httppanic/main.go
+workbook/ch03/step8/lab/testdata/ptrwrap.go = examples/ch03/testdata/ptrwrap.go

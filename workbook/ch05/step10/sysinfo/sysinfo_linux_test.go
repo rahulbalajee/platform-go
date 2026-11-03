@@ -1,0 +1,47 @@
+// START imports OMIT
+
+//go:build linux
+
+package sysinfo_test
+
+import (
+	"os"
+	"testing"
+
+	"oskit/sysinfo"
+)
+
+// END imports OMIT
+
+// START proc OMIT
+// These tests read the real /proc and /sys/fs/cgroup of the test process.
+// They only compile on Linux; run them in CI, or in a container.
+
+func TestRealProcSelf(t *testing.T) {
+	st, err := sysinfo.ReadStat(sysinfo.Host(), "self")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if st.PID != os.Getpid() || st.PPID != os.Getppid() || st.State != 'R' {
+		t.Fatalf("stat = %+v, want pid %d ppid %d state R",
+			st, os.Getpid(), os.Getppid())
+	}
+	if st.Threads < 2 {
+		t.Errorf("Threads = %d; the Go runtime always runs several", st.Threads)
+	}
+}
+
+func TestRealProcesses(t *testing.T) {
+	ps, err := sysinfo.Processes(sysinfo.Host())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range ps {
+		if p.PID == os.Getpid() {
+			return
+		}
+	}
+	t.Fatalf("own PID %d not among %d processes", os.Getpid(), len(ps))
+}
+
+// END proc OMIT

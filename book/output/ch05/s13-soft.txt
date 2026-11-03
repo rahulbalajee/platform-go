@@ -1,0 +1,2 @@
+RLIMIT_NOFILE 4095: opened 4089 files, then: open /proc/self/status: too many open files
+errors.Is(err, syscall.EMFILE) = true

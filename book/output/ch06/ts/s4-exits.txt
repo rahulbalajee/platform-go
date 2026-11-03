@@ -1,0 +1,1 @@
+            FAIL: testdata/script/exit_status.txtar:25: sweep exited with status 2, want 1

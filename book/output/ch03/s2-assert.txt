@@ -1,0 +1,5 @@
+cmd/deployctl/client.go:140:16: type assertion on error will fail on wrapped errors. Use errors.As to check for specific errors (errorlint)
+        apiErr, ok := err.(*APIError)
+                      ^
+1 issues:
+* errorlint: 1

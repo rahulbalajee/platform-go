@@ -1,0 +1,9 @@
+./cmd/deployctl/client.go
+./cmd/deployctl/config.go
+./cmd/deployctl/deploy.go
+./cmd/deployctl/main.go
+./cmd/deployctl/run_test.go
+./cmd/fakeapi/main.go
+./internal/fakeapi/fakeapi.go
+./lab/chain/main.go
+./lab/testdata/ptrwrap.go

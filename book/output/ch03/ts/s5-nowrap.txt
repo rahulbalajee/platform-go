@@ -1,0 +1,2 @@
+    run_test.go:210: CodeOf = failure, want tempfail
+    run_test.go:216: message = "deploy of v1.4.2 interrupted; 1 of 2 targets not updated"

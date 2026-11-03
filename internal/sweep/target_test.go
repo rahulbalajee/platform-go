@@ -81,13 +81,14 @@ func TestParseTargetsRejects(t *testing.T) {
 		"tcp without port":   {"tcp://db.example.com", "tcp targets need host:port"},
 		"missing host":       {"https:///healthz", "missing host"},
 		"unparseable":        {"http://[::1", "missing ']' in host"},
-		"port out of range":  {"tcp://db.example.com:100000", "invalid port"},
-		"port zero":          {"https://example.com:0/", "invalid port"},
 		"line numbers": {
 			"# fleet\nhttps://ok.example.com\nftp://a\ntcp://b\n",
 			"line 3: \"ftp://a\": unsupported scheme \"ftp\" (want http, https, " +
 				"tcp, tls, dns)\n  line 4: \"tcp://b\": tcp targets need host:port",
 		},
+		// Found by FuzzParseTargets: url.Parse accepts any digits as a port.
+		"port out of range": {"tcp://db.example.com:100000", "invalid port"},
+		"port zero":         {"https://example.com:0/", "invalid port"},
 	}
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {

@@ -1,0 +1,12 @@
+sweep/internal/sweep/resolver.go:38:    LookupHost              0.0%
+sweep/internal/sweep/resolver.go:71:    cached                  0.0%
+sweep/internal/sweep/resolver.go:81:    store                   0.0%
+sweep/retry/retry.go:171:               Error                   0.0%
+sweep/retry/retry.go:180:               Error                   0.0%
+sweep/internal/sweep/resolver.go:95:    DialContext             27.8%
+sweep/internal/sweep/probe.go:194:      Probe                   50.0%
+sweep/cmd/sweep/main.go:215:            defaultProbers          66.7%
+sweep/retry/retry.go:148:               Permanent               66.7%
+sweep/internal/sweep/probe.go:208:      humanDays               75.0%
+sweep/retry/retry.go:132:               shouldRetry             80.0%
+sweep/internal/sweep/probe.go:147:      Probe                   81.8%

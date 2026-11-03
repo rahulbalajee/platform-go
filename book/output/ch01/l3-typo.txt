@@ -1,0 +1,2 @@
+main.go:6:2: example.com/codec@v1.4.0: replacement directory ../fork/codex does not exist
+../../modcache/example.com/log@v1.2.0/log.go:3:8: example.com/codec@v1.4.0: replacement directory ../fork/codex does not exist

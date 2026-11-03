@@ -1,0 +1,6 @@
+STATUS  TARGET                    LATENCY  TRIES  DETAIL
+UP      https://api.test/healthz  42ms     1      200 OK
+DOWN    https://web.test/healthz  2s       3      unhealthy status 503 Service Unavailable (after 3 attempts)
+UP      tcp://db.test:5432        3ms      1      connected to 10.0.3.7:5432
+DOWN    tls://legacy.test:443     81ms     1      certificate expires in 6d (minimum 14d)
+DOWN    dns://gone.test           12ms     1      lookup gone.test: no such host

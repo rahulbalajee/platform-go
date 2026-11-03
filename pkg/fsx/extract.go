@@ -1,3 +1,5 @@
+// START tar OMIT
+
 package fsx
 
 import (
@@ -49,6 +51,8 @@ func ExtractTar(r io.Reader, root *os.Root, lim Limits) error {
 		}
 	}
 }
+
+// END tar OMIT
 
 // START extract OMIT
 // extractEntry writes one archive entry through root. budget is the number

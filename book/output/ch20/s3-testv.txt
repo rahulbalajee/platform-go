@@ -1,0 +1,5 @@
+--- PASS: TestHealthCheckLifecycle (12.33s)
+--- PASS: TestApplyProbeStateMachine (0.00s)
+--- PASS: TestSaturatedFailureCausesNoStatusChange (0.00s)
+PASS
+ok      watchtower/internal/controller  16.461s

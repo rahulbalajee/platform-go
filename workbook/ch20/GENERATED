@@ -1,0 +1,33 @@
+# Files that commands printed in Chapter 20 produce, relative to a step
+# directory. book/scripts/check_workbook.py skips them in its coverage check.
+
+# kubebuilder init --domain platformgo.dev --license none
+# kubebuilder create api --group watchtower --version v1alpha1 --kind HealthCheck
+# (scaffold files the chapter never edits)
+.custom-gcl.yml
+.dockerignore
+.gitignore
+.golangci.yml
+AGENTS.md
+Dockerfile
+Makefile
+PROJECT
+README.md
+api/v1alpha1/groupversion_info.go
+config/crd/kustomization.yaml
+config/crd/kustomizeconfig.yaml
+config/default/*
+config/manager/manager.yaml
+config/network-policy/*
+config/prometheus/*
+config/rbac/*
+config/samples/kustomization.yaml
+
+# make manifests (controller-gen: CRD and ClusterRole, incl. config/rbac/role.yaml)
+config/crd/bases/*
+
+# make generate (controller-gen: DeepCopy methods)
+api/v1alpha1/zz_generated.deepcopy.go
+
+# make deploy IMG=watchtower:dev (kustomize edit set image)
+config/manager/kustomization.yaml

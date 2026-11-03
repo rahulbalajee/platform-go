@@ -1,0 +1,5 @@
+../../../..~/broken/internal/controller/metrics.go:68:6: func forget is unused (unused)
+func forget(namespace, name string) {
+     ^
+1 issues:
+* unused: 1

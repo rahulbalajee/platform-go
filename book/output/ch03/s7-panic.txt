@@ -1,0 +1,5 @@
+us-east-1   v1.4.1 (previous v1.4.0 since 2026-10-28T09:12:00Z)
+deployctl: internal error: runtime error: invalid memory address or nil pointer dereference
+  this is a bug in deployctl; a crash report was saved to
+  /tmp/deployctl-crash-173886242.txt
+  hint: attach that file to an issue at https://github.com/rahulbalajee/platform-go/issues

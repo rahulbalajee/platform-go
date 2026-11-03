@@ -1,0 +1,4 @@
+--- PASS: TestLockReleasedWhenHolderIsKilled (0.01s)
+--- PASS: TestAcquireWaitsForRelease (0.16s)
+--- PASS: TestAcquireGivesUpWithContext (0.10s)
+ok      oskit/fsx       1.319s

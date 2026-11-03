@@ -1,0 +1,1 @@
+    lock_test.go:43: second TryLock: err = lock $TMPDIR/TestTryLockIsExclusiveWithinOneProcess2269631319/001/tool.lock: resource temporarily unavailable, want ErrLocked

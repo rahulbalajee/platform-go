@@ -1,0 +1,8 @@
+--- PASS: TestDatadogEnsureIsIdempotentAcrossLostStatus (0.00s)
+--- PASS: TestDatadogRecreatesMonitorDeletedInUI (0.00s)
+--- PASS: TestDatadogRemoveIsIdempotent (0.00s)
+--- PASS: TestDatadogWithoutCredentialsIsUnavailable (0.00s)
+ok      watchtower/internal/alerting    0.353s
+--- PASS: TestDatadogFinalizer (2.01s)
+ok      watchtower/internal/controller  5.316s
+ok      watchtower/internal/probe       0.169s [no tests to run]

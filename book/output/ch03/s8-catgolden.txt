@@ -1,0 +1,5 @@
+deployctl: deploy of v1.4.2 failed on 2 of 4 targets [DPL-PARTIAL]
+  - eu-west-1: health check failing on 3/3 replicas (HTTP 503, 3 attempts)
+  - sa-east-1: deploy already in progress, started by ci-bot (HTTP 409)
+  hint: fix the failing targets, then re-run with -only eu-west-1,sa-east-1
+  docs: https://github.com/rahulbalajee/platform-go/tree/main/examples/ch03#dpl-partial

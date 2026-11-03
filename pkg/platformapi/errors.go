@@ -1,3 +1,5 @@
+// START errors OMIT
+
 package platformapi
 
 import (
@@ -7,13 +9,11 @@ import (
 	"time"
 )
 
-// START errors OMIT
-
 // Sentinel errors for the conditions callers branch on. Test with
 // errors.Is; the *APIError in the chain carries the details.
 var (
-	ErrNotFound = errors.New("platformapi: not found") // 404
-	ErrConflict = errors.New("platformapi: conflict")  // 409
+	ErrNotFound = errors.New("github.com/rahulbalajee/platform-go/pkg/platformapi: not found") // 404
+	ErrConflict = errors.New("github.com/rahulbalajee/platform-go/pkg/platformapi: conflict")  // 409
 )
 
 // APIError is an error response from the platform API.

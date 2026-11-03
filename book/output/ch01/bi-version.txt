@@ -1,1 +1,0 @@
-stamp v0.0.0-20261103092110-f4030eafc9cc+dirty go1.27.3 darwin/arm64

@@ -1,0 +1,3 @@
+flag provided but not defined: -parallel
+Usage of deploy:
+deployctl: flag provided but not defined: -parallel

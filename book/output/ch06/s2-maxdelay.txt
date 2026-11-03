@@ -1,0 +1,5 @@
+--- FAIL: TestRunnerHonoursRetryAfter (0.00s)
+    fake_test.go:108: retried after 2s, want the 3s the server asked for
+FAIL
+FAIL    sweep/internal/sweep    0.594s
+FAIL

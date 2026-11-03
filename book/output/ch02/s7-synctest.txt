@@ -1,0 +1,9 @@
+=== RUN   TestRetriesReuseTheIdempotencyKey
+--- PASS: TestRetriesReuseTheIdempotencyKey (0.00s)
+=== RUN   TestRetryAfterIsHonoured
+--- PASS: TestRetryAfterIsHonoured (0.00s)
+=== RUN   TestRetriesGiveUp
+--- PASS: TestRetriesGiveUp (0.00s)
+=== RUN   TestLimiterGatesEveryAttempt
+--- PASS: TestLimiterGatesEveryAttempt (0.00s)
+ok      platformapi     1.001s

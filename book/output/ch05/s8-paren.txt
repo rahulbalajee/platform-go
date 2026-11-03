@@ -1,0 +1,5 @@
+--- FAIL: TestReadStatHostileComm (0.00s)
+    sysinfo_test.go:25: stat field "3)": strconv.ParseInt: parsing "3)": invalid syntax
+FAIL
+FAIL    oskit/sysinfo   1.239s
+FAIL

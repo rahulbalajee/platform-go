@@ -165,8 +165,7 @@ lists failures we produced on purpose by breaking a copy of that step, with the
 exact message each one prints.
 
 If you get stuck, the repository has every step as a complete module under
-`workbook/ch04/step1` to `step7`, and each one passes `go vet`, `go test
--race` and `golangci-lint`. Diff your directory against the step you are on.
+`workbook/ch04/step1` to `step7`, and each one passes `go vet`, `go test -race` and `golangci-lint`. Diff your directory against the step you are on.
 The last step is not a toy: the repository's `pkg/conc`, `pkg/retry`,
 `pkg/lifecycle`, `internal/sweep` and `cmd/sweep` are the same files with
 longer import paths, and a check in CI keeps them identical.
@@ -318,8 +317,7 @@ And the check itself:
 #src("workbook/ch04/step1/internal/sweep/runner.go", region: "check")
 
 `context.WithTimeout` derives a context that expires after `r.cfg.Timeout`;
-the HTTP request built from it is abandoned at that moment. The `defer
-cancel()` releases the timer as soon as the check finishes rather than when
+the HTTP request built from it is abandoned at that moment. The `defer cancel()` releases the timer as soon as the check finishes rather than when
 the timeout would have fired.
 
 #goconcept(title: [`context.Context`])[

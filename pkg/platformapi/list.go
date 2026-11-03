@@ -1,3 +1,5 @@
+// START page OMIT
+
 package platformapi
 
 import (
@@ -6,8 +8,6 @@ import (
 	"net/url"
 	"strconv"
 )
-
-// START page OMIT
 
 // page is the wire shape of every list response.
 type page[T any] struct {

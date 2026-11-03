@@ -1,26 +1,17 @@
 Vulnerability #1: GO-2026-6617
     Found in: golang.org/x/net@v0.59.0
-    Fixed in: golang.org/x/net@v0.60.0
 Vulnerability #2: GO-2026-6612
     Found in: golang.org/x/net@v0.59.0
-    Fixed in: golang.org/x/net@v0.60.0
 Vulnerability #3: GO-2026-6611
     Found in: golang.org/x/net@v0.59.0
-    Fixed in: golang.org/x/net@v0.60.0
 Vulnerability #4: GO-2026-6610
     Found in: golang.org/x/net@v0.59.0
-    Fixed in: golang.org/x/net@v0.60.0
 Vulnerability #5: GO-2026-6603
     Found in: golang.org/x/net@v0.59.0
-    Fixed in: golang.org/x/net@v0.60.0
 Vulnerability #6: GO-2026-6505
     Found in: go.opentelemetry.io/otel/exporters/otlp/otlptrace@v1.44.0
-    Fixed in: go.opentelemetry.io/otel/exporters/otlp/otlptrace@v1.45.0
     Found in: go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.44.0
-    Fixed in: go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc@v1.45.0
     Found in: go.opentelemetry.io/otel/sdk@v1.44.0
-    Fixed in: go.opentelemetry.io/otel/sdk@v1.45.0
 Vulnerability #7: GO-2026-6348
     Found in: google.golang.org/grpc@v1.82.1
-    Fixed in: google.golang.org/grpc@v1.83.1
 Your code is affected by 7 vulnerabilities from 3 modules.

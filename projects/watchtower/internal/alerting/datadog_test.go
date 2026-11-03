@@ -1,3 +1,5 @@
+// START ddtesthead OMIT
+
 package alerting_test
 
 import (
@@ -17,7 +19,10 @@ import (
 func newBackend(t *testing.T) (*alerting.Datadog, *ddfake.Server) {
 	t.Helper()
 	fake := ddfake.New(t)
-	return &alerting.Datadog{BaseURL: fake.URL, APIKey: "k", AppKey: "a", HTTP: fake.Client()}, fake
+	dd := &alerting.Datadog{
+		BaseURL: fake.URL, APIKey: "k", AppKey: "a", HTTP: fake.Client(),
+	}
+	return dd, fake
 }
 
 func check() *v1alpha1.HealthCheck {
@@ -30,6 +35,8 @@ func check() *v1alpha1.HealthCheck {
 		}},
 	}
 }
+
+// END ddtesthead OMIT
 
 // START ddtest OMIT
 func TestDatadogEnsureIsIdempotentAcrossLostStatus(t *testing.T) {
@@ -62,6 +69,7 @@ func TestDatadogEnsureIsIdempotentAcrossLostStatus(t *testing.T) {
 
 // END ddtest OMIT
 
+// START ddtestmore OMIT
 func TestDatadogRecreatesMonitorDeletedInUI(t *testing.T) {
 	dd, fake := newBackend(t)
 	hc := check()
@@ -101,3 +109,5 @@ func TestDatadogWithoutCredentialsIsUnavailable(t *testing.T) {
 		t.Fatalf("err = %v, want ErrUnavailable", err)
 	}
 }
+
+// END ddtestmore OMIT

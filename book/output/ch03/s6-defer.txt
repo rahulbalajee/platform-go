@@ -1,0 +1,8 @@
+--- FAIL: TestLogFileRecordsTheFailure (0.00s)
+    run_test.go:277: the log lacks the failure record:
+        {"time":"2026-11-03T18:26:12.799982+05:30","level":"DEBUG","msg":"api call","method":"GET","path":"/v1/whoami","token":"[REDACTED]"}
+        {"time":"2026-11-03T18:26:12.800501+05:30","level":"DEBUG","msg":"api call","method":"POST","path":"/v1/deploy/sa-east-1","token":"[REDACTED]"}
+        {"time":"2026-11-03T18:26:12.800515+05:30","level":"DEBUG","msg":"api call","method":"POST","path":"/v1/deploy/us-east-1","token":"[REDACTED]"}
+FAIL
+FAIL    deployctl/cmd/deployctl 2.436s
+FAIL

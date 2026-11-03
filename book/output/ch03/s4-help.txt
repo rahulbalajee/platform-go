@@ -1,0 +1,9 @@
+usage: deployctl [-config FILE] COMMAND
+
+commands:
+  init             write a starter deployctl.json
+  deploy VERSION   roll VERSION out to every target
+
+flags:
+  -config file
+        config file (default "deployctl.json")

@@ -1,3 +1,4 @@
+// START imports OMIT
 package clierr_test
 
 import (
@@ -20,12 +21,14 @@ import (
 	"go.uber.org/goleak"
 
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
-	"github.com/rahulbalajee/platform-go/pkg/lifecycle"
-	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
 
+// END imports OMIT
+// START testmain OMIT
 func TestMain(m *testing.M) { goleak.VerifyTestMain(m) }
 
+// END testmain OMIT
+// START fixtures OMIT
 var update = flag.Bool("update", false, "rewrite testdata/*.golden")
 
 // netTimeout behaves like a *net.OpError for an i/o timeout.
@@ -34,6 +37,14 @@ type netTimeout struct{}
 func (netTimeout) Error() string { return "read tcp 10.0.0.1:443: i/o timeout" }
 func (netTimeout) Timeout() bool { return true }
 
+// gaveUp is how a retry helper reports its last failure: a type of its
+// own that wraps the cause.
+type gaveUp struct{ last error }
+
+func (g *gaveUp) Error() string { return "gave up: " + g.last.Error() }
+func (g *gaveUp) Unwrap() error { return g.last }
+
+// END fixtures OMIT
 // START codeof OMIT
 func TestCodeOf(t *testing.T) {
 	usage := &clierr.Error{Code: clierr.ExitUsage, Message: "bad flag"}
@@ -49,19 +60,24 @@ func TestCodeOf(t *testing.T) {
 		{"wrapped", fmt.Errorf("deploy: %w", usage), clierr.ExitUsage},
 		{"joined", errors.Join(errors.New("a"), usage), clierr.ExitUsage},
 		{"zero code infers", &clierr.Error{Err: netTimeout{}}, clierr.ExitTempFail},
+		{"explicit beats inferred",
+			&clierr.Error{Code: clierr.ExitFailure, Err: netTimeout{}},
+			clierr.ExitFailure},
 		{"deadline", fmt.Errorf("x: %w", context.DeadlineExceeded),
 			clierr.ExitTempFail},
 		{"behaviour", fmt.Errorf("get: %w", netTimeout{}), clierr.ExitTempFail},
-		{"retry exhausted",
-			&retry.ExhaustedError{Attempts: 3, Err: netTimeout{}},
-			clierr.ExitTempFail},
+		{"retry wrapper", &gaveUp{last: netTimeout{}}, clierr.ExitTempFail},
 		{"permission",
 			&fs.PathError{Op: "open", Path: "/etc/x", Err: fs.ErrPermission},
 			clierr.ExitNoPerm},
-		{"sigint", &lifecycle.SignalError{Signal: syscall.SIGINT}, 130},
-		{"sigterm", &lifecycle.SignalError{Signal: syscall.SIGTERM}, 143},
+		// START codeofsignal OMIT
+		{"sigint", &clierr.SignalError{Signal: syscall.SIGINT}, 130},
+		{"sigterm", &clierr.SignalError{Signal: syscall.SIGTERM}, 143},
+		// END codeofsignal OMIT
+		// START codeofpanic OMIT
 		{"panic beats all", errors.Join(usage, &clierr.PanicError{Value: 1}),
 			clierr.ExitInternal},
+		// END codeofpanic OMIT
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -74,7 +90,7 @@ func TestCodeOf(t *testing.T) {
 }
 
 // END codeof OMIT
-
+// START partial OMIT
 // partial is the multi-target failure used by the golden tests.
 func partial() error {
 	return &clierr.Error{
@@ -90,14 +106,21 @@ func partial() error {
 	}
 }
 
+// END partial OMIT
 // START golden OMIT
 // TestReportGolden pins the exact text people and scripts see. Run
-// `go test ./pkg/clierr -update` after an intended change and review the diff.
+// `go test -update` in this package after an intended change, and review
+// the diff of testdata/*.golden like any other code change.
 func TestReportGolden(t *testing.T) {
 	for _, tc := range []struct {
 		name string
 		json bool
-	}{{"partial.text", false}, {"partial.json", true}} {
+	}{
+		{"partial.text", false},
+		// START goldenjson OMIT
+		{"partial.json", true},
+		// END goldenjson OMIT
+	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var stderr bytes.Buffer
 			p := &clierr.Program{Name: "deployctl", Stderr: &stderr, JSON: tc.json}
@@ -126,7 +149,7 @@ func TestReportGolden(t *testing.T) {
 }
 
 // END golden OMIT
-
+// START help OMIT
 func TestHelpIsSilentSuccess(t *testing.T) {
 	var stderr bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &stderr}
@@ -136,10 +159,11 @@ func TestHelpIsSilentSuccess(t *testing.T) {
 	}
 }
 
+// END help OMIT
 // START signal OMIT
 func TestSignalCauseDecidesCode(t *testing.T) {
 	ctx, cancel := context.WithCancelCause(t.Context())
-	cancel(&lifecycle.SignalError{Signal: syscall.SIGTERM})
+	cancel(&clierr.SignalError{Signal: syscall.SIGTERM})
 
 	var stderr bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &stderr}
@@ -152,7 +176,6 @@ func TestSignalCauseDecidesCode(t *testing.T) {
 }
 
 // END signal OMIT
-
 // START panic OMIT
 func TestPanicBecomesCrashReport(t *testing.T) {
 	dir := t.TempDir()
@@ -186,7 +209,6 @@ func TestPanicBecomesCrashReport(t *testing.T) {
 }
 
 // END panic OMIT
-
 // START safe OMIT
 func TestSafeCarriesPanicsAcrossGoroutines(t *testing.T) {
 	errs := make([]error, 3)
@@ -221,7 +243,7 @@ func TestSafeCarriesPanicsAcrossGoroutines(t *testing.T) {
 }
 
 // END safe OMIT
-
+// START fallback OMIT
 func TestCrashFallsBackToStderr(t *testing.T) {
 	var stderr bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &stderr,
@@ -237,6 +259,8 @@ func TestCrashFallsBackToStderr(t *testing.T) {
 	}
 }
 
+// END fallback OMIT
+// START logrecord OMIT
 func TestLogRecordForOperators(t *testing.T) {
 	var log bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &bytes.Buffer{},
@@ -264,6 +288,7 @@ func TestLogRecordForOperators(t *testing.T) {
 	}
 }
 
+// END logrecord OMIT
 // START secret OMIT
 func TestSecretNeverPrints(t *testing.T) {
 	tok := clierr.Secret("ghp_live_0123456789")

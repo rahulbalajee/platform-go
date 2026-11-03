@@ -1,0 +1,2 @@
+Error: build linters: plugin(logcheck): plugin "logcheck" not found
+The command is terminated due to an error: build linters: plugin(logcheck): plugin "logcheck" not found

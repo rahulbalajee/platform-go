@@ -1,0 +1,16 @@
+--- FAIL: TestScripts (0.00s)
+    --- FAIL: TestScripts/exit_status (0.20s)
+        testscript.go:609: # The exit status is sweep's contract with CI:
+            # 0 every target is up, 1 some are down, 2 usage or input error.
+            # Every target up: exit 0, the table on stdout, the summary on stderr. (0.197s)
+            > exits 0 sweep healthy.txt
+            [stderr]
+            sweep: invalid targets:
+              line 2: "$FLEET/ok": unsupported scheme "" (want http, https, tcp, tls, dns)
+              line 3: "tcp://$FLEET_ADDR": tcp targets need host:port
+            
+            FAIL: testdata/script/exit_status.txtar:5: sweep exited with status 2, want 0
+            
+FAIL
+FAIL    sweep/sweepscript       0.956s
+FAIL

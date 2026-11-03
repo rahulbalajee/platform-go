@@ -1,0 +1,5 @@
+--- PASS: TestRealProcSelf (0.00s)
+--- PASS: TestRealProcesses (0.00s)
+--- PASS: TestReadStatHostileComm (0.00s)
+--- PASS: TestProcessesSkipsNonPIDs (0.00s)
+PASS

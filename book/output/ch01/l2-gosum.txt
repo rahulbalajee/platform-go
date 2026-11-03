@@ -1,0 +1,6 @@
+main.go:6:2: missing go.sum entry for module providing package example.com/codec/v2 (imported by example.com/app); to add:
+	go get example.com/app
+main.go:7:2: missing go.sum entry for module providing package example.com/log (imported by example.com/app); to add:
+	go get example.com/app
+main.go:8:2: missing go.sum entry for module providing package example.com/metrics (imported by example.com/app); to add:
+	go get example.com/app

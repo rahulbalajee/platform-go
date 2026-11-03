@@ -1,0 +1,27 @@
+# Chapter 6 starts from the finished Chapter 4 project: the reader copies
+# their own sweep directory (or workbook/ch04/step7) with the commands in
+# "Before the labs", and no lab changes these files. Chapter 4 prints them;
+# book/scripts/capture-ch06.sh checks that every step still matches them.
+cmd/fleet/main.go
+cmd/sweep/main.go
+cmd/sweep/main_test.go
+conc/conc.go
+conc/conc_test.go
+conc/keyed.go
+internal/sweep/main_test.go
+internal/sweep/probe.go
+internal/sweep/probe_test.go
+internal/sweep/report.go
+internal/sweep/resolver.go
+internal/sweep/runner.go
+internal/sweep/runner_test.go
+internal/sweep/summary_test.go
+internal/sweep/target.go
+lifecycle/lifecycle.go
+lifecycle/lifecycle_test.go
+retry/retry.go
+retry/retry_test.go
+
+# Fuzz corpus entries are written by `go test -fuzz` (Lab 5), which the
+# book prints; the file names are hashes of whatever input the fuzzer found.
+internal/sweep/testdata/fuzz/*/*

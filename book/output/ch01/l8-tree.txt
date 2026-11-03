@@ -1,0 +1,4 @@
+./buildinfo/buildinfo_test.go
+./buildinfo/buildinfo.go
+./cmd/stamp/main_test.go
+./cmd/stamp/main.go

@@ -1,0 +1,4 @@
+via pipe:
+  "stdout is not a terminal\n"
+  "deployed 3/3\n"
+ttydemo: read /dev/ptmx: input/output error

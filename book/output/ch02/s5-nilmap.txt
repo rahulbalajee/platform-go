@@ -1,0 +1,25 @@
+--- FAIL: TestBadPageSizeIsAnAPIError (0.00s)
+panic: assignment to entry in nil map [recovered, repanicked]
+
+goroutine 90 [running]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+net/url.Values.Set(...)
+        $GOROOT/src/net/url/url.go:909
+platformapi.(*Client).list[...].func1(...)
+        ~/broken/list.go:29
+platformapi.Collect[...](...)
+        ~/broken/list.go:59
+platformapi_test.TestBadPageSizeIsAnAPIError(0x…)
+        ~/broken/list_test.go:108 +0x230
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    platformapi     0.794s
+ok      platformapi/platformapifake     (cached)
+FAIL

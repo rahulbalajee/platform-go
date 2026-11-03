@@ -1,0 +1,12 @@
+=== RUN   TestParseTargets
+=== RUN   TestParseTargets/tcp/ipv6_literal
+=== PAUSE TestParseTargets/tcp/ipv6_literal
+=== RUN   TestParseTargets/tls/host_and_port
+=== PAUSE TestParseTargets/tls/host_and_port
+=== CONT  TestParseTargets/tcp/ipv6_literal
+=== CONT  TestParseTargets/tls/host_and_port
+--- PASS: TestParseTargets (0.00s)
+    --- PASS: TestParseTargets/tcp/ipv6_literal (0.00s)
+    --- PASS: TestParseTargets/tls/host_and_port (0.00s)
+PASS
+ok      sweep/internal/sweep    0.203s

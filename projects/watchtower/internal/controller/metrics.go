@@ -1,3 +1,5 @@
+// START head OMIT
+
 package controller
 
 import (
@@ -8,7 +10,10 @@ import (
 	"github.com/rahulbalajee/platform-go/projects/watchtower/internal/probe"
 )
 
+// END head OMIT
+
 // START metrics OMIT
+
 // Label names are check_namespace/check_name, not namespace/name: when
 // Prometheus scrapes the operator, it attaches the *operator's* namespace
 // as `namespace`, and a clashing metric label would be renamed to
@@ -42,6 +47,11 @@ func init() {
 	metrics.Registry.MustRegister(checkUp, probeDuration, probesTotal)
 }
 
+// END metrics OMIT
+
+// START observe OMIT
+
+// observe records one probe result.
 func observe(hc *v1alpha1.HealthCheck, res probe.Result) {
 	up, result := 0.0, "failure"
 	if res.OK {
@@ -62,4 +72,4 @@ func forget(namespace, name string) {
 	probesTotal.DeletePartialMatch(l)
 }
 
-// END metrics OMIT
+// END observe OMIT

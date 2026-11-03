@@ -1,0 +1,8 @@
+--- PASS: TestReportersGolden (0.00s)
+    --- PASS: TestReportersGolden/table (0.00s)
+    --- PASS: TestReportersGolden/wide (0.00s)
+    --- PASS: TestReportersGolden/json (0.00s)
+    --- PASS: TestReportersGolden/jsonl (0.00s)
+ok      sweep/internal/sweep    0.224s
+--- PASS: TestRunGolden (1.25s)
+ok      sweep/cmd/sweep 1.639s

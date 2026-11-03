@@ -1,0 +1,1 @@
+cmd/stamp/main.go:37:34: undefined: buildinfo.from

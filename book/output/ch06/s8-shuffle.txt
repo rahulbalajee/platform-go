@@ -1,0 +1,6 @@
+-test.shuffle 1793710971572297000
+--- FAIL: TestRegistryStartsEmpty (0.00s)
+    flaky_test.go:21: registry has 1 checks, want 0
+FAIL
+FAIL    sweep/flaky     0.462s
+FAIL

@@ -1,0 +1,12 @@
+--- FAIL: TestWaitFollowsRolloutToSuccess (0.00s)
+    operation_test.go:25: <nil>
+--- FAIL: TestResumeWaitingByOperationID (0.00s)
+    operation_test.go:134: Wait(resumed) = &{ID:d-9 Service:checkout Environment:staging Version:v1.5.0 State:succeeded Replicas:4 UpdatedReplicas:4 Reason: CreatedAt:2000-01-01 00:00:00 +0000 UTC}, <nil>
+FAIL
+FAIL    platformapi     3.944s
+--- FAIL: TestPromoteAgainstFakePlatform (0.01s)
+    promote_test.go:94: <nil>
+FAIL
+FAIL    platformapi/examples/promote    2.572s
+ok      platformapi/platformapifake     3.154s
+FAIL

@@ -1,0 +1,14 @@
+--- FAIL: TestRunGolden (1.23s)
+    golden_test.go:84: ~/broken/cmd/sweep/testdata/golden/run-stderr.golden mismatch (-want +got):
+          []string{
+                strings.Join({
+                        "checked 6/6 targets in ",
+        -               "ELAPSED",
+        +               "1.232s",
+                        ": 2 up, 4 down",
+                }, ""),
+                "",
+          }
+FAIL
+FAIL    sweep/cmd/sweep 1.783s
+FAIL

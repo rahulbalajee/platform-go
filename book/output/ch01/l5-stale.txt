@@ -1,0 +1,5 @@
+# tools/rollout
+rollout/phase_string.go:13:8: invalid argument: index 1 out of bounds [0:1]
+rollout/phase_string.go:14:8: invalid argument: index 1 out of bounds [0:1]
+rollout/phase_string.go:15:8: invalid argument: index 1 out of bounds [0:1]
+rollout/phase_string.go:16:8: invalid argument: index 1 out of bounds [0:1]

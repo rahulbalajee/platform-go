@@ -1,18 +1,4 @@
-/*
-Copyright 2026.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// START imports OMIT
 
 package v1alpha1
 
@@ -21,7 +7,10 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
+// END imports OMIT
+
 // START spec OMIT
+
 // HealthCheckSpec is the desired state: what to probe, how often, and what
 // counts as healthy.
 // +kubebuilder:validation:XValidation:rule="duration(self.timeout) < duration(self.interval)",message="timeout must be shorter than interval"
@@ -33,12 +22,12 @@ type HealthCheckSpec struct {
 	// +kubebuilder:default="30s"
 	// +kubebuilder:validation:XValidation:rule="duration(self) >= duration('5s')",message="interval must be at least 5s"
 	// +optional
-	Interval metav1.Duration `json:"interval,omitempty"`
+	Interval metav1.Duration `json:"interval,omitzero"`
 
 	// Timeout for a single probe. Must be shorter than interval.
 	// +kubebuilder:default="5s"
 	// +optional
-	Timeout metav1.Duration `json:"timeout,omitempty"`
+	Timeout metav1.Duration `json:"timeout,omitzero"`
 
 	// FailureThreshold is the number of consecutive failed probes before the
 	// check is reported unhealthy. Brief blips below it are absorbed.
@@ -61,6 +50,10 @@ type HealthCheckSpec struct {
 	// +optional
 	Suspend bool `json:"suspend,omitempty"`
 }
+
+// END spec OMIT
+
+// START target OMIT
 
 // Target identifies the endpoint to probe. Exactly one field must be set.
 // +kubebuilder:validation:XValidation:rule="has(self.url) != has(self.service)",message="exactly one of url or service must be set"
@@ -101,6 +94,10 @@ type ServiceTarget struct {
 	Scheme string `json:"scheme,omitempty"`
 }
 
+// END target OMIT
+
+// START expect OMIT
+
 // Expectations define a healthy response beyond "it answered".
 type Expectations struct {
 	// StatusCodes that count as healthy. Empty means any 2xx or 3xx.
@@ -125,7 +122,7 @@ type AlertSpec struct {
 	// For is how long the check must be failing before the alert fires.
 	// +kubebuilder:default="2m"
 	// +optional
-	For metav1.Duration `json:"for,omitempty"`
+	For metav1.Duration `json:"for,omitzero"`
 
 	// RunbookURL is attached to the alert so the responder knows what to do.
 	// +kubebuilder:validation:Pattern=`^https?://`
@@ -138,9 +135,10 @@ type AlertSpec struct {
 	Summary string `json:"summary,omitempty"`
 }
 
-// END spec OMIT
+// END expect OMIT
 
-// START status OMIT
+// START conditions OMIT
+
 // Condition types and reasons. Reasons are CamelCase, stable, and meant for
 // machines (alerting, kubectl wait); messages are for humans.
 const (
@@ -157,6 +155,10 @@ const (
 	ReasonBackendUnavailable = "BackendUnavailable"
 	ReasonSyncFailed         = "SyncFailed"
 )
+
+// END conditions OMIT
+
+// START status OMIT
 
 // HealthCheckStatus is the observed state. Fields are written only when they
 // change, so a steadily healthy check causes no API writes at all.
@@ -207,6 +209,7 @@ type AlertingStatus struct {
 // END status OMIT
 
 // START kind OMIT
+
 // HealthCheck continuously probes an endpoint, reports its health through
 // status conditions and metrics, and keeps an alert rule in sync.
 // +kubebuilder:object:root=true
@@ -233,6 +236,8 @@ type HealthCheck struct {
 
 // END kind OMIT
 
+// START list OMIT
+
 // +kubebuilder:object:root=true
 
 // HealthCheckList contains a list of HealthCheck.
@@ -243,8 +248,10 @@ type HealthCheckList struct {
 }
 
 func init() {
-	SchemeBuilder.Register(func(scheme *runtime.Scheme) error {
-		scheme.AddKnownTypes(SchemeGroupVersion, &HealthCheck{}, &HealthCheckList{})
+	SchemeBuilder.Register(func(s *runtime.Scheme) error {
+		s.AddKnownTypes(SchemeGroupVersion, &HealthCheck{}, &HealthCheckList{})
 		return nil
 	})
 }
+
+// END list OMIT

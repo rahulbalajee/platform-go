@@ -1,0 +1,8 @@
+cpu: Apple M5
+benchmark                  MB/s   largest write
+buf=512B                    378           512 B
+buf=4KiB                   2560          4096 B
+buf=32KiB                  6615         32768 B
+buf=256KiB                 8478        262144 B
+buf=1MiB                   9922       1048576 B
+buf=1MiB-via-WriteTo       4822         32768 B

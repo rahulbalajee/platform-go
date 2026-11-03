@@ -1,0 +1,7 @@
+./api.go
+./client_test.go
+./client.go
+./platformapifake/fake.go
+./platformapifake/resources.go
+./transport.go
+./types.go

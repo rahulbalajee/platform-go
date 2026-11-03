@@ -1,3 +1,5 @@
+// START helpers OMIT
+
 //go:build unix
 
 package procx_test
@@ -115,6 +117,8 @@ func readLine(t *testing.T, r io.Reader) string {
 	return strings.TrimSpace(line)
 }
 
+// END helpers OMIT
+
 // START test OMIT
 func TestCancelKillsTheWholeGroup(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
@@ -139,6 +143,7 @@ func TestCancelKillsTheWholeGroup(t *testing.T) {
 
 // END test OMIT
 
+// START grace OMIT
 func TestGraceEscalatesToSIGKILL(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
@@ -159,7 +164,8 @@ func TestGraceEscalatesToSIGKILL(t *testing.T) {
 	if got := procx.ExitCode(err); got != 128+int(syscall.SIGKILL) {
 		t.Fatalf("exit code %d (%v), want 137", got, err)
 	}
-	if took := time.Since(start); took < 200*time.Millisecond || took > 3*time.Second {
+	took := time.Since(start)
+	if took < 200*time.Millisecond || took > 3*time.Second {
 		t.Fatalf("stopped after %v, want about the 200ms grace", took)
 	}
 }
@@ -191,6 +197,9 @@ func TestWaitDoesNotHangOnInheritedPipes(t *testing.T) {
 	waitGone(t, grandchild)
 }
 
+// END grace OMIT
+
+// START misc OMIT
 func TestArgumentsAreNotInterpretedByAShell(t *testing.T) {
 	evil := `$(touch pwned); rm -rf "$HOME" #`
 	out, err := child(t.Context(), "args", evil, "*").Output()
@@ -240,3 +249,5 @@ func TestExitCode(t *testing.T) {
 		t.Errorf("start failure %v should wrap os.ErrNotExist", err)
 	}
 }
+
+// END misc OMIT

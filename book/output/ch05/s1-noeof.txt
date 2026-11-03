@@ -1,0 +1,37 @@
+panic: test timed out after 10s
+        running tests:
+                TestLogReaderIsAWellBehavedReader (10s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+        $GOROOT/src/testing/testing.go:2961 +0x2c4
+created by time.goFunc
+        $GOROOT/src/time/sleep.go:182 +0x38
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x…, {0x…?, 0x…?}, 0x…)
+        $GOROOT/src/testing/testing.go:2268 +0x3cc
+testing.runTests.func1(0x…)
+        $GOROOT/src/testing/testing.go:2744 +0x38
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+testing.runTests({0x…, 0x5}, {0x…, 0x10}, 0x…, {0x…, 0x5, 0x5}, {0x…?, 0x…?, ...})
+        $GOROOT/src/testing/testing.go:2742 +0x400
+testing.(*M).Run(0x…)
+        $GOROOT/src/testing/testing.go:2602 +0x578
+main.main()
+        _testmain.go:56 +0x80
+
+goroutine 7 [runnable]:
+oskit/cmd/loggen.(*logReader).Read(0x…, {0x…, 0x1564, 0x1564?})
+        ~/broken/cmd/loggen/gen.go:34 +0x190
+io.ReadAll({0x…, 0x…})
+        $GOROOT/src/io/io.go:722 +0xe8
+oskit/cmd/loggen.TestLogReaderIsAWellBehavedReader(0x…)
+        ~/broken/cmd/loggen/gen_test.go:21 +0xdc
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    oskit/cmd/loggen        12.208s
+FAIL

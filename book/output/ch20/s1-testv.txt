@@ -1,0 +1,4 @@
+=== RUN   TestHealthCheckKindIsServed
+--- PASS: TestHealthCheckKindIsServed (1.01s)
+PASS
+ok      watchtower/internal/controller  4.286s

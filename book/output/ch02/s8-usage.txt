@@ -1,0 +1,2 @@
+usage: tour pages|deploy|flaky|errors
+exit status 2

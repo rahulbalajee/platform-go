@@ -1,3 +1,5 @@
+// START imports OMIT
+
 package controller
 
 import (
@@ -27,6 +29,10 @@ import (
 	"github.com/rahulbalajee/platform-go/projects/watchtower/internal/probe"
 )
 
+// END imports OMIT
+
+// START vars OMIT
+
 // The manager under test only watches managedNS. Tests that drive
 // Reconcile by hand use manualNS, where the manager can't interfere.
 const (
@@ -40,10 +46,12 @@ var (
 	envUp  bool
 )
 
+// END vars OMIT
+
 // START suite OMIT
-// TestMain starts a real kube-apiserver and etcd (envtest), installs our
-// CRD plus a stand-in PrometheusRule CRD, and runs the controller in a
-// manager, exactly as main does, but against a throwaway control plane.
+
+// TestMain starts a throwaway control plane for the package's tests:
+// envtest runs a real kube-apiserver and etcd and installs the CRDs.
 func TestMain(m *testing.M) {
 	os.Exit(runSuite(m))
 }
@@ -56,14 +64,16 @@ func runSuite(m *testing.M) int {
 	env := &envtest.Environment{
 		CRDDirectoryPaths: []string{
 			filepath.Join("..", "..", "config", "crd", "bases"),
-			filepath.Join("testdata", "crds"),
+			// START testcrds OMIT
+			filepath.Join("testdata", "crds"), // a stand-in PrometheusRule CRD
+			// END testcrds OMIT
 		},
 		ErrorIfCRDPathMissing: true,
 		BinaryAssetsDirectory: envtestBinDir(),
 	}
 	if os.Getenv("KUBEBUILDER_ASSETS") == "" && env.BinaryAssetsDirectory == "" {
-		fmt.Println("envtest binaries not found; integration tests will be skipped " +
-			"(run `make test`)")
+		fmt.Println("envtest binaries not found (set KUBEBUILDER_ASSETS or " +
+			"run `make test`); envtest tests will be skipped")
 		return m.Run()
 	}
 	cfg, err := env.Start()
@@ -78,10 +88,12 @@ func runSuite(m *testing.M) int {
 		return 1
 	}
 	for _, ns := range []string{managedNS, manualNS} {
-		_ = k8s.Create(context.Background(), &corev1.Namespace{
-			Name: ns})
+		_ = k8s.Create(context.Background(), &corev1.Namespace{Name: ns})
 	}
+	// START manager OMIT
 
+	// The controller runs in a manager, exactly as in main. Its cache only
+	// sees managedNS.
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme:  scheme,
 		Metrics: metricsserver.Options{BindAddress: "0"},
@@ -94,6 +106,7 @@ func runSuite(m *testing.M) int {
 		return 1
 	}
 	ctx, cancel := context.WithCancel(context.Background())
+	// START reconciler OMIT
 	r := &HealthCheckReconciler{
 		Client:   mgr.GetClient(),
 		Scheme:   scheme,
@@ -102,6 +115,7 @@ func runSuite(m *testing.M) int {
 		Alerts: &alerting.PrometheusRules{
 			Client: mgr.GetClient(), Scheme: scheme,
 		},
+
 		ClusterDomain:           "cluster.local",
 		MaxConcurrentReconciles: 4,
 		WatchRules:              true,
@@ -111,6 +125,7 @@ func runSuite(m *testing.M) int {
 		cancel()
 		return 1
 	}
+	// END reconciler OMIT
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
@@ -118,48 +133,26 @@ func runSuite(m *testing.M) int {
 			fmt.Fprintln(os.Stderr, "manager:", err)
 		}
 	}()
+	defer func() {
+		cancel()
+		<-done // stop the manager before the API server goes away
+	}()
+	// END manager OMIT
 
 	envUp = true
-	code := m.Run()
-	cancel()
-	<-done // stop the manager before the API server goes away
-	return code
+	return m.Run()
 }
 
 // END suite OMIT
 
-// clusterDNSProber answers for in-cluster Service URLs (there is no cluster
-// DNS in envtest) and delegates everything else to the real HTTP prober.
-type clusterDNSProber struct{ real probe.Prober }
+// START helpers OMIT
 
-func (p clusterDNSProber) Probe(ctx context.Context, s probe.Spec) probe.Result {
-	if strings.Contains(s.URL, ".svc.cluster.local") {
-		return probe.Result{OK: true, Code: 200, Message: "HTTP 200"}
-	}
-	return p.real.Probe(ctx, s)
-}
-
+// requireEnv skips a test that needs the API server when envtest is off.
 func requireEnv(t *testing.T) {
 	t.Helper()
 	if !envUp {
-		t.Skip("envtest not available; run `make test`")
+		t.Skip("envtest not available: set KUBEBUILDER_ASSETS or run `make test`")
 	}
-}
-
-// eventually polls cond until it succeeds or timeout elapses.
-func eventually(t *testing.T, timeout time.Duration, cond func() (bool, string)) {
-	t.Helper()
-	deadline := time.Now().Add(timeout)
-	last := ""
-	for time.Now().Before(deadline) {
-		ok, msg := cond()
-		if ok {
-			return
-		}
-		last = msg
-		time.Sleep(150 * time.Millisecond)
-	}
-	t.Fatalf("condition not met within %s: %s", timeout, last)
 }
 
 // envtestBinDir finds binaries installed by `make setup-envtest` so the
@@ -177,3 +170,42 @@ func envtestBinDir() string {
 	}
 	return ""
 }
+
+// END helpers OMIT
+
+// START eventually OMIT
+
+// eventually polls cond until it succeeds or timeout elapses. The API
+// server and the controller run on their own goroutines, so tests wait for
+// an outcome instead of sleeping for a guessed duration.
+func eventually(t *testing.T, timeout time.Duration, cond func() (bool, string)) {
+	t.Helper()
+	deadline := time.Now().Add(timeout)
+	last := ""
+	for time.Now().Before(deadline) {
+		ok, msg := cond()
+		if ok {
+			return
+		}
+		last = msg
+		time.Sleep(150 * time.Millisecond)
+	}
+	t.Fatalf("condition not met within %s: %s", timeout, last)
+}
+
+// END eventually OMIT
+
+// START dnsprober OMIT
+
+// clusterDNSProber answers for in-cluster Service URLs (there is no cluster
+// DNS in envtest) and delegates everything else to the real HTTP prober.
+type clusterDNSProber struct{ real probe.Prober }
+
+func (p clusterDNSProber) Probe(ctx context.Context, s probe.Spec) probe.Result {
+	if strings.Contains(s.URL, ".svc.cluster.local") {
+		return probe.Result{OK: true, Code: 200, Message: "HTTP 200"}
+	}
+	return p.real.Probe(ctx, s)
+}
+
+// END dnsprober OMIT

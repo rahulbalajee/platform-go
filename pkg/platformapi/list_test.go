@@ -1,6 +1,10 @@
+// START head OMIT
+
 package platformapi_test
 
 import (
+	"bufio"
+	"context"
 	"errors"
 	"net/http"
 	"strings"
@@ -34,6 +38,8 @@ func TestListDeploymentsFollowsPageTokens(t *testing.T) {
 	}
 }
 
+// END head OMIT
+
 // START breaktest OMIT
 func TestBreakStopsFetchingPages(t *testing.T) {
 	client, fake := newClient(t)
@@ -63,13 +69,14 @@ func TestListErrorEndsIteration(t *testing.T) {
 		platformapi.DeploymentFilter{}, platformapi.PageSize(3)) {
 		if err != nil {
 			errs++
-			if !strings.Contains(err.Error(), "500") {
-				t.Errorf("err = %v, want the injected 500", err)
+			if apiErr, ok := errors.AsType[*platformapi.APIError](err); !ok ||
+				apiErr.StatusCode != http.StatusUnauthorized {
+				t.Errorf("err = %v, want a 401", err)
 			}
 			continue // the iterator must end by itself after an error
 		}
-		if items++; items == 3 { // the next fetch will fail
-			fake.FailNext(1, http.StatusInternalServerError, 0)
+		if items++; items == 3 { // credentials rotate: the next fetch fails
+			fake.RequireToken("rotated")
 		}
 	}
 	if items != 3 || errs != 1 {
@@ -79,16 +86,30 @@ func TestListErrorEndsIteration(t *testing.T) {
 
 // END errtest OMIT
 
-func TestCollectReturnsPartialResultsOnError(t *testing.T) {
+// START collecttest OMIT
+func TestCollectReturnsPartialResults(t *testing.T) {
+	calls := 0
+	expiring := platformapi.TokenSourceFunc(func(context.Context) (string, error) {
+		if calls++; calls > 1 {
+			return "expired", nil
+		}
+		return "test-token", nil
+	})
+	client, _ := newClient(t, platformapi.WithTokenSource(expiring))
+	got, err := platformapi.Collect(client.ListDeployments(t.Context(),
+		platformapi.DeploymentFilter{}, platformapi.PageSize(3)))
+	if len(got) != 3 || err == nil {
+		t.Errorf("got %d items, err %v; want the first page and a 401", len(got), err)
+	}
+}
+
+func TestBadPageSizeIsAnAPIError(t *testing.T) {
 	client, _ := newClient(t)
 	envs, err := platformapi.Collect(client.ListEnvironments(t.Context(),
 		platformapi.PageSize(500)))
-	if len(envs) != 0 {
-		t.Errorf("got %d environments, want none", len(envs))
-	}
 	if apiErr, ok := errors.AsType[*platformapi.APIError](err); !ok ||
-		apiErr.Code != "invalid_argument" {
-		t.Errorf("err = %v, want invalid_argument for page_size 500", err)
+		apiErr.Code != "invalid_argument" || len(envs) != 0 {
+		t.Errorf("got %d environments, err %v; want invalid_argument", len(envs), err)
 	}
 }
 
@@ -107,3 +128,29 @@ func TestListServicesFiltersByTeam(t *testing.T) {
 		t.Errorf("payments services = %s, want checkout,ledger", got)
 	}
 }
+
+// END collecttest OMIT
+
+// START logstest OMIT
+func TestDeploymentLogsStream(t *testing.T) {
+	client, _ := newClient(t)
+	logs, err := client.DeploymentLogs(t.Context(), "d-8")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer logs.Close()
+	var lines []string
+	sc := bufio.NewScanner(logs) // any io.Reader will do
+	for sc.Scan() {
+		lines = append(lines, sc.Text())
+	}
+	if err := sc.Err(); err != nil {
+		t.Fatal(err)
+	}
+	if len(lines) != 6 || lines[0] != "d-8 rollout of checkout v1.4.1 to staging" ||
+		lines[5] != "d-8 state: succeeded" {
+		t.Errorf("log =\n%s", strings.Join(lines, "\n"))
+	}
+}
+
+// END logstest OMIT

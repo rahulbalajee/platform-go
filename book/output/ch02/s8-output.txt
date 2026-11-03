@@ -1,0 +1,12 @@
+--- FAIL: Example (0.03s)
+got:
+d-9 checkout v1.5.0 succeeded
+want:
+d-9 checkout v1.5.0 deployed
+FAIL
+FAIL    platformapi     2.196s
+ok      platformapi/examples/promote    2.585s
+ok      platformapi/examples/tour       2.682s
+ok      platformapi/platformapifake     1.285s
+?       platformapi/retry       [no test files]
+FAIL

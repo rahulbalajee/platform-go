@@ -1,0 +1,11 @@
+-- before cancel
+  PID  PPID  PGID S  COMMAND
+    1     0     1 S  /sbin/docker-init -- /orphans -kill group
+    6     1     6 R  /orphans -kill group
+   12     6    12 S  /orphans -role=worker
+   18    12    12 S  /orphans -role=sleeper
+Wait: signal: terminated
+-- after Wait returned
+  PID  PPID  PGID S  COMMAND
+    1     0     1 S  /sbin/docker-init -- /orphans -kill group
+    6     1     6 S  /orphans -kill group

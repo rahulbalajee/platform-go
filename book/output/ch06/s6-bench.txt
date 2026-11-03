@@ -1,0 +1,11 @@
+goos: darwin
+goarch: arm64
+pkg: sweep/internal/sweep
+cpu: Apple M5
+BenchmarkParseTargets-10    4104  381722 ns/op  381.7 ns/line  276521 B/op  1813 allocs/op
+BenchmarkReport/table-10    1646  995456 ns/op  734784 B/op  6353 allocs/op
+BenchmarkReport/json-10     1339  1007541 ns/op  571805 B/op  17 allocs/op
+BenchmarkReport/jsonl-10    1926  734931 ns/op  224252 B/op  2002 allocs/op
+BenchmarkDecodeJSONL-10      948  1205323 ns/op  164261 B/op  2002 allocs/op
+PASS
+ok    sweep/internal/sweep  7.608s

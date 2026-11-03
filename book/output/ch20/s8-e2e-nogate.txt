@@ -1,0 +1,181 @@
+customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com serverside-applied
+sha256:11d290c2d688addae2d62959ee898cbb87e043557da6a3ee9a62e9a2f1d14da0
+sha256:d58e8aa8dbe1a7f42b499ed40d4a6ec1f526a7149da790356ea79636a66381f2
+Image: "watchtower:dev" with ID "sha256:11d290c2d688addae2d62959ee898cbb87e043557da6a3ee9a62e9a2f1d14da0" not yet present on node "watchtower-control-plane", loading...
+Image: "watchtower-demoapp:dev" with ID "sha256:d58e8aa8dbe1a7f42b499ed40d4a6ec1f526a7149da790356ea79636a66381f2" not yet present on node "watchtower-control-plane", loading...
+"~/broken/bin/controller-gen" rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+Downloading sigs.k8s.io/kustomize/kustomize/v5@v5.8.1
+cd config/manager && "~/broken/bin/kustomize" edit set image controller=watchtower:dev
+"~/broken/bin/kustomize" build config/default | "kubectl" apply -f -
+namespace/watchtower-system unchanged
+customresourcedefinition.apiextensions.k8s.io/healthchecks.watchtower.platformgo.dev unchanged
+serviceaccount/watchtower-controller-manager unchanged
+role.rbac.authorization.k8s.io/watchtower-leader-election-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-healthcheck-admin-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-healthcheck-editor-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-healthcheck-viewer-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-manager-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-metrics-auth-role unchanged
+clusterrole.rbac.authorization.k8s.io/watchtower-metrics-reader unchanged
+rolebinding.rbac.authorization.k8s.io/watchtower-leader-election-rolebinding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/watchtower-manager-rolebinding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/watchtower-metrics-auth-rolebinding unchanged
+service/watchtower-controller-manager-metrics-service unchanged
+deployment.apps/watchtower-controller-manager configured
+deployment.apps/watchtower-controller-manager restarted
+Waiting for deployment "watchtower-controller-manager" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "watchtower-controller-manager" rollout to finish: 1 old replicas are pending termination...
+deployment "watchtower-controller-manager" successfully rolled out
+namespace "shop" deleted
+namespace/shop created
+deployment.apps/storefront created
+service/storefront created
+Waiting for deployment "storefront" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "storefront" rollout to finish: 1 of 2 updated replicas are available...
+deployment "storefront" successfully rolled out
+namespace/shop unchanged
+deployment.apps/storefront unchanged
+service/storefront unchanged
+healthcheck.watchtower.platformgo.dev/storefront created
+healthcheck.watchtower.platformgo.dev/go-dev created
+healthcheck.watchtower.platformgo.dev/payments-api created
+healthcheck.watchtower.platformgo.dev/inventory created
+healthcheck.watchtower.platformgo.dev/payments-api condition met
+payments-api turned unhealthy 15s after it was created
+healthcheck.watchtower.platformgo.dev/storefront condition met
+healthcheck.watchtower.platformgo.dev/storefront condition met
+healthcheck.watchtower.platformgo.dev/inventory condition met
+$ kubectl get healthchecks -n shop
+NAME           HEALTHY   REASON             FAILURES   ALERTING     AGE
+go-dev         True      ProbeSucceeded                             16s
+inventory      Unknown   TargetUnresolved                           16s
+payments-api   False     ProbeFailing       3          prometheus   16s
+storefront     True      ProbeSucceeded                prometheus   16s
+$ kubectl describe hc payments-api -n shop
+Name:         payments-api
+Namespace:    shop
+Labels:       <none>
+Annotations:  <none>
+API Version:  watchtower.platformgo.dev/v1alpha1
+Kind:         HealthCheck
+Metadata:
+  Creation Timestamp:  2026-11-03T14:22:03Z
+  Generation:          1
+  Resource Version:    55415
+  UID:                 6981a253-10a1-40e4-bc04-963335c2ad22
+Spec:
+  Alert:
+    For:              2m
+    Severity:         critical
+    Summary:          Payments API is returning errors
+  Failure Threshold:  3
+  Interval:           10s
+  Target:
+    Service:
+      Name:    storefront
+      Path:    /status/503
+      Port:    80
+      Scheme:  http
+  Timeout:     5s
+Status:
+  Alerting:
+    Backend:              prometheus
+    Observed Generation:  1
+    Ref:                  watchtower-payments-api
+  Conditions:
+    Last Transition Time:  2026-11-03T14:22:18Z
+    Message:               unexpected status 503
+    Observed Generation:   1
+    Reason:                ProbeFailing
+    Status:                False
+    Type:                  Healthy
+    Last Transition Time:  2026-11-03T14:22:08Z
+    Message:               prometheus rule watchtower-payments-api is up to date
+    Observed Generation:   1
+    Reason:                RuleSynced
+    Status:                True
+    Type:                  AlertingReady
+  Consecutive Failures:    3
+  Last Failure:            unexpected status 503
+  Observed Generation:     1
+  Resolved URL:            http://storefront.shop.svc.cluster.local:80/status/503
+Events:
+  Type     Reason        Age   From        Message
+  ----     ------        ----  ----        -------
+  Warning  ProbeFailing  0s    watchtower  failed 3 consecutive probes: unexpected status 503
+$ kubectl get prometheusrules -n shop
+NAME                      AGE
+watchtower-payments-api   11s
+watchtower-storefront     11s
+$ kubectl get prometheusrule watchtower-storefront -n shop -o yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: "2026-11-03T14:22:08Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: watchtower
+  name: watchtower-storefront
+  namespace: shop
+  ownerReferences:
+  - apiVersion: watchtower.platformgo.dev/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: HealthCheck
+    name: storefront
+    uid: 18a55bdf-6116-471b-bd89-da85c7b053e7
+  resourceVersion: "55389"
+  uid: 1d8ee08b-13d0-45d2-9004-8c419402b088
+spec:
+  groups:
+  - name: watchtower.shop.storefront
+    rules:
+    - alert: HealthCheckFailing
+      annotations:
+        runbook_url: https://runbooks.example.com/shop/storefront
+        summary: HealthCheck shop/storefront is failing
+      expr: |-
+        max by (check_namespace, check_name) (
+          watchtower_healthcheck_up{check_namespace="shop", check_name="storefront"}
+        ) == 0
+      for: 2m
+      labels:
+        severity: critical
+        watchtower_check: storefront
+        watchtower_check_namespace: shop
+$ kubectl get events -n shop --field-selector reportingComponent=watchtower -o custom-columns=REASON:.reason,OBJECT:.involvedObject.name,MESSAGE:.message
+REASON         OBJECT         MESSAGE
+ProbeFailing   payments-api   failed 3 consecutive probes: unexpected status 503
+$ kubectl delete prometheusrule watchtower-storefront -n shop
+prometheusrule.monitoring.coreos.com "watchtower-storefront" deleted from shop namespace
+$ kubectl get prometheusrule watchtower-storefront -n shop
+NAME                    AGE
+watchtower-storefront   3s
+service/inventory created
+service/inventory patched
+healthcheck.watchtower.platformgo.dev/inventory condition met
+$ kubectl get hc inventory -n shop -o custom-columns=NAME:.metadata.name,TARGET:.status.resolvedURL,REASON:.status.conditions[?(@.type=="Healthy")].reason
+NAME        TARGET                                                 REASON
+inventory   http://inventory.shop.svc.cluster.local:8080/healthz   Pending
+healthcheck.watchtower.platformgo.dev/inventory condition met
+$ kubectl get healthchecks -n shop
+NAME           HEALTHY   REASON           FAILURES   ALERTING     AGE
+go-dev         True      ProbeSucceeded                           31s
+inventory      True      ProbeSucceeded                           31s
+payments-api   False     ProbeFailing     3          prometheus   31s
+storefront     True      ProbeSucceeded              prometheus   31s
+serviceaccount/metrics-probe unchanged
+clusterrolebinding.rbac.authorization.k8s.io/watchtower-metrics-probe unchanged
+$ metrics
+watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="success"} 2
+watchtower_healthcheck_probes_total{check_name="inventory",check_namespace="shop",result="failure"} 1
+watchtower_healthcheck_probes_total{check_name="inventory",check_namespace="shop",result="success"} 1
+watchtower_healthcheck_probes_total{check_name="payments-api",check_namespace="shop",result="failure"} 5
+watchtower_healthcheck_probes_total{check_name="storefront",check_namespace="shop",result="failure"} 1
+watchtower_healthcheck_probes_total{check_name="storefront",check_namespace="shop",result="success"} 5
+watchtower_healthcheck_up{check_name="go-dev",check_namespace="shop"} 1
+watchtower_healthcheck_up{check_name="inventory",check_namespace="shop"} 1
+watchtower_healthcheck_up{check_name="payments-api",check_namespace="shop"} 0
+watchtower_healthcheck_up{check_name="storefront",check_namespace="shop"} 1
+e2e OK
+hack/e2e-kind.sh: line 156: 82383 Terminated: 15          kubectl -n $ns port-forward $svc 8443:8443 > /dev/null 2>&1

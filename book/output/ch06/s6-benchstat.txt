@@ -1,0 +1,28 @@
+goos: darwin
+goarch: arm64
+pkg: sweep/internal/sweep
+cpu: Apple M5
+                │    v1.txt    │                v2.txt                 │
+                │    sec/op    │    sec/op      vs base                │
+Report/table-10   915.0µ ± 60%   1061.6µ ± 55%        ~ (p=0.393 n=10)
+Report/json-10    1.870m ± 38%    1.052m ± 47%  -43.71% (p=0.004 n=10)
+Report/jsonl-10   594.6µ ± 28%    828.9µ ± 52%  +39.40% (p=0.009 n=10)
+DecodeJSONL-10    2.400m ± 53%    1.386m ± 37%  -42.25% (p=0.000 n=10)
+geomean           1.250m          1.064m        -14.85%
+
+                │    v1.txt     │                v2.txt                │
+                │     B/op      │     B/op      vs base                │
+Report/table-10    717.6Ki ± 0%   717.6Ki ± 0%        ~ (p=0.684 n=10)
+Report/json-10    1154.0Ki ± 1%   559.4Ki ± 4%  -51.52% (p=0.000 n=10)
+Report/jsonl-10    109.5Ki ± 0%   219.0Ki ± 0%  +99.93% (p=0.000 n=10)
+DecodeJSONL-10     393.1Ki ± 0%   160.4Ki ± 0%  -59.19% (p=0.000 n=10)
+geomean            434.5Ki        344.6Ki       -20.70%
+
+                │   v1.txt    │                v2.txt                 │
+                │  allocs/op  │  allocs/op   vs base                  │
+Report/table-10   6.353k ± 0%   6.353k ± 0%        ~ (p=1.000 n=10) ¹
+Report/json-10     42.50 ± 1%    17.00 ± 6%  -60.00% (p=0.000 n=10)
+Report/jsonl-10   1.002k ± 0%   2.002k ± 0%  +99.80% (p=0.000 n=10)
+DecodeJSONL-10    9.102k ± 0%   2.002k ± 0%  -78.00% (p=0.000 n=10)
+geomean           1.253k         811.1       -35.25%
+¹ all samples are equal

@@ -1,3 +1,5 @@
+// START head OMIT
+
 // Package procx runs subprocesses the way production tools need to: no
 // shell, in their own process group, with a SIGTERM-then-SIGKILL shutdown
 // that reaches grandchildren too, and nothing left running after Wait.
@@ -26,6 +28,8 @@ const DefaultGrace = 5 * time.Second
 type Cmd struct {
 	*exec.Cmd
 }
+
+// END head OMIT
 
 // START command OMIT
 // Command returns a Cmd that runs name with args, without a shell, in a new
@@ -60,6 +64,7 @@ func (c *Cmd) Wait() error {
 
 // END wait OMIT
 
+// START run OMIT
 // Run starts the command and waits for it.
 func (c *Cmd) Run() error {
 	if err := c.Start(); err != nil {
@@ -98,6 +103,8 @@ func (c *Cmd) Signal(sig syscall.Signal) error {
 	return signalGroup(c.Process, sig)
 }
 
+// END run OMIT
+
 // START forward OMIT
 // Forward relays the given signals, when this process receives them, to
 // the command's process group until stop is called. Call it after Start.
@@ -129,6 +136,7 @@ func (c *Cmd) Forward(sigs ...os.Signal) (stop func()) {
 
 // END forward OMIT
 
+// START exitcode OMIT
 // ExitCode maps an error from Run or Wait to a shell-style exit status: 0
 // for success, the child's own status if it exited, 128+n if it was killed
 // by signal n, and -1 if it never ran.
@@ -145,3 +153,5 @@ func ExitCode(err error) int {
 	}
 	return ee.ExitCode()
 }
+
+// END exitcode OMIT

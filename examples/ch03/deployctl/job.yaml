@@ -25,7 +25,7 @@ spec:
       restartPolicy: Never # required by podFailurePolicy
       containers:
         - name: deployctl
-          image: deployctl:dev # go build ./examples/ch03/deployctl
+          image: deployctl:dev # any image with the deployctl binary
           args: ["-config", "/etc/deployctl/prod.json", "-o", "json",
                  "deploy", "-timeout", "5m", "v1.4.2"]
           env:

@@ -1,0 +1,6 @@
+via pipe:
+  "stdout is not a terminal\n"
+  "deployed 3/3\n"
+via pty:
+  "stdout is a terminal, 120x40, TERM=xterm-256color\r\n"
+  "\rdeploying 1/3\rdeploying 2/3\rdeploying 3/3\r\x1b[32mdeployed 3/3\x1b[0m\r\n"

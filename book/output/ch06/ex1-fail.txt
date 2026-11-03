@@ -1,0 +1,17 @@
+--- FAIL: TestScripts (0.00s)
+    --- FAIL: TestScripts/empty (0.85s)
+        testscript.go:609: # An inventory with no targets is a mistake (a truncated file, a glob that
+            # matched nothing, the wrong environment), not a healthy fleet. sweep must
+            # fail as a usage error, say why, and print nothing on stdout. (0.845s)
+            > exits 2 sweep empty.txt
+            [stdout]
+            STATUS  TARGET  LATENCY  TRIES  DETAIL
+            
+            [stderr]
+            checked 0/0 targets in 0s: 0 up, 0 down
+            
+            FAIL: testdata/script/empty.txtar:4: sweep exited with status 0, want 2
+            
+FAIL
+FAIL    sweep/sweepscript       1.985s
+FAIL

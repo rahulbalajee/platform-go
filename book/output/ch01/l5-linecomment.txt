@@ -1,0 +1,19 @@
+--- FAIL: TestStringAndParse (0.00s)
+    phase_test.go:13: Phase(0).String() = "PhasePending", want "pending"
+    phase_test.go:17: ParsePhase("pending") = PhasePending, rollout: unknown phase "pending"
+    phase_test.go:13: Phase(1).String() = "PhaseCanary", want "canary"
+    phase_test.go:17: ParsePhase("canary") = PhasePending, rollout: unknown phase "canary"
+    phase_test.go:13: Phase(2).String() = "PhaseProgressing", want "progressing"
+    phase_test.go:17: ParsePhase("progressing") = PhasePending, rollout: unknown phase "progressing"
+    phase_test.go:13: Phase(3).String() = "PhasePaused", want "paused"
+    phase_test.go:17: ParsePhase("paused") = PhasePending, rollout: unknown phase "paused"
+    phase_test.go:13: Phase(4).String() = "PhaseComplete", want "complete"
+    phase_test.go:17: ParsePhase("complete") = PhasePending, rollout: unknown phase "complete"
+    phase_test.go:13: Phase(5).String() = "PhaseRolledBack", want "rolled-back"
+    phase_test.go:17: ParsePhase("rolled-back") = PhasePending, rollout: unknown phase "rolled-back"
+--- FAIL: TestJSON (0.00s)
+    phase_test.go:38: marshal = {"phase":"PhaseRolledBack"}
+    phase_test.go:43: unmarshal = PhasePending, rollout: unknown phase "canary"
+FAIL
+FAIL	tools/rollout	0.435s
+FAIL

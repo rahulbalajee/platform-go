@@ -106,8 +106,7 @@ both be clean, and the tests you had before must still pass.
 ]
 
 #solution(4, 4, title: [Fail fast], code: "solutions/ch04/ex4")[
-  A `failFast` field in `options`, a flag (`fs.BoolVar(&o.failFast,
-  "fail-fast", false, "stop at the first failed target")`), and this change
+  A `failFast` field in `options`, a flag (`fs.BoolVar(&o.failFast, "fail-fast", false, "stop at the first failed target")`), and this change
   to the loop in `run`:
 
   #src("solutions/ch04/ex4/cmd/sweep/main.go", region: "ex4")

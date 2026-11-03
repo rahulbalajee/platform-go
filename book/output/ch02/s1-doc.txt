@@ -1,0 +1,9 @@
+package platformapi // import "platformapi"
+
+type Client struct{ ... }
+    func New(baseURL string) (*Client, error)
+type Deployment struct{ ... }
+type DeploymentState string
+    const StatePending DeploymentState = "pending" ...
+type Environment struct{ ... }
+type Service struct{ ... }

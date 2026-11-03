@@ -1,0 +1,54 @@
+package platformapi // import "platformapi"
+
+Package platformapi is the Go client for the internal platform API:
+environments, services, and deployments.
+
+Create one Client per process with New and share it; it is safe for concurrent
+use. Every method takes a context.Context as its first argument, and the context
+bounds the call, including retries.
+
+    client, err := platformapi.New("https://platform.internal",
+        platformapi.WithTokenSource(tokens),
+        platformapi.WithUserAgent("ship/2.3.0"),
+    )
+
+List methods return iterators that fetch pages on demand. Creating a deployment
+returns an Operation; Client.Wait polls it to completion. Errors returned by the
+API are *APIError values, and errors.Is reports ErrNotFound and ErrConflict for
+the matching status codes.
+
+Package platformapifake provides an in-memory server for tests.
+
+var ErrNotFound = errors.New("platformapi: not found") ...
+func Collect[T any](seq iter.Seq2[T, error]) ([]T, error)
+type APIError struct{ ... }
+type CallOption func(*callConfig)
+    func IdempotencyKey(key string) CallOption
+    func PageSize(n int) CallOption
+    func RequestID(id string) CallOption
+type Client struct{ ... }
+    func New(baseURL string, opts ...Option) (*Client, error)
+type CreateDeploymentRequest struct{ ... }
+type Deployment struct{ ... }
+type DeploymentFilter struct{ ... }
+type DeploymentState string
+    const StatePending DeploymentState = "pending" ...
+type Environment struct{ ... }
+type Limiter interface{ ... }
+type Operation[T any] struct{ ... }
+type OperationError struct{ ... }
+type Option func(*config) error
+    func WithHTTPClient(hc *http.Client) Option
+    func WithLimiter(l Limiter) Option
+    func WithLogger(l *slog.Logger) Option
+    func WithPollInterval(d time.Duration) Option
+    func WithRetry(p retry.Policy) Option
+    func WithToken(token string) Option
+    func WithTokenSource(ts TokenSource) Option
+    func WithUserAgent(product string) Option
+type Service struct{ ... }
+type ServiceFilter struct{ ... }
+type TokenInvalidator interface{ ... }
+type TokenSource interface{ ... }
+    func StaticToken(token string) TokenSource
+type TokenSourceFunc func(ctx context.Context) (string, error)

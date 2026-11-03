@@ -1,0 +1,1 @@
+    clierr_test.go:231: err = <nil>, want a *PanicError in the tree

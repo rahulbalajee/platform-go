@@ -1,0 +1,1 @@
+internal/sweep/fake_test.go:41:9: Probe passes lock by value: sweep/internal/sweep_test.scriptedProber contains sync.Mutex

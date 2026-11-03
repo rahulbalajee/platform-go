@@ -1,0 +1,2 @@
+go: no such tool "stringer"
+rollout/phase.go:8: running "go": exit status 2

@@ -1,0 +1,12 @@
+path           stamp/cmd/stamp
+main module    stamp (devel)
+-buildmode     exe
+-compiler      gc
+CGO_ENABLED    1
+CGO_CFLAGS     
+CGO_CPPFLAGS   
+CGO_CXXFLAGS   
+CGO_LDFLAGS    
+GOARCH         arm64
+GOOS           darwin
+GOARM64        v8.0

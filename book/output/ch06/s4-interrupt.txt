@@ -1,0 +1,44 @@
+=== RUN   TestScripts
+=== RUN   TestScripts/interrupt
+=== PAUSE TestScripts/interrupt
+=== CONT  TestScripts/interrupt
+        # The first Ctrl-C cancels in-flight checks, and sweep still reports what
+        # it saw. Two checks run at a time (-c 2): /ok finishes, two /slow checks
+        # hang, and the last target never starts. (0.219s)
+        > envsubst slow.txt
+        > ! exec sweep -c 2 slow.txt &sweep&
+        > waitreq /slow 2
+        > kill -INT sweep
+        > wait sweep
+        [stdout]
+        STATUS     TARGET                       LATENCY  TRIES  DETAIL
+        UP         http://127.0.0.1:PORT/ok    1ms      1      200 OK
+        CANCELLED  http://127.0.0.1:PORT/slow  1ms      1      received signal interrupt
+        CANCELLED  http://127.0.0.1:PORT/slow  0s       1      received signal interrupt
+        [stderr]
+        
+        interrupt: shutting down (press Ctrl-C again to force)
+        checked 3/4 targets in 1ms: 1 up, 0 down, 2 cancelled (interrupted; 1 never started)
+        > stdout '^UP +\S+/ok '
+        > stdout -count=2 '^CANCELLED +\S+/slow '
+        > stderr '1 up, 0 down, 2 cancelled \(interrupted; 1 never started\)$'
+        # An overall -deadline also cancels, but it is not an interrupt: the
+        # status is 1 (unhealthy), not 130, and the cause says why. (0.308s)
+        > exits 1 sweep -deadline 300ms slow.txt
+        [stdout]
+        STATUS     TARGET                       LATENCY  TRIES  DETAIL
+        UP         http://127.0.0.1:PORT/ok    0s       1      200 OK
+        CANCELLED  http://127.0.0.1:PORT/slow  301ms    1      sweep deadline of 300ms exceeded
+        CANCELLED  http://127.0.0.1:PORT/slow  301ms    1      sweep deadline of 300ms exceeded
+        CANCELLED  http://127.0.0.1:PORT/slow  301ms    1      sweep deadline of 300ms exceeded
+        
+        [stderr]
+        checked 4/4 targets in 301ms: 1 up, 0 down, 3 cancelled (interrupted; 0 never started)
+        
+        > stdout -count=3 '^CANCELLED .* sweep deadline of 300ms exceeded$'
+        PASS
+        
+--- PASS: TestScripts (0.00s)
+    --- PASS: TestScripts/interrupt (0.53s)
+PASS
+ok      sweep/sweepscript       1.058s

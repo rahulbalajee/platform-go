@@ -1,0 +1,1 @@
+error generating coverage report: output directory "cov/unit" inaccessible (err: stat cov/unit: no such file or directory); no coverage data written

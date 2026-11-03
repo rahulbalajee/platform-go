@@ -1,0 +1,2 @@
+payments-api turned unhealthy 15s after it was created
+NAME           HEALTHY   REASON             FAILURES   ALERTING     AGE

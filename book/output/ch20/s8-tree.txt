@@ -1,0 +1,6 @@
+config/samples/demo.yaml
+config/samples/kustomization.yaml
+config/samples/watchtower_v1alpha1_healthcheck.yaml
+hack/demoapp/main.go
+hack/e2e-kind.sh
+hack/scratch.Dockerfile

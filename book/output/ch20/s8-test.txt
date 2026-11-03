@@ -1,0 +1,7 @@
+?       watchtower/api/v1alpha1 [no test files]
+?       watchtower/cmd  [no test files]
+?       watchtower/hack/demoapp [no test files]
+ok      watchtower/internal/alerting    0.630s
+?       watchtower/internal/alerting/ddfake     [no test files]
+ok      watchtower/internal/controller  20.781s
+ok      watchtower/internal/probe       1.047s

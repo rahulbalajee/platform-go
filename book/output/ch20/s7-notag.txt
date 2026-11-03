@@ -1,0 +1,5 @@
+--- FAIL: TestDatadogEnsureIsIdempotentAcrossLostStatus (0.00s)
+    datadog_test.go:57: refs 1/2, 2 creates, 2 monitors; want exactly one monitor
+FAIL
+FAIL    watchtower/internal/alerting    0.835s
+FAIL

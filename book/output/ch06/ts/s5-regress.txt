@@ -1,0 +1,2 @@
+    --- FAIL: FuzzParseTargets/30d7a0c508abd008 (0.00s)
+        target_fuzz_test.go:43: accepted "tCp://0:100000" with port "100000"

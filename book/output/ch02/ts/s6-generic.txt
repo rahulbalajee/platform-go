@@ -1,0 +1,3 @@
+examples/promote/waiter.go:15:16: cannot use (*platformapi.Client)(nil) (value of type *platformapi.Client) as waiter value in variable declaration: *platformapi.Client does not implement waiter (wrong type for method Wait)
+                have Wait[T any](context.Context, *platformapi.Operation[T], ...platformapi.CallOption) (*T, error)
+                want Wait(context.Context, *platformapi.Operation[platformapi.Deployment], ...platformapi.CallOption) (*platformapi.Deployment, error)

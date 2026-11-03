@@ -1,0 +1,16 @@
+$ bin/sigpipe | head -n 3; echo "exit status ${PIPESTATUS[0]}"
+1
+2
+3
+exit status 141
+$ bin/sigpipe -notify | head -n 3; echo "exit status ${PIPESTATUS[0]}"
+1
+2
+3
+1000000 writes failed (write /dev/stdout: broken pipe), still running
+exit status 1
+$ bin/sigpipe -notify -check | head -n 3; echo "exit status ${PIPESTATUS[0]}"
+1
+2
+3
+exit status 0

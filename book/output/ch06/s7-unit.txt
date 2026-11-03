@@ -1,0 +1,5 @@
+ok      sweep/cmd/sweep 2.338s  coverage: 76.8% of statements
+ok      sweep/internal/sweep    2.138s  coverage: 72.7% of statements
+ok      sweep/conc      1.143s  coverage: 98.5% of statements
+ok      sweep/retry     1.620s  coverage: 88.7% of statements
+ok      sweep/lifecycle 2.476s  coverage: 92.6% of statements

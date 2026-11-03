@@ -1,0 +1,7 @@
+# Build and test outputs. Never commit them.
+/sweep
+/sweep-cover
+/fleet
+*.test
+*.out
+/cov/

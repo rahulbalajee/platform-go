@@ -1,0 +1,5 @@
+        sweep/cmd/sweep         coverage: 67.1% of statements
+        sweep/conc              coverage: 63.6% of statements
+        sweep/internal/sweep            coverage: 43.3% of statements
+        sweep/lifecycle         coverage: 77.8% of statements
+        sweep/retry             coverage: 34.0% of statements

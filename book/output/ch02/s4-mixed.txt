@@ -1,0 +1,3 @@
+# platformapi_test
+# [platformapi_test]
+vet: ./calls_test.go:25:3: cannot use platformapi.WithUserAgent("ci-run-77") (value of func type platformapi.Option) as platformapi.CallOption value in argument to client.GetService

@@ -1,0 +1,10 @@
+--- FAIL: TestIdempotencyKeyMakesCreateRepeatable (0.90s)
+    calls_test.go:107: sent 6 requests, want 3
+--- FAIL: TestClientErrorsAreNotRetried (0.09s)
+    retry_test.go:78: sent 4 requests, want 1: a 404 is not retryable
+FAIL
+FAIL    platformapi     9.469s
+ok      platformapi/examples/promote    0.604s
+ok      platformapi/platformapifake     (cached)
+?       platformapi/retry       [no test files]
+FAIL

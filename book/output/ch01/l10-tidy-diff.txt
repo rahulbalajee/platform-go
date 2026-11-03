@@ -1,0 +1,19 @@
+diff current/go.mod tidy/go.mod
+--- current/go.mod
++++ tidy/go.mod
+@@ -5,5 +5,3 @@
+ toolchain go1.27.3
+ 
+ require github.com/google/go-cmp v0.7.0
+-
+-require golang.org/x/sync v0.24.0 // indirect
+
+diff current/go.sum tidy/go.sum
+--- current/go.sum
++++ tidy/go.sum
+@@ -1,4 +1,2 @@
+ github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
+ github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
+-golang.org/x/sync v0.24.0 h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=
+-golang.org/x/sync v0.24.0/go.mod h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=
+

@@ -1,0 +1,5 @@
+        clierr_test.go:121: stderr mismatch (-update to accept)
+            got:
+            want:
+              - eu-west-1: health check failing (HTTP 503)
+              - sa-east-1: deploy already in progress

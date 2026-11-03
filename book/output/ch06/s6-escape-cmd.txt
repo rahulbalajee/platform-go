@@ -1,0 +1,1 @@
+go build -gcflags=-m ./internal/sweep 2>&1 | grep -E 'report.go:(114|115|116):' | grep -v inlining

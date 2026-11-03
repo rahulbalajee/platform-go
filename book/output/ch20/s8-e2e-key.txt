@@ -1,0 +1,2 @@
+payments-api turned unhealthy 25s after it was created
+e2e OK

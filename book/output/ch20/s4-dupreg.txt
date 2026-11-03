@@ -1,0 +1,9 @@
+panic: duplicate metrics collector registration attempted
+
+goroutine 1 [running]:
+github.com/prometheus/client_golang/prometheus.(*Registry).MustRegister(0x1073ca780, {0x245ef3d7f3b0?, 0x0?, 0x0?})
+        ~/go/pkg/mod/github.com/prometheus/client_golang@v1.24.0/prometheus/registry.go:419 +0x6c
+watchtower/internal/controller.init.0()
+        ~/broken/internal/controller/metrics.go:48 +0x190
+FAIL    watchtower/internal/controller  0.679s
+FAIL

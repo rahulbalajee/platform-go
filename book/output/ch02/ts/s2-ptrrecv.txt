@@ -1,0 +1,1 @@
+vet: ./options_test.go:93:52: cannot use lim (variable of struct type countingLimiter) as platformapi.Limiter value in argument to platformapi.WithLimiter: countingLimiter does not implement platformapi.Limiter (method Wait has pointer receiver)

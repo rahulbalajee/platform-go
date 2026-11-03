@@ -1,0 +1,32 @@
+ M go.mod
+ M go.sum
+?? cmd/sweep/golden_test.go
+?? cmd/sweep/testdata/golden/run-json.golden
+?? cmd/sweep/testdata/golden/run-stderr.golden
+?? containers/containers_test.go
+?? containers/doc.go
+?? containers/go.mod
+?? containers/go.sum
+?? flaky/covrace.sh
+?? flaky/doc.go
+?? flaky/flaky_test.go
+?? flaky/registry.go
+?? internal/sweep/bench_test.go
+?? internal/sweep/fake_test.go
+?? internal/sweep/probe_fuzz_test.go
+?? internal/sweep/report_test.go
+?? internal/sweep/sweeptest/fleet.go
+?? internal/sweep/sweeptest/fleet_test.go
+?? internal/sweep/target_fuzz_test.go
+?? internal/sweep/target_test.go
+?? internal/sweep/testdata/fuzz/FuzzParseRetryAfter/50a7fd29d8f9ea0b
+?? internal/sweep/testdata/fuzz/FuzzParseTargets/1c0eab32cf38a6eb
+?? internal/sweep/testdata/golden/report-json.golden
+?? internal/sweep/testdata/golden/report-jsonl.golden
+?? internal/sweep/testdata/golden/report-table.golden
+?? internal/sweep/testdata/golden/report-wide.golden
+?? sweepscript/script_test.go
+?? sweepscript/testdata/script/exit_status.txtar
+?? sweepscript/testdata/script/help.txtar
+?? sweepscript/testdata/script/interrupt.txtar
+?? sweepscript/testdata/script/inventory.txtar

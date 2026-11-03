@@ -1,0 +1,9 @@
+--- FAIL: TestHealthCheckLifecycle (10.15s)
+    healthcheck_controller_test.go:170: condition not met within 10s: Healthy: nil
+--- FAIL: TestServiceTargetResolvesWhenServiceAppears (5.08s)
+    healthcheck_controller_test.go:205: condition not met within 5s: nil
+--- FAIL: TestPrometheusRuleLifecycle (10.14s)
+    healthcheck_controller_test.go:267: condition not met within 10s: {ObservedGeneration:0 Conditions:[] ResolvedURL: ConsecutiveFailures:0 LastFailure: Alerting:<nil>}
+FAIL
+FAIL    watchtower/internal/controller  32.825s
+FAIL

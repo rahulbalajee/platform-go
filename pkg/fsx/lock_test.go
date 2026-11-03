@@ -1,3 +1,5 @@
+// START locktests OMIT
+
 package fsx_test
 
 import (
@@ -50,6 +52,8 @@ func TestTryLockIsExclusiveWithinOneProcess(t *testing.T) {
 	_ = l2.Unlock()
 }
 
+// END locktests OMIT
+
 // START crash OMIT
 // TestLockReleasedWhenHolderIsKilled: a SIGKILLed holder cannot clean up,
 // but the kernel closes its descriptors and the lock goes with them.
@@ -90,6 +94,7 @@ func TestLockReleasedWhenHolderIsKilled(t *testing.T) {
 
 // END crash OMIT
 
+// START acquiretests OMIT
 func TestAcquireWaitsForRelease(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "tool.lock")
 	first, err := fsx.TryLock(path)
@@ -126,3 +131,5 @@ func TestAcquireGivesUpWithContext(t *testing.T) {
 		t.Fatalf("err = %v, want ErrLocked and DeadlineExceeded", err)
 	}
 }
+
+// END acquiretests OMIT

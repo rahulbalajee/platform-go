@@ -1,0 +1,3 @@
+# Files produced by commands the book prints (go generate runs stringer in
+# Lab 5); book/scripts/check_workbook.py skips them in the coverage check.
+rollout/phase_string.go

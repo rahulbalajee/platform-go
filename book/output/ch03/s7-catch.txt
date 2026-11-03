@@ -1,0 +1,22 @@
+--- FAIL: TestPanicBecomesCrashReport (0.00s)
+panic: assignment to entry in nil map [recovered, repanicked]
+
+goroutine 40 [running]:
+testing.tRunner.func1.2({0x…, 0x…})
+        $GOROOT/src/testing/testing.go:2125 +0x1a0
+testing.tRunner.func1()
+        $GOROOT/src/testing/testing.go:2128 +0x2c8
+panic({0x…?, 0x…?})
+        $GOROOT/src/runtime/panic.go:859 +0x120
+deployctl/pkg/clierr_test.TestPanicBecomesCrashReport.func1({0x…?, 0x…?})
+        ~/broken/pkg/clierr/clierr_test.go:187 +0x34
+deployctl/pkg/clierr.(*Program).Run(0x…, {0x…, 0x…}, 0xa?)
+        ~/broken/pkg/clierr/program.go:65 +0x8c
+deployctl/pkg/clierr_test.TestPanicBecomesCrashReport(0x…)
+        ~/broken/pkg/clierr/clierr_test.go:185 +0xd0
+testing.tRunner(0x…, 0x…)
+        $GOROOT/src/testing/testing.go:2195 +0xc4
+created by testing.(*T).Run in goroutine 1
+        $GOROOT/src/testing/testing.go:2260 +0x3b8
+FAIL    deployctl/pkg/clierr    0.481s
+FAIL

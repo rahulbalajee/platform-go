@@ -1,2 +1,1 @@
 stringer (golang.org/x/tools/cmd/stringer)
-govulncheck (golang.org/x/vuln/cmd/govulncheck)

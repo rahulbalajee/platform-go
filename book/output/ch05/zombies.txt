@@ -1,7 +1,0 @@
-zombies is PID 1
-  PID  PPID S  COMM
-    1     0 R  zombies
-   18     1 Z  zombies
-   19     1 Z  zombies
-   20     1 Z  zombies
-3 zombie(s)

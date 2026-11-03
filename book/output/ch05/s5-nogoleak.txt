@@ -1,0 +1,2 @@
+fsx/main_test.go:6:2: no required module provides package go.uber.org/goleak; to add it:
+        go get go.uber.org/goleak

@@ -1,0 +1,19 @@
+                - message: interval must be at least 5s
+                  rule: duration(self) >= duration('5s')
+              suspend:
+                description: Suspend pauses probing without deleting the check or
+--
+                - message: exactly one of url or service must be set
+                  rule: has(self.url) != has(self.service)
+              timeout:
+                default: 5s
+--
+            - message: timeout must be shorter than interval
+              rule: duration(self.timeout) < duration(self.interval)
+          status:
+            description: |-
+--
+                  backend:
+                    description: 'Backend that owns the rule: prometheus, datadog,
+                      or none.'
+                    type: string

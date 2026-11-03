@@ -1,0 +1,5 @@
+--- FAIL: TestPrometheusRuleLifecycle (10.14s)
+    healthcheck_controller_test.go:302: condition not met within 5s: rule still missing: prometheusrules.monitoring.coreos.com "watchtower-orders-7697" not found
+FAIL
+FAIL    watchtower/internal/controller  27.411s
+FAIL

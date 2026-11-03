@@ -1,0 +1,12 @@
+./api.go
+./client_test.go
+./client.go
+./errors_test.go
+./errors.go
+./options_test.go
+./platformapifake/fake_test.go
+./platformapifake/fake.go
+./platformapifake/resources.go
+./token.go
+./transport.go
+./types.go

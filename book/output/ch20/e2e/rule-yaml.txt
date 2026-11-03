@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: "2026-11-03T14:13:05Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/managed-by: watchtower
+  name: watchtower-storefront
+  namespace: shop
+  ownerReferences:
+  - apiVersion: watchtower.platformgo.dev/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: HealthCheck
+    name: storefront
+    uid: e8c415ff-98fa-4b6d-b76b-22f808b73bd6
+  resourceVersion: "53988"
+  uid: c2bbe34c-404b-4833-9292-0eca6d57ed50
+spec:
+  groups:
+  - name: watchtower.shop.storefront
+    rules:
+    - alert: HealthCheckFailing
+      annotations:
+        runbook_url: https://runbooks.example.com/shop/storefront
+        summary: HealthCheck shop/storefront is failing
+      expr: |-
+        max by (check_namespace, check_name) (
+          watchtower_healthcheck_up{check_namespace="shop", check_name="storefront"}
+        ) == 0
+      for: 2m
+      labels:
+        severity: critical
+        watchtower_check: storefront
+        watchtower_check_namespace: shop

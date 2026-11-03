@@ -1,0 +1,1 @@
+go: warning: example.com/codec@v1.5.0: retracted by module author: drops zero-valued fields

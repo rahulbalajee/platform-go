@@ -1,0 +1,5 @@
+2026/11/03 18:32:45 http: TLS handshake error from 127.0.0.1:PORT: remote error: tls: bad certificate
+PASS
+error generating coverage report: output directory "cov/unit" inaccessible (err: stat cov/unit: no such file or directory); no coverage data written
+FAIL    sweep/internal/sweep    1.362s
+FAIL

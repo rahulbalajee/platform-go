@@ -1,0 +1,21 @@
+--- FAIL: TestScripts (0.00s)
+    --- FAIL: TestScripts/exit_status (0.20s)
+        testscript.go:609: # The exit status is sweep's contract with CI:
+            # 0 every target is up, 1 some are down, 2 usage or input error.
+            # Every target up: exit 0, the table on stdout, the summary on stderr. (0.195s)
+            > envsubst healthy.txt
+            > exits 0 sweep healthy.txt
+            [stdout]
+            STATUS  TARGET                     LATENCY  TRIES  DETAIL
+            UP      http://127.0.0.1:PORT/ok  1ms      1      200 OK
+            UP      tcp://127.0.0.1:PORT      0s       1      connected to 127.0.0.1:PORT
+            
+            [stderr]
+            checked 2/2 targets in 1ms: 2 up, 0 down
+            
+            > stdout '^UP +http://127\.0\.0\.1:\d+/ok +\S+ +2 +200 OK$'
+            FAIL: testdata/script/exit_status.txtar:7: no match for `^UP +http://127\.0\.0\.1:\d+/ok +\S+ +2 +200 OK$` found in stdout
+            
+FAIL
+FAIL    sweep/sweepscript       1.020s
+FAIL

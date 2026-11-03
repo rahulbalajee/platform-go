@@ -1,0 +1,2 @@
+REASON         OBJECT         MESSAGE
+ProbeFailing   payments-api   failed 3 consecutive probes: unexpected status 503

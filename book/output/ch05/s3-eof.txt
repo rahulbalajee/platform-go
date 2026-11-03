@@ -1,0 +1,12 @@
+--- FAIL: TestLinesTruncatesLongLinesAndKeepsGoing (0.00s)
+    scan_test.go:59: EOF
+--- FAIL: TestLinesSurvivesShortReads (0.00s)
+    scan_test.go:83: one byte: {Lines:5 Bytes:65632 Status:[0 0 2 0 0 1] Truncated:1 Malformed:2 Sum:[]}, EOF
+    scan_test.go:83: half: {Lines:5 Bytes:65632 Status:[0 0 2 0 0 1] Truncated:1 Malformed:2 Sum:[]}, EOF
+--- FAIL: TestStreamSurvivesLongLines (0.00s)
+    scan_test.go:108: stream: {Lines:5 Bytes:65632 Status:[0 0 2 0 0 1] Truncated:1 Malformed:2 Sum:[]}, EOF
+--- FAIL: TestScanFSReadsPlainAndGzippedFiles (0.00s)
+    scan_test.go:136: access.log: EOF
+FAIL
+FAIL    oskit/cmd/logscan       0.544s
+FAIL

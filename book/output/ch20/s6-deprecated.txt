@@ -1,0 +1,5 @@
+../../../..~/broken/internal/alerting/prometheus.go:150:41: SA1019: sigs.k8s.io/controller-runtime/pkg/client.Apply is deprecated: Use client.Client.Apply() and client.Client.SubResource("subrsource").Apply() instead. (staticcheck)
+        if err := p.Client.Patch(ctx, desired, client.Apply,
+                                               ^
+1 issues:
+* staticcheck: 1

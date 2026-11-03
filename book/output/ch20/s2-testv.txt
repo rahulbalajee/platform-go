@@ -1,0 +1,8 @@
+--- PASS: TestCRDValidationRejectsBadSpecs (2.01s)
+    --- PASS: TestCRDValidationRejectsBadSpecs/both_url_and_service (2.01s)
+    --- PASS: TestCRDValidationRejectsBadSpecs/interval_too_short (0.00s)
+    --- PASS: TestCRDValidationRejectsBadSpecs/timeout_>=_interval (0.00s)
+    --- PASS: TestCRDValidationRejectsBadSpecs/not_a_URL (0.00s)
+--- PASS: TestCRDAppliesDefaults (0.00s)
+PASS
+ok      watchtower/internal/controller  4.220s

@@ -1,0 +1,4 @@
+testing: will not fuzz, -fuzz matches more than one fuzz test: [FuzzParseRetryAfter FuzzParseTargets]
+FAIL
+exit status 1
+FAIL    sweep/internal/sweep    0.499s

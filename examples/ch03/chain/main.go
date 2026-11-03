@@ -1,3 +1,4 @@
+// START head OMIT
 // Command chain shows how errors.Is, errors.As and errors.AsType see a
 // wrapped error, and how they walk the tree that errors.Join and multiple
 // %w verbs build.
@@ -12,6 +13,7 @@ import (
 	"strings"
 )
 
+// END head OMIT
 // START wrap OMIT
 func wrapping() {
 	// A real error from the OS: *fs.PathError wrapping syscall.ENOENT.
@@ -27,7 +29,6 @@ func wrapping() {
 
 	var pe *fs.PathError         // errors.As: declare a target, pass its address
 	if errors.As(wrapped, &pe) { //nolint:modernize // the pre-1.26 form
-
 		fmt.Println("As:     op =", pe.Op, " path =", pe.Path)
 	}
 	if pe, ok := errors.AsType[*fs.PathError](wrapped); ok { // Go 1.26
@@ -36,7 +37,6 @@ func wrapping() {
 }
 
 // END wrap OMIT
-
 // START tree OMIT
 func trees(cfgErr error) {
 	tree := fmt.Errorf("deploy v1.4.2: %w", errors.Join(
@@ -50,7 +50,6 @@ func trees(cfgErr error) {
 }
 
 // END tree OMIT
-
 // START walk OMIT
 // walk prints the tree in the order errors.Is and errors.As visit it.
 func walk(err error, depth int) {
@@ -66,7 +65,7 @@ func walk(err error, depth int) {
 }
 
 // END walk OMIT
-
+// START main OMIT
 // main runs one part: "wrap" (the default) or "tree".
 func main() {
 	_, err := os.Open("/etc/deployctl/deployctl.json")
@@ -77,3 +76,5 @@ func main() {
 	}
 	wrapping()
 }
+
+// END main OMIT

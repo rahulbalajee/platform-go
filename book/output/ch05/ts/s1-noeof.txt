@@ -1,0 +1,3 @@
+panic: test timed out after 10s
+                TestLogReaderIsAWellBehavedReader (10s)
+oskit/cmd/loggen.(*logReader).Read(0x…, {0x…, 0x1564, 0x1564?})

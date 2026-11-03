@@ -1,0 +1,2 @@
+# oskit/cmd/logscan
+cmd/logscan/main.go:80:49: undefined: peakRSS

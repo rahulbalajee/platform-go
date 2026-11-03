@@ -1,0 +1,5 @@
+lines     1000000
+status    2xx=919680 3xx=50284 4xx=22021 5xx=8015
+read      73 MiB in 0.1s (571 MiB/s)
+sha256    78ade1a279631e1c43cfd025e0a7d1afccdbcf8f0b8c554de89e9550a59917f8
+peak RSS  4.6 MiB

@@ -1,0 +1,12 @@
+package platformapi // import "platformapi"
+
+type Option func(*config) error
+    An Option configures a Client. Options are applied in order, so a later
+    option overrides an earlier one.
+
+func WithHTTPClient(hc *http.Client) Option
+func WithLimiter(l Limiter) Option
+func WithLogger(l *slog.Logger) Option
+func WithToken(token string) Option
+func WithTokenSource(ts TokenSource) Option
+func WithUserAgent(product string) Option

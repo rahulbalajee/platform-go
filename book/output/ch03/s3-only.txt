@@ -1,0 +1,3 @@
+deploying checkout v1.4.2 to 2 targets
+  us-east-1   deployed 100ms
+  us-west-2   deployed 100ms

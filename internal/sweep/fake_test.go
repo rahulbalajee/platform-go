@@ -60,13 +60,13 @@ func (p *scriptedProber) Starts(target string) []time.Time {
 	return append([]time.Time(nil), p.starts[target]...)
 }
 
-func runOnce(t *testing.T, cfg sweep.Config, inventory string) map[string]sweep.Result {
+func runOnce(t *testing.T, cfg sweep.Config, inv string) map[string]sweep.Result {
 	t.Helper()
 	runner, err := sweep.NewRunner(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
-	targets, err := sweep.ParseTargets(strings.NewReader(inventory))
+	targets, err := sweep.ParseTargets(strings.NewReader(inv))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,7 +142,8 @@ func TestRunnerReportsUnknownKind(t *testing.T) {
 		Probers: map[sweep.Kind]sweep.Prober{},
 	}, "dns://example.com")
 	r := got["dns://example.com"]
-	if r.Status != sweep.StatusDown || !strings.Contains(r.Error, `no prober for kind "dns"`) {
+	want := `no prober for kind "dns"`
+	if r.Status != sweep.StatusDown || !strings.Contains(r.Error, want) {
 		t.Errorf("got %+v, want down with a missing-prober error", r)
 	}
 }

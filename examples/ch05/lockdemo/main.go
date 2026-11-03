@@ -1,3 +1,5 @@
+// START lockdemohead OMIT
+
 // Command lockdemo is a stand-in for a CLI that must not run twice at once
 // (a deploy, a backup, a migration). It takes a lock file, "works" for a
 // while, and exits.
@@ -55,6 +57,8 @@ func main() {
 	}
 	logf("done, lock released")
 }
+
+// END lockdemohead OMIT
 
 // START acquire OMIT
 func acquire(path string, wait time.Duration, pidfile bool) (func() error, error) {

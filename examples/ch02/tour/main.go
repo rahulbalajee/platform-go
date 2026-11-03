@@ -1,8 +1,10 @@
+// START head OMIT
+
 // Command tour drives the platformapi SDK against an in-process fake of
 // the platform API and prints what happens. Each scenario starts from a
 // fresh fake:
 //
-//	go run ./examples/ch02/tour pages|deploy|flaky|errors
+//	tour pages|deploy|flaky|errors
 package main
 
 import (
@@ -36,6 +38,9 @@ func main() {
 	os.Exit(code)
 }
 
+// END head OMIT
+
+// START run OMIT
 func run(ctx context.Context, scenario string, out io.Writer) error {
 	fake := platformapifake.New()
 	fake.RequireToken("tour-token")
@@ -78,6 +83,8 @@ func run(ctx context.Context, scenario string, out io.Writer) error {
 	}
 	return fmt.Errorf("unknown scenario %q", scenario)
 }
+
+// END run OMIT
 
 // START pages OMIT
 func pages(ctx context.Context, client *platformapi.Client,
@@ -134,12 +141,15 @@ func deploy(ctx context.Context, client *platformapi.Client, out io.Writer) erro
 
 // END deploy OMIT
 
+// START short OMIT
 func short(id string) string {
 	if len(id) > 13 {
 		return id[:13] + "…"
 	}
 	return id
 }
+
+// END short OMIT
 
 // START flaky OMIT
 func flaky(ctx context.Context, client *platformapi.Client,
@@ -188,7 +198,8 @@ func failures(ctx context.Context, client *platformapi.Client,
 		errors.Is(err, platformapi.ErrNotFound))
 	if apiErr, ok := errors.AsType[*platformapi.APIError](err); ok {
 		fmt.Fprintf(out, "  op=%q status=%d code=%s\n  message=%q\n  request=%s\n",
-			apiErr.Op, apiErr.StatusCode, apiErr.Code, apiErr.Message, apiErr.RequestID)
+			apiErr.Op, apiErr.StatusCode, apiErr.Code, apiErr.Message,
+			apiErr.RequestID)
 	}
 
 	req := platformapi.CreateDeploymentRequest{
@@ -207,7 +218,8 @@ func failures(ctx context.Context, client *platformapi.Client,
 	defer cancel()
 	_, err = client.Wait(short, op)
 	d, _ := client.GetDeployment(ctx, op.Result.ID)
-	fmt.Fprintf(out, "timeout: %v\n  %s is still %s on the server\n", err, d.ID, d.State)
+	fmt.Fprintf(out, "timeout: %v\n  %s is still %s on the server\n",
+		err, d.ID, d.State)
 
 	fake.BreakVersion("v1.6.0-rc.1")
 	op, err = client.CreateDeployment(ctx, platformapi.CreateDeploymentRequest{

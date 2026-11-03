@@ -1,23 +1,15 @@
-// Package sysinfo reads facts about the current process and its container
-// from Linux procfs and the cgroup v2 filesystem: effective memory, CPU and
-// PID limits, current usage, and per-process state.
-//
-// Every reader takes an fs.FS rooted at "/". Production code passes Host();
-// tests pass a testing/fstest.MapFS, so the parsing is tested on any OS.
+// START head OMIT
+
 package sysinfo
 
 import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"os"
 	"path"
 	"strconv"
 	"strings"
 )
-
-// Host returns the real filesystem, rooted at "/".
-func Host() fs.FS { return os.DirFS("/") }
 
 // Unlimited is reported for a limit that is set to "max".
 const Unlimited = -1
@@ -44,6 +36,8 @@ type Cgroup struct {
 	PidsMax       int64   // or Unlimited
 	PidsCurrent   int64
 }
+
+// END head OMIT
 
 // START cgroup OMIT
 // ReadCgroup reads the limits and usage of the calling process's cgroup.
@@ -78,6 +72,7 @@ func ReadCgroup(fsys fs.FS) (Cgroup, error) {
 
 // END cgroup OMIT
 
+// START helpers OMIT
 // selfCgroup returns the v2 path from /proc/self/cgroup ("0::/some/path").
 func selfCgroup(fsys fs.FS) (string, error) {
 	b, err := fs.ReadFile(fsys, "proc/self/cgroup")
@@ -134,8 +129,13 @@ func readCPUMax(fsys fs.FS, dir string) (float64, error) {
 	}
 	q, err1 := strconv.ParseFloat(quota, 64)
 	p, err2 := strconv.ParseFloat(period, 64)
-	if err := errors.Join(err1, err2); err != nil || p == 0 {
+	if err := errors.Join(err1, err2); err != nil {
 		return 0, fmt.Errorf("malformed cpu.max %q: %w", b, err)
+	}
+	if p == 0 {
+		return 0, fmt.Errorf("malformed cpu.max %q: zero period", b)
 	}
 	return q / p, nil
 }
+
+// END helpers OMIT

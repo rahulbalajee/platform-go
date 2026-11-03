@@ -1,3 +1,4 @@
+// START head OMIT
 //go:build unix
 
 package main
@@ -24,6 +25,8 @@ import (
 
 var update = flag.Bool("update", false, "rewrite testdata/*.golden")
 
+// END head OMIT
+
 // START testmain OMIT
 // binary is the deployctl executable built once for the whole package.
 var binary string
@@ -48,7 +51,7 @@ func TestMain(m *testing.M) {
 }
 
 // END testmain OMIT
-
+// START env OMIT
 // env is a working directory with a config pointing at a fake API.
 type env struct {
 	dir string
@@ -83,6 +86,7 @@ func (e env) command(t *testing.T, args ...string) *exec.Cmd {
 	return cmd
 }
 
+// END env OMIT
 // START exitcode OMIT
 // exitCode runs cmd and returns its exit status and stderr. A process
 // killed by a signal reports -1 from ExitCode; that is a test failure.
@@ -151,6 +155,7 @@ func TestExitCodes(t *testing.T) {
 
 // END table OMIT
 
+// START golden OMIT
 func checkGolden(t *testing.T, name, got string) {
 	t.Helper()
 	path := filepath.Join("testdata", name+".golden")
@@ -168,6 +173,8 @@ func checkGolden(t *testing.T, name, got string) {
 			path, got, want)
 	}
 }
+
+// END golden OMIT
 
 // START crash OMIT
 func TestPanicWritesCrashReportNotStack(t *testing.T) {
@@ -224,6 +231,7 @@ func TestInterruptExits130(t *testing.T) {
 
 // END interrupt OMIT
 
+// START more OMIT
 func TestUnreadableConfigIsPermissionDenied(t *testing.T) {
 	if os.Geteuid() == 0 {
 		t.Skip("root can read anything")
@@ -254,3 +262,5 @@ func TestJSONErrorsAreMachineReadable(t *testing.T) {
 		t.Errorf("code = %d, doc = %+v", code, doc)
 	}
 }
+
+// END more OMIT

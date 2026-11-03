@@ -1,0 +1,44 @@
+--- FAIL: TestReportersGolden (0.00s)
+    --- FAIL: TestReportersGolden/json (0.00s)
+        report_test.go:102: testdata/golden/report-json.golden mismatch (-want +got):
+              []string{
+                ... // 15 identical elements
+                `      "status": "up",`,
+                `      "attempts": 1,`,
+            -   `      "latency_ns": 42000000,`,
+            +   `      "latency_ms": 42000000,`,
+                `      "detail": "200 OK"`,
+                "    },",
+                ... // 4 identical elements
+                `      "status": "down",`,
+                `      "attempts": 3,`,
+            -   `      "latency_ns": 2000000000,`,
+            +   `      "latency_ms": 2000000000,`,
+                `      "detail": "503 Service Unavailable",`,
+                `      "error": "unhealthy status 503 Service Unavailable (after `...,
+                ... // 5 identical elements
+                `      "status": "up",`,
+                `      "attempts": 1,`,
+            -   `      "latency_ns": 3000000,`,
+            +   `      "latency_ms": 3000000,`,
+                `      "detail": "connected to 10.0.3.7:5432"`,
+                "    },",
+                ... // 4 identical elements
+                `      "status": "down",`,
+                `      "attempts": 1,`,
+            -   `      "latency_ns": 81000000,`,
+            +   `      "latency_ms": 81000000,`,
+                `      "detail": "cert \"legacy.test\" expires in 6d",`,
+                `      "error": "certificate expires in 6d (minimum 14d)"`,
+                ... // 5 identical elements
+                `      "status": "down",`,
+                `      "attempts": 1,`,
+            -   `      "latency_ns": 12000000,`,
+            +   `      "latency_ms": 12000000,`,
+                `      "error": "lookup gone.test: no such host"`,
+                "    }",
+                ... // 3 identical elements
+              }
+FAIL
+FAIL    sweep/internal/sweep    0.457s
+FAIL

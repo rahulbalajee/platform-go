@@ -1,0 +1,16 @@
+round 13, stderr of one process:
+error: coverage meta-data emit failed: writing $GOCOVERDIR/covmeta.<hash>: rename from 
+$GOCOVERDIR/tmp.covmeta.<hash>1793710974959647000 failed: rename 
+$GOCOVERDIR/tmp.covmeta.<hash>1793710974959647000 $GOCOVERDIR/covmeta.<hash>: no such 
+file or directory
+
+files written:
+covcounters.<hash>.46487.1793710974960406000
+covcounters.<hash>.46488.1793710974960439000
+covcounters.<hash>.46489.1793710974960475000
+covcounters.<hash>.46490.1793710974961513000
+covcounters.<hash>.46491.1793710974962079000
+covcounters.<hash>.46492.1793710974961726000
+covcounters.<hash>.46493.1793710974963202000
+covcounters.<hash>.46494.1793710974962918000
+covmeta.<hash>

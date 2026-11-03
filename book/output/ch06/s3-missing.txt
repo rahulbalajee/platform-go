@@ -1,0 +1,12 @@
+--- FAIL: TestReportersGolden (0.00s)
+    --- FAIL: TestReportersGolden/table (0.00s)
+        report_test.go:102: open testdata/golden/report-table.golden: no such file or directory (run 'go test -update' to create it)
+    --- FAIL: TestReportersGolden/wide (0.00s)
+        report_test.go:102: open testdata/golden/report-wide.golden: no such file or directory (run 'go test -update' to create it)
+    --- FAIL: TestReportersGolden/json (0.00s)
+        report_test.go:102: open testdata/golden/report-json.golden: no such file or directory (run 'go test -update' to create it)
+    --- FAIL: TestReportersGolden/jsonl (0.00s)
+        report_test.go:102: open testdata/golden/report-jsonl.golden: no such file or directory (run 'go test -update' to create it)
+FAIL
+FAIL    sweep/internal/sweep    0.626s
+FAIL

@@ -1,0 +1,9 @@
+transport.go:25:22: response body must be closed (bodyclose)
+        resp, err := c.hc.Do(req)
+                            ^
+transport.go:53:6: func drain is unused (unused)
+func drain(resp *http.Response) {
+     ^
+2 issues:
+* bodyclose: 1
+* unused: 1

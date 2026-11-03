@@ -1,0 +1,9 @@
+--- FAIL: TestNotFoundIsAnAPIError (0.00s)
+    errors_test.go:17: GET /v1/deployments/d-404: 404 not_found: deployment "d-404" not found (request srv-1)
+    errors_test.go:19: err = GET /v1/deployments/d-404: 404 not_found: deployment "d-404" not found (request srv-1), want ErrNotFound
+--- FAIL: TestIDsCannotEscapeTheirPath (0.00s)
+    errors_test.go:46: err = GET /v1/deployments/..%2Fenvironments%2Fprod: 404 not_found: deployment "../environments/prod" not found (request srv-1), want ErrNotFound
+FAIL
+FAIL    platformapi     0.785s
+ok      platformapi/platformapifake     (cached)
+FAIL

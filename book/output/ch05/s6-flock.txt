@@ -1,0 +1,16 @@
+$ bin/lockdemo -name A -hold 3s &
+18:36:57.979 A: acquired lock (pid 54562), working for 3s
+$ bin/lockdemo -name B; echo "exit status $?"
+18:36:58.990 B: another run is in progress, exiting
+                held by pid=54562 host=devbox since=2026-11-03T13:06:57Z
+exit status 75
+$ bin/lockdemo -name C -wait 5s
+18:37:00.978 A: done, lock released
+18:37:01.133 C: acquired lock (pid 54569), working for 1s
+18:37:02.133 C: done, lock released
+$ bin/lockdemo -name D -hold 60s & sleep 1; kill -9 $!
+18:37:02.136 D: acquired lock (pid 54595), working for 1m0s
+Killed: 9               bin/lockdemo -name D -hold 60s
+$ bin/lockdemo -name E -hold 0s
+18:37:03.778 E: acquired lock (pid 54648), working for 0s
+18:37:03.779 E: done, lock released

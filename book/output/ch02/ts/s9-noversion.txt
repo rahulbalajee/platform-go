@@ -1,0 +1,2 @@
+no required module provides package golang.org/x/exp/cmd/apidiff; to add it:
+        go get golang.org/x/exp/cmd/apidiff

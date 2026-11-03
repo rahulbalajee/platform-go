@@ -1,0 +1,5 @@
+NAME           HEALTHY   REASON             FAILURES   ALERTING     AGE
+go-dev         True      ProbeSucceeded                             26s
+inventory      Unknown   TargetUnresolved                           26s
+payments-api   False     ProbeFailing       3          prometheus   26s
+storefront     True      ProbeSucceeded                prometheus   26s

@@ -1,0 +1,14 @@
+./cmd/loggen/copy_test.go
+./cmd/loggen/count.go
+./cmd/loggen/gen_test.go
+./cmd/loggen/gen.go
+./cmd/loggen/main.go
+./cmd/logscan/main.go
+./cmd/logscan/naive.go
+./cmd/logscan/rss_darwin.go
+./cmd/logscan/rss_linux.go
+./cmd/logscan/rss_other.go
+./cmd/logscan/scan_test.go
+./cmd/logscan/scan.go
+./cmd/logscan/stats.go
+./cmd/torn/main.go

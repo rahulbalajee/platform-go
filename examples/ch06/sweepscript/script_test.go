@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -24,28 +25,16 @@ var update = flag.Bool("update", false, "rewrite cmp files inside the scripts")
 // binDir holds the sweep binary under test.
 var binDir string
 
-// coverPkgs are the packages instrumented when coverage is collected.
-const coverPkgs = "./cmd/sweep,./internal/sweep," +
-	"./pkg/conc,./pkg/retry,./pkg/lifecycle"
-
 // START main OMIT
-// TestMain builds the real sweep binary once for every script. When
-// GOCOVERDIR is set it builds with -cover, and each run of sweep in a
-// script writes coverage data there (testscript passes GOCOVERDIR on).
+// TestMain builds the real sweep binary once, before any script runs, and
+// deletes it when they have all finished.
 func TestMain(m *testing.M) {
 	dir, err := os.MkdirTemp("", "sweep-e2e-")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	args := []string{"build", "-o", filepath.Join(dir, "sweep")}
-	if os.Getenv("GOCOVERDIR") != "" {
-		args = append(args, "-cover", "-coverpkg="+coverPkgs)
-	}
-	build := exec.Command("go", append(args, "./cmd/sweep")...)
-	build.Dir = "../../.." // the root module, which owns cmd/sweep
-	build.Stdout, build.Stderr = os.Stderr, os.Stderr
-	if err := build.Run(); err != nil {
+	if err := buildSweep(dir); err != nil {
 		fmt.Fprintln(os.Stderr, "building sweep:", err)
 		os.Exit(1)
 	}
@@ -56,6 +45,29 @@ func TestMain(m *testing.M) {
 }
 
 // END main OMIT
+
+// START build OMIT
+// buildSweep compiles cmd/sweep into dir. It builds inside the module that
+// owns cmd/sweep, so that module's go.mod decides every dependency version.
+// When GOCOVERDIR is set it builds with -cover, and every run of sweep in a
+// script writes coverage data there (testscript passes GOCOVERDIR on).
+func buildSweep(dir string) error {
+	const pkg = "github.com/rahulbalajee/platform-go/cmd/sweep"
+	root, err := exec.Command("go", "list", "-f", "{{.Module.Dir}}", pkg).Output()
+	if err != nil {
+		return fmt.Errorf("locating %s: %w", pkg, err)
+	}
+	args := []string{"build", "-o", filepath.Join(dir, "sweep")}
+	if os.Getenv("GOCOVERDIR") != "" {
+		args = append(args, "-cover")
+	}
+	build := exec.Command("go", append(args, pkg)...)
+	build.Dir = strings.TrimSpace(string(root))
+	build.Stdout, build.Stderr = os.Stderr, os.Stderr
+	return build.Run()
+}
+
+// END build OMIT
 
 // START run OMIT
 // TestScripts runs every testdata/script/*.txtar file as a subtest. Each
@@ -95,6 +107,7 @@ func TestScripts(t *testing.T) {
 
 // END run OMIT
 
+// fleetKey is the key under which Setup stores the script's fake fleet.
 type fleetKey struct{}
 
 // START coverdir OMIT
@@ -140,6 +153,7 @@ func cmdExits(ts *testscript.TestScript, neg bool, args []string) {
 
 // END exits OMIT
 
+// START waitreq OMIT
 // cmdWaitreq blocks until the fake fleet has served path at least n times,
 // so a script can act at a known point instead of sleeping.
 //
@@ -160,6 +174,9 @@ func cmdWaitreq(ts *testscript.TestScript, neg bool, args []string) {
 	ts.Check(fleet.WaitFor(ctx, args[0], n))
 }
 
+// END waitreq OMIT
+
+// START envsubst OMIT
 // cmdEnvsubst expands $VARIABLES in the named files in place, so inventory
 // files inside a script can point at the per-script fake fleet.
 //
@@ -183,3 +200,5 @@ func refusedAddr() (string, error) {
 	addr := l.Addr().String()
 	return addr, l.Close()
 }
+
+// END envsubst OMIT

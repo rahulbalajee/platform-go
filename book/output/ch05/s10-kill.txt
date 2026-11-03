@@ -1,0 +1,5 @@
+--- FAIL: TestCancelKillsTheWholeGroup (0.01s)
+    procx_test.go:139: exit code 137 (signal: killed), want 143
+FAIL
+FAIL    oskit/procx     0.514s
+FAIL

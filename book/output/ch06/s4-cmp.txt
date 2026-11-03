@@ -1,0 +1,45 @@
+--- FAIL: TestScripts (0.00s)
+    --- FAIL: TestScripts/help (0.22s)
+        testscript.go:609: # -h prints usage to stderr and exits 0. The expected text lives in this
+            # file: 'go test -update' rewrites it when the flags change. (0.222s)
+            > exec sweep -h
+            [stderr]
+            Usage of sweep:
+              -attempts int
+                        attempts per target incl. the first (default 3)
+              -c int
+                        max targets checked concurrently (default 32)
+              -deadline duration
+                        overall deadline (0 = none)
+              -min-cert-validity duration
+                        fail TLS targets whose certificate expires sooner (default 336h0m0s)
+              -o string
+                        output: table, wide, json, jsonl (default "table")
+              -per-host int
+                        max concurrent checks per host (default 4)
+              -rate float
+                        max attempts per second (0 = no limit) (default 50)
+              -timeout duration
+                        timeout per attempt (default 5s)
+              -version
+                        print version and exit
+            > ! stdout .
+            > cmp stderr usage.txt
+            diff stderr usage.txt
+            --- stderr
+            +++ usage.txt
+            @@ -2,7 +2,7 @@
+               -attempts int
+                        attempts per target incl. the first (default 3)
+               -c int
+            -           max targets checked concurrently (default 32)
+            +           max targets checked concurrently (default 16)
+               -deadline duration
+                        overall deadline (0 = none)
+               -min-cert-validity duration
+            
+            FAIL: testdata/script/help.txtar:5: stderr and usage.txt differ
+            
+FAIL
+FAIL    sweep/sweepscript       1.469s
+FAIL

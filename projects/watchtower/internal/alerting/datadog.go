@@ -1,3 +1,5 @@
+// START ddhead OMIT
+
 package alerting
 
 import (
@@ -31,8 +33,15 @@ type Datadog struct {
 	Query func(hc *v1alpha1.HealthCheck) string
 }
 
-func (d *Datadog) Name() string   { return "datadog" }
+// Name implements Backend.
+func (d *Datadog) Name() string { return "datadog" }
+
+// External implements Backend: monitors live in Datadog, not the cluster.
 func (d *Datadog) External() bool { return true }
+
+// END ddhead OMIT
+
+// START ddmonitor OMIT
 
 // DefaultDatadogQuery assumes the OpenMetrics check maps
 // watchtower_healthcheck_up to watchtower.healthcheck.up and keeps the
@@ -62,9 +71,14 @@ type monitorOptions struct {
 
 // uidTag is how we find a monitor we created even if we never recorded its
 // ID, for example because the status update after creation failed.
-func uidTag(hc *v1alpha1.HealthCheck) string { return "watchtower-uid:" + string(hc.UID) }
+func uidTag(hc *v1alpha1.HealthCheck) string {
+	return "watchtower-uid:" + string(hc.UID)
+}
+
+// END ddmonitor OMIT
 
 // START ddensure OMIT
+
 // Ensure creates or updates the monitor. External APIs have no owner
 // references and no server-side apply, so idempotency is our job: the
 // monitor is tagged with the HealthCheck's UID, and before creating one we
@@ -109,8 +123,12 @@ func (d *Datadog) Ensure(
 
 // END ddensure OMIT
 
+// START ddremove OMIT
+
 // Remove deletes the monitor. A monitor that is already gone is success.
-func (d *Datadog) Remove(ctx context.Context, hc *v1alpha1.HealthCheck) error {
+func (d *Datadog) Remove(
+	ctx context.Context, hc *v1alpha1.HealthCheck,
+) error {
 	id := knownID(hc)
 	if id == 0 {
 		found, err := d.findByTag(ctx, uidTag(hc))
@@ -122,13 +140,19 @@ func (d *Datadog) Remove(ctx context.Context, hc *v1alpha1.HealthCheck) error {
 		}
 		id = found
 	}
-	err := d.do(ctx, http.MethodDelete, "/api/v1/monitor/"+strconv.FormatInt(id, 10), nil, nil)
+	path := "/api/v1/monitor/" + strconv.FormatInt(id, 10)
+	err := d.do(ctx, http.MethodDelete, path, nil, nil)
 	if isNotFound(err) {
 		return nil
 	}
 	return err
 }
 
+// END ddremove OMIT
+
+// START ddbody OMIT
+
+// monitorFor renders the desired monitor for hc.
 func (d *Datadog) monitorFor(hc *v1alpha1.HealthCheck) monitor {
 	q := d.Query
 	if q == nil {
@@ -154,6 +178,7 @@ func (d *Datadog) monitorFor(hc *v1alpha1.HealthCheck) monitor {
 	}
 }
 
+// knownID is the monitor ID recorded in status, or 0.
 func knownID(hc *v1alpha1.HealthCheck) int64 {
 	a := hc.Status.Alerting
 	if a == nil || a.Backend != "datadog" {
@@ -163,6 +188,7 @@ func knownID(hc *v1alpha1.HealthCheck) int64 {
 	return id
 }
 
+// findByTag returns the ID of a monitor carrying tag, or 0.
 func (d *Datadog) findByTag(ctx context.Context, tag string) (int64, error) {
 	var found []monitor
 	path := "/api/v1/monitor?monitor_tags=" + url.QueryEscape(tag)
@@ -185,11 +211,13 @@ func (e *apiError) Error() string {
 	return fmt.Sprintf("datadog API: HTTP %d: %s", e.Status, e.Body)
 }
 
+// isNotFound reports whether err is a 404 from Datadog.
 func isNotFound(err error) bool {
 	ae, ok := errors.AsType[*apiError](err)
 	return ok && ae.Status == http.StatusNotFound
 }
 
+// do sends one API request and decodes a 2xx JSON response into out.
 func (d *Datadog) do(ctx context.Context, method, path string, in, out any) error {
 	var body io.Reader
 	if in != nil {
@@ -243,3 +271,5 @@ func datadogWindow(d time.Duration) string {
 	}
 	return "last_1d"
 }
+
+// END ddbody OMIT

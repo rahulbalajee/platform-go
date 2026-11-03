@@ -1,0 +1,2 @@
+cmd/main.go:25:2: package watchtower/api/v1alpha1 is not in std ($GOROOT/src/watchtower/api/v1alpha1)
+cmd/main.go:26:2: package watchtower/internal/controller is not in std ($GOROOT/src/watchtower/internal/controller)

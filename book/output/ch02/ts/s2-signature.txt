@@ -1,0 +1,3 @@
+vet: ./options_test.go:93:52: cannot use lim (variable of type *countingLimiter) as platformapi.Limiter value in argument to platformapi.WithLimiter: *countingLimiter does not implement platformapi.Limiter (wrong type for method Wait)
+                have Wait() error
+                want Wait(context.Context) error

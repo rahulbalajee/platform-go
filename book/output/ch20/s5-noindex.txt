@@ -1,0 +1,5 @@
+--- FAIL: TestServiceTargetResolvesWhenServiceAppears (3.23s)
+    healthcheck_controller_test.go:218: condition not met within 3s: Healthy=Unknown url=""
+FAIL
+FAIL    watchtower/internal/controller  19.889s
+FAIL

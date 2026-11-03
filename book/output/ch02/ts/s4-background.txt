@@ -1,0 +1,2 @@
+    calls_test.go:46: err = <nil>, want context.Canceled
+    calls_test.go:49: sent 1 requests on a cancelled context

@@ -1,0 +1,5 @@
+pkg/clierr/program.go:214:12: G303: File creation in shared tmp directory without using ioutil.Tempfile (gosec)
+        f, err := os.Create("/tmp/" + p.Name + "-crash.txt")
+                  ^
+1 issues:
+* gosec: 1

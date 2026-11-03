@@ -1,0 +1,3 @@
+$ bin/torn -for 5s & sleep 0.5; kill -HUP $!; wait $!; echo "exit status $?"
+Hangup: 1               bin/torn -for 5s
+exit status 129

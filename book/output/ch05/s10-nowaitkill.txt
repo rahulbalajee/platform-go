@@ -1,0 +1,5 @@
+--- FAIL: TestWaitKillsAbandonedDescendants (3.01s)
+    procx_test.go:180: process 56876 is still running
+FAIL
+FAIL    oskit/procx     3.485s
+FAIL

@@ -1,0 +1,29 @@
+# -h prints usage to stderr and exits 0. The expected text lives in this
+# file: 'go test -update' rewrites it when the flags change.
+exec sweep -h
+! stdout .
+cmp stderr usage.txt
+
+exec sweep -version
+stdout '^sweep dev$'
+
+-- usage.txt --
+Usage of sweep:
+  -attempts int
+    	attempts per target incl. the first (default 3)
+  -c int
+    	max targets checked concurrently (default 32)
+  -deadline duration
+    	overall deadline (0 = none)
+  -min-cert-validity duration
+    	fail TLS targets whose certificate expires sooner (default 336h0m0s)
+  -o string
+    	output: table, wide, json, jsonl (default "table")
+  -per-host int
+    	max concurrent checks per host (default 4)
+  -rate float
+    	max attempts per second (0 = no limit) (default 50)
+  -timeout duration
+    	timeout per attempt (default 5s)
+  -version
+    	print version and exit

@@ -1,0 +1,12 @@
+# Chapter 1's final lab steps are the production code other chapters reuse.
+# book/scripts/check_workbook.py checks that each pair below is identical
+# apart from OMIT markers and these import paths.
+@import stamp/buildinfo = github.com/rahulbalajee/platform-go/pkg/buildinfo
+
+workbook/ch01/step4/buildinfo/buildinfo.go = pkg/buildinfo/buildinfo.go
+workbook/ch01/step4/buildinfo/buildinfo_test.go = pkg/buildinfo/buildinfo_test.go
+workbook/ch01/step4/cmd/stamp/main.go = examples/ch01/stamp/main.go
+workbook/ch01/step4/cmd/stamp/main_test.go = examples/ch01/stamp/main_test.go
+workbook/ch01/step1/rollout/phase.go = examples/ch01/tools/rollout/phase.go
+workbook/ch01/step1/rollout/phase_test.go = examples/ch01/tools/rollout/phase_test.go
+workbook/ch01/step1/rollout/phase_string.go = examples/ch01/tools/rollout/phase_string.go

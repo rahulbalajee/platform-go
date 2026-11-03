@@ -1,0 +1,2 @@
+deploying checkout v1.4.2 to 4 targets
+deployctl: deploy v1.4.2 to us-east-1: Post "http://127.0.0.1:8787/v1/deploy/us-east-1": dial tcp 127.0.0.1:8787: connect: connection refused

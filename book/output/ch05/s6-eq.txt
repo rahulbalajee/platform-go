@@ -1,0 +1,5 @@
+--- FAIL: TestTryLockIsExclusiveWithinOneProcess (0.00s)
+    lock_test.go:43: second TryLock: err = lock $TMPDIR/TestTryLockIsExclusiveWithinOneProcess2269631319/001/tool.lock: resource temporarily unavailable, want ErrLocked
+FAIL
+FAIL    oskit/fsx       0.610s
+FAIL

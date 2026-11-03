@@ -1,0 +1,15 @@
+./cmd/deployctl/client.go
+./cmd/deployctl/config.go
+./cmd/deployctl/deploy.go
+./cmd/deployctl/main.go
+./cmd/deployctl/run_test.go
+./cmd/fakeapi/main.go
+./internal/fakeapi/fakeapi.go
+./job.yaml
+./lab/chain/main.go
+./lab/exitcount/main.go
+./lab/testdata/ptrwrap.go
+./pkg/clierr/clierr_test.go
+./pkg/clierr/code.go
+./pkg/clierr/error.go
+./pkg/clierr/program.go

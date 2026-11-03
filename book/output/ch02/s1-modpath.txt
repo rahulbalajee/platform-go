@@ -1,0 +1,1 @@
+client_test.go:12:2: package platformapi is not in std ($GOROOT/src/platformapi)

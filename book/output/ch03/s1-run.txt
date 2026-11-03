@@ -1,0 +1,4 @@
+deploying checkout v1.4.2 to 4 targets
+  us-east-1   deployed 100ms
+  us-west-2   deployed 100ms
+deployctl: deploy v1.4.2 to eu-west-1: POST /v1/deploy/eu-west-1: 503 Service Unavailable

@@ -1,0 +1,5 @@
+--- FAIL: TestServiceTargetResolvesWhenServiceAppears (3.24s)
+    healthcheck_controller_test.go:218: condition not met within 3s: Healthy=False url="http://api-4008.wt-managed.svc.cluster.local:8080/healthz"
+FAIL
+FAIL    watchtower/internal/controller  20.590s
+FAIL

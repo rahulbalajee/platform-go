@@ -1,0 +1,2 @@
+ok      sweep/sweepscript       2.226s
+warning: no applicable files found in input directories

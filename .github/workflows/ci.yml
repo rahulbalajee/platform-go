@@ -136,7 +136,7 @@ jobs:
       - uses: helm/kind-action@v1
         with:
           cluster_name: watchtower
-      - run: projects/watchtower/hack/e2e-kind.sh
+      - run: bash projects/watchtower/hack/e2e-kind.sh
 
   # The book: every listing is read from the code at build time, so a
   # compiling book proves the snippets still exist; widths must fit the page.

@@ -1,3 +1,4 @@
+// START imports OMIT
 package main
 
 import (
@@ -12,8 +13,9 @@ import (
 	"time"
 
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
-	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
+
+// END imports OMIT
 
 // START apierror OMIT
 // APIError is a non-2xx answer from the deployment API. It keeps what the
@@ -36,63 +38,102 @@ func (e *APIError) Temporary() bool {
 }
 
 // END apierror OMIT
-
-// Client talks to the deployment API.
-type Client struct {
-	BaseURL string
-	Token   clierr.Secret // never printed, never logged
-	HTTP    *http.Client
-	Retry   retry.Policy
-	Log     *slog.Logger
+// START retryerror OMIT
+// RetryError is the error after every attempt failed. It wraps the last
+// attempt's error, so errors.Is and errors.AsType still find the cause.
+type RetryError struct {
+	Attempts int   // how many times the call was tried
+	Err      error // what the last attempt returned
 }
 
-// START do OMIT
-// do sends one API call with retries. Transport errors and temporary API
-// errors are retried; everything else is wrapped in retry.Permanent, which
-// stays transparent to errors.Is/As.
-func (c *Client) do(ctx context.Context, method, path string, in, out any) error {
-	return c.Retry.Do(ctx, func(ctx context.Context) error {
-		var body io.Reader
-		if in != nil {
-			b, err := json.Marshal(in)
-			if err != nil {
-				return retry.Permanent(err)
-			}
-			body = bytes.NewReader(b)
-		}
-		req, err := http.NewRequestWithContext(ctx, method, c.BaseURL+path, body)
-		if err != nil {
-			return retry.Permanent(err)
-		}
-		req.Header.Set("Authorization", "Bearer "+string(c.Token))
-		c.Log.DebugContext(ctx, "api call", "method", method, "path", path,
-			"token", c.Token) // logs [REDACTED]
+func (e *RetryError) Error() string {
+	return fmt.Sprintf("%d attempts, last: %v", e.Attempts, e.Err)
+}
 
-		resp, err := c.HTTP.Do(req)
-		if err != nil {
-			return err // dial, TLS, timeout: worth another attempt
+// Unwrap makes the last attempt's error part of the chain.
+func (e *RetryError) Unwrap() error { return e.Err }
+
+// END retryerror OMIT
+// START client OMIT
+// Client talks to the deployment API.
+type Client struct {
+	BaseURL  string
+	Token    clierr.Secret // never printed, never logged
+	HTTP     *http.Client
+	Attempts int           // tries per call when a failure is temporary
+	Backoff  time.Duration // pause before the second try; doubles after
+	Log      *slog.Logger
+}
+
+// END client OMIT
+// START do OMIT
+// do sends one API call. A temporary failure is tried again, up to
+// c.Attempts times with a doubling pause; anything else returns at once.
+func (c *Client) do(ctx context.Context, method, path string, in, out any) error {
+	delay := c.Backoff
+	for attempt := 1; ; attempt++ {
+		again, err := c.send(ctx, method, path, in, out)
+		if err == nil || !again || ctx.Err() != nil {
+			return err
 		}
-		defer resp.Body.Close()
-		if resp.StatusCode >= 300 {
-			apiErr := &APIError{Status: resp.StatusCode,
-				RequestID: resp.Header.Get("X-Request-Id")}
-			var problem struct{ Error string }
-			_ = json.NewDecoder(io.LimitReader(resp.Body, 64<<10)).Decode(&problem)
-			apiErr.Message = problem.Error
-			if apiErr.Temporary() {
-				return apiErr
-			}
-			return retry.Permanent(apiErr)
+		if attempt >= c.Attempts {
+			return &RetryError{Attempts: attempt, Err: err}
 		}
-		if out == nil {
-			return nil
+		select {
+		case <-time.After(delay):
+			delay *= 2
+		case <-ctx.Done():
+			return err
 		}
-		return retry.Permanent(json.NewDecoder(resp.Body).Decode(out))
-	})
+	}
 }
 
 // END do OMIT
+// START send OMIT
+// send makes one attempt and says whether another could succeed. Only this
+// function knows the protocol, so it classifies its own failures.
+func (c *Client) send(ctx context.Context, method, path string,
+	in, out any) (again bool, err error) {
 
+	var body io.Reader
+	if in != nil {
+		b, err := json.Marshal(in)
+		if err != nil {
+			return false, err
+		}
+		body = bytes.NewReader(b)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, c.BaseURL+path, body)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Set("Authorization", "Bearer "+string(c.Token))
+	c.Log.DebugContext(ctx, "api call", "method", method, "path", path,
+		"token", c.Token) // logs [REDACTED]
+
+	resp, err := c.HTTP.Do(req)
+	if err != nil {
+		return true, err // no answer (refused, reset, timed out): try again
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 300 {
+		apiErr := &APIError{Status: resp.StatusCode,
+			RequestID: resp.Header.Get("X-Request-Id")}
+		var problem struct{ Error string }
+		_ = json.NewDecoder(io.LimitReader(resp.Body, 64<<10)).Decode(&problem)
+		apiErr.Message = problem.Error
+		return apiErr.Temporary(), apiErr
+	}
+	if out == nil {
+		return false, nil
+	}
+	if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+		return false, fmt.Errorf("decode %s response: %w", path, err)
+	}
+	return false, nil
+}
+
+// END send OMIT
 // START auth OMIT
 // checkAuth asks the API who we are before doing anything else, so a bad
 // token fails once, up front, instead of once per target halfway through
@@ -125,7 +166,7 @@ func (c *Client) checkAuth(ctx context.Context) error {
 }
 
 // END auth OMIT
-
+// START deploycall OMIT
 // Deploy asks the API to roll service@version out to target.
 func (c *Client) Deploy(ctx context.Context, target, service, version string) error {
 	in := map[string]string{"service": service, "version": version}
@@ -135,15 +176,13 @@ func (c *Client) Deploy(ctx context.Context, target, service, version string) er
 // newClient builds the API client from the config and the environment.
 func newClient(cfg Config, getenv func(string) string, log *slog.Logger) *Client {
 	return &Client{
-		BaseURL: cfg.API,
-		Token:   clierr.Secret(getenv("DEPLOYCTL_TOKEN")),
-		// No Client.Timeout: deadlines come from the context.
-		HTTP: &http.Client{},
-		Retry: retry.Policy{
-			MaxAttempts: 3,
-			BaseDelay:   100 * time.Millisecond,
-			MaxDelay:    time.Second,
-		},
-		Log: log,
+		BaseURL:  cfg.API,
+		Token:    clierr.Secret(getenv("DEPLOYCTL_TOKEN")),
+		HTTP:     &http.Client{}, // no Timeout: deadlines come from the context
+		Attempts: 3,
+		Backoff:  100 * time.Millisecond,
+		Log:      log,
 	}
 }
+
+// END deploycall OMIT

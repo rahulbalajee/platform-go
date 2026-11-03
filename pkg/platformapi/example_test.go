@@ -1,3 +1,5 @@
+// START head OMIT
+
 package platformapi_test
 
 import (
@@ -10,6 +12,8 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi/platformapifake"
 )
+
+// END head OMIT
 
 // START example OMIT
 
@@ -79,6 +83,8 @@ func ExampleClient_ListDeployments() {
 
 // END examplelist OMIT
 
+// START poll OMIT
+
 // Follow a rollout's progress with Poll.
 func ExampleClient_Poll() {
 	srv := httptest.NewServer(platformapifake.New())
@@ -109,6 +115,10 @@ func ExampleClient_Poll() {
 	// op-9 rolling out v2.0.1: 2/2 replicas updated
 }
 
+// END poll OMIT
+
+// START apierror OMIT
+
 // Check for a missing deployment with errors.Is, and read the details
 // from the *APIError.
 func ExampleAPIError() {
@@ -128,3 +138,5 @@ func ExampleAPIError() {
 	}
 	// Output: 404 not_found req-1234
 }
+
+// END apierror OMIT

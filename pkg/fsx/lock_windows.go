@@ -18,8 +18,8 @@ var errWouldBlock = windows.ERROR_LOCK_VIOLATION
 // handle is closed or the process exits.
 func lockFile(f *os.File) error {
 	ol := new(windows.Overlapped)
-	return windows.LockFileEx(windows.Handle(f.Fd()),
-		windows.LOCKFILE_EXCLUSIVE_LOCK|windows.LOCKFILE_FAIL_IMMEDIATELY, 0, 1, 0, ol)
+	const flags = windows.LOCKFILE_EXCLUSIVE_LOCK | windows.LOCKFILE_FAIL_IMMEDIATELY
+	return windows.LockFileEx(windows.Handle(f.Fd()), flags, 0, 1, 0, ol)
 }
 
 func unlockFile(f *os.File) error {

@@ -1,4 +1,6 @@
-package promote_test
+// START head OMIT
+
+package promote
 
 import (
 	"context"
@@ -8,15 +10,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/rahulbalajee/platform-go/examples/ch02/promote"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi/platformapifake"
 )
 
+// END head OMIT
+
 // START stub OMIT
 
 // stub implements promote.Platform in a few lines, because the interface
-// has three methods rather than the SDK's fifteen.
+// has three methods rather than the SDK's eleven.
 type stub struct {
 	history []platformapi.Deployment
 	created []platformapi.CreateDeploymentRequest
@@ -54,7 +57,7 @@ func TestPromotePicksNewestSuccessfulVersion(t *testing.T) {
 	s := &stub{history: []platformapi.Deployment{
 		{Version: "v1.4.1"}, {Version: "v1.4.0"}, // newest first
 	}}
-	_, err := promote.Promote(t.Context(), s, "checkout", "staging", "prod")
+	_, err := Promote(t.Context(), s, "checkout", "staging", "prod")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,9 +68,10 @@ func TestPromotePicksNewestSuccessfulVersion(t *testing.T) {
 
 // END stubtest OMIT
 
+// START faketest OMIT
 func TestPromoteWithoutHistoryFails(t *testing.T) {
 	s := &stub{}
-	if _, err := promote.Promote(t.Context(), s, "checkout", "staging", "prod"); err == nil {
+	if _, err := Promote(t.Context(), s, "checkout", "staging", "prod"); err == nil {
 		t.Fatal("promoted a service with no successful deployment")
 	}
 	if len(s.created) != 0 {
@@ -79,20 +83,24 @@ func TestPromoteWithoutHistoryFails(t *testing.T) {
 func TestPromoteAgainstFakePlatform(t *testing.T) {
 	srv := httptest.NewServer(platformapifake.New())
 	defer srv.Close()
-	client, err := platformapi.New(srv.URL, platformapi.WithPollInterval(time.Millisecond))
+	client, err := platformapi.New(srv.URL,
+		platformapi.WithPollInterval(time.Millisecond))
 	if err != nil {
 		t.Fatal(err)
 	}
-	d, err := promote.Promote(t.Context(), promote.Client{Client: client},
+	d, err := Promote(t.Context(), Client{Client: client},
 		"checkout", "staging", "prod")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if d.Environment != "prod" || d.Version != "v1.4.1" || d.State != platformapi.StateSucceeded {
+	if d.Environment != "prod" || d.Version != "v1.4.1" ||
+		d.State != platformapi.StateSucceeded {
 		t.Errorf("deployment = %+v", d)
 	}
-	_, err = promote.Promote(t.Context(), promote.Client{Client: client}, "ledger", "staging", "prod")
+	_, err = Promote(t.Context(), Client{Client: client}, "ledger", "staging", "prod")
 	if err == nil || errors.Is(err, platformapi.ErrNotFound) {
 		t.Errorf("ledger has never been deployed: err = %v", err)
 	}
 }
+
+// END faketest OMIT

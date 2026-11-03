@@ -1,1 +1,1 @@
-stamp v1.4.0 (f4030eafc9cc, 2026-11-03T09:21:10Z) go1.27.3 darwin/arm64
+stamp v1.4.0 (e3dfd1265fa1, 2026-11-02T16:20:05Z) go1.27.3 darwin/arm64

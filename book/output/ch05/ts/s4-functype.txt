@@ -1,0 +1,1 @@
+cmd/torn/main.go:43:10: cannot use os.WriteFile (value of type func(name string, data []byte, perm os.FileMode) error) as writeFunc value in return statement

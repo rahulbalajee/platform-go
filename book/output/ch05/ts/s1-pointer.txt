@@ -1,0 +1,1 @@
+cmd/loggen/main.go:56:42: cannot use count (variable of struct type countWriter) as io.Writer value in argument to io.MultiWriter: countWriter does not implement io.Writer (method Write has pointer receiver)

@@ -1,16 +1,7 @@
+// START head OMIT
 // Command deployctl rolls a service version out to a set of targets through
-// a deployment API. It exists to show every failure mode of a platform CLI
-// and how pkg/clierr reports each one:
-//
-//	deployctl [-config FILE] [-o text|json] [-log FILE] COMMAND [ARGS]
-//
-//	init             write a starter deployctl.json
-//	deploy VERSION   roll VERSION out to every target
-//	status           show what each target runs
-//
-// Exit status follows the clierr contract: 0 ok, 1 failed, 2 usage or
-// config error, 70 internal error, 75 timed out, 77 not authorized,
-// 128+n killed by signal n (130 for Ctrl-C).
+// a deployment API. It exists to show every way a platform CLI can fail,
+// and how to report each one. Run "deployctl -h" for commands and flags.
 package main
 
 import (
@@ -27,8 +18,11 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
 )
 
+// END head OMIT
+// START docs OMIT
 const docs = "https://github.com/rahulbalajee/platform-go/tree/main/examples/ch03"
 
+// END docs OMIT
 // START main OMIT
 func main() {
 	p := &clierr.Program{
@@ -41,7 +35,7 @@ func main() {
 }
 
 // END main OMIT
-
+// START globals OMIT
 // globals are the flags every command accepts.
 type globals struct {
 	config  string
@@ -49,6 +43,7 @@ type globals struct {
 	logFile string
 }
 
+// END globals OMIT
 // START run OMIT
 // run is the program. It returns an error and never exits, so tests can
 // drive it, and it tells p how to report once it knows the output format.
@@ -92,7 +87,7 @@ func run(ctx context.Context, p *clierr.Program, args []string,
 }
 
 // END run OMIT
-
+// START usage OMIT
 const usage = `usage: deployctl [-config FILE] [-o text|json] [-log FILE] COMMAND
 
 commands:
@@ -101,11 +96,12 @@ commands:
   status           show what each target runs
 `
 
+// END usage OMIT
 // START parse OMIT
 // parse parses flags without letting the flag package print anything:
 // on a bad flag it would print the error and the whole usage text, and
-// then Run would report the same error again. Help goes to stdout, because
-// the user asked for it.
+// then the report would show the same error again. Help goes to stdout,
+// because the user asked for it.
 func parse(fs *flag.FlagSet, args []string, stdout io.Writer,
 	usage string) error {
 
@@ -139,7 +135,7 @@ func usageError(err error, cmd string) error {
 }
 
 // END parse OMIT
-
+// START openlog OMIT
 // openLog returns the operator log: JSON lines appended to path, or a
 // logger that discards everything when path is empty.
 func openLog(path string) (*slog.Logger, func(), error) {
@@ -158,6 +154,8 @@ func openLog(path string) (*slog.Logger, func(), error) {
 	return slog.New(h), func() { _ = f.Close() }, nil
 }
 
+// END openlog OMIT
+// START splitlist OMIT
 // splitList parses a comma-separated flag value.
 func splitList(s string) []string {
 	var out []string
@@ -169,7 +167,11 @@ func splitList(s string) []string {
 	return out
 }
 
+// END splitlist OMIT
+// START elapsed OMIT
 // elapsed rounds a duration for people.
 func elapsed(start time.Time) time.Duration {
 	return time.Since(start).Round(10 * time.Millisecond)
 }
+
+// END elapsed OMIT

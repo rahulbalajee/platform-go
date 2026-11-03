@@ -1,0 +1,3 @@
+WARNING: DATA RACE
+Read at 0x… by main goroutine:
+      ~/broken/cmd/torn/main.go:94 +0x674

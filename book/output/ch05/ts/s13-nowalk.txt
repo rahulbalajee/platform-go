@@ -1,0 +1,1 @@
+    sysinfo_test.go:128: got {Path:/batch.slice/job.service MemoryMax:2147483648 MemoryHigh:-1 MemoryCurrent:1048576 MemoryPeak:0 CPUs:0.5 PidsMax:-1 PidsCurrent:0}

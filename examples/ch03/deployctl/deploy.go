@@ -1,3 +1,4 @@
+// START imports OMIT
 package main
 
 import (
@@ -8,18 +9,21 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
-	"github.com/rahulbalajee/platform-go/pkg/conc"
-	"github.com/rahulbalajee/platform-go/pkg/retry"
 )
 
-const deployUsage = `usage: deployctl deploy [-timeout D] [-parallel N] [-only T,...] VERSION
+// END imports OMIT
+
+// START usage OMIT
+const deployUsage = `usage: deployctl deploy [flags] VERSION
 `
 
+// END usage OMIT
+// START result OMIT
 // result is the outcome for one target.
 type result struct {
 	Target string
@@ -27,6 +31,8 @@ type result struct {
 	Err    error
 }
 
+// END result OMIT
+// START deploy OMIT
 func deploy(ctx context.Context, g globals, args []string,
 	getenv func(string) string, log *slog.Logger, stdout io.Writer) error {
 
@@ -78,6 +84,7 @@ func deploy(ctx context.Context, g globals, args []string,
 		g.output == "json", stdout)
 }
 
+// END deploy OMIT
 // START rollout OMIT
 // rollout deploys to every target, at most parallel at a time, prints each
 // result as it arrives, and returns one error describing all failures.
@@ -88,28 +95,28 @@ func rollout(ctx context.Context, c *Client, service, version string,
 		fmt.Fprintf(stdout, "deploying %s %s to %d targets\n",
 			service, version, len(targets))
 	}
-	one := func(ctx context.Context, target string) result {
-		start := time.Now()
-		err := clierr.Safe(func() error { // a panic here is on a worker goroutine
-			return c.Deploy(ctx, target, service, version)
-		})
-		return result{Target: target, Took: elapsed(start), Err: err}
-	}
+	results := make(chan result)
+	go func() { // starts the workers in order, then closes results
+		slots := make(chan struct{}, parallel) // a worker holds a slot
+		var wg sync.WaitGroup
+		for _, target := range targets {
+			slots <- struct{}{} // wait for a free slot before starting
+			wg.Go(func() {
+				defer func() { <-slots }()
+				results <- deployOne(ctx, c, target, service, version)
+			})
+		}
+		wg.Wait() // every worker has sent its result...
+		close(results)
+	}()
 
 	var failed []error
-	seen := make(map[string]bool)
-	for r := range conc.Stream(ctx, slices.Values(targets), parallel, one) {
-		seen[r.Target] = true
+	for r := range results { // only this loop touches failed
 		if r.Err != nil {
 			r.Err = targetError(ctx, r.Target, r.Err)
 			failed = append(failed, r.Err)
 		}
 		printResult(stdout, r, asJSON)
-	}
-	for _, t := range targets { // never started: the context ended first
-		if !seen[t] {
-			failed = append(failed, &clierr.Error{Message: t + ": not started"})
-		}
 	}
 	if len(failed) == 0 {
 		return nil
@@ -118,7 +125,21 @@ func rollout(ctx context.Context, c *Client, service, version string,
 }
 
 // END rollout OMIT
+// START deployone OMIT
+// deployOne deploys one target and times it. It runs on a worker
+// goroutine, where Run's recover can't see a panic, so Safe turns a panic
+// into an error that travels back like any other.
+func deployOne(ctx context.Context, c *Client, target, service,
+	version string) result {
 
+	start := time.Now()
+	err := clierr.Safe(func() error {
+		return c.Deploy(ctx, target, service, version)
+	})
+	return result{Target: target, Took: elapsed(start), Err: err}
+}
+
+// END deployone OMIT
 // START outcome OMIT
 // rolloutError is the single error for a rollout with failures. If the
 // context ended (deadline or signal), that is the headline; otherwise it
@@ -153,7 +174,6 @@ func rolloutError(ctx context.Context, version string, nFailed, total int,
 }
 
 // END outcome OMIT
-
 // START targeterr OMIT
 // targetError turns one target's failure into a line a person can act on,
 // prefixed with the target, and keeps the full error underneath.
@@ -161,8 +181,8 @@ func targetError(ctx context.Context, target string, err error) error {
 	msg := err.Error() // last resort: the raw chain
 	if apiErr, ok := errors.AsType[*APIError](err); ok {
 		msg = fmt.Sprintf("%s (HTTP %d", apiErr.Message, apiErr.Status)
-		if ex, ok := errors.AsType[*retry.ExhaustedError](err); ok {
-			msg += fmt.Sprintf(", %d attempts", ex.Attempts)
+		if re, ok := errors.AsType[*RetryError](err); ok {
+			msg += fmt.Sprintf(", %d attempts", re.Attempts)
 		}
 		msg += ")"
 	}
@@ -177,8 +197,6 @@ func targetError(ctx context.Context, target string, err error) error {
 	return &clierr.Error{Message: target + ": " + msg, Err: err}
 }
 
-// END targeterr OMIT
-
 // names returns the target names from errors made by targetError.
 func names(failed []error) []string {
 	var out []string
@@ -190,6 +208,8 @@ func names(failed []error) []string {
 	return out
 }
 
+// END targeterr OMIT
+// START print OMIT
 func printResult(w io.Writer, r result, asJSON bool) {
 	status, detail := "deployed", ""
 	if r.Err != nil {
@@ -206,3 +226,5 @@ func printResult(w io.Writer, r result, asJSON bool) {
 	}
 	fmt.Fprintf(w, "  %-11s %-8s %s\n", r.Target, status, r.Took)
 }
+
+// END print OMIT

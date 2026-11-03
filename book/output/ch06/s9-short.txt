@@ -1,0 +1,8 @@
+=== RUN   TestSweepAgainstFleetContainer
+    containers_test.go:101: needs Docker; skipped in -short mode
+--- SKIP: TestSweepAgainstFleetContainer (0.00s)
+=== RUN   TestTCPProbeSeesPostgresStop
+    containers_test.go:136: needs Docker; skipped in -short mode
+--- SKIP: TestTCPProbeSeesPostgresStop (0.00s)
+PASS
+ok      sweep/containers        0.568s

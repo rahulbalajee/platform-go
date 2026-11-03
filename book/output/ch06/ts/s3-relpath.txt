@@ -1,0 +1,1 @@
+    golden_test.go:83: open testdata/golden/run-json.golden: no such file or directory (run 'go test -update' to create it)

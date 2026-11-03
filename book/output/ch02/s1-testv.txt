@@ -1,0 +1,8 @@
+=== RUN   TestGetEnvironment
+--- PASS: TestGetEnvironment (0.01s)
+=== RUN   TestGetDeploymentDecodesEveryField
+--- PASS: TestGetDeploymentDecodesEveryField (0.00s)
+=== RUN   TestMissingResourceIsAnError
+--- PASS: TestMissingResourceIsAnError (0.00s)
+PASS
+ok      platformapi     0.437s

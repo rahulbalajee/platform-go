@@ -1,0 +1,2 @@
+verifying example.com/codec@v1.4.0: checksum mismatch
+SECURITY ERROR

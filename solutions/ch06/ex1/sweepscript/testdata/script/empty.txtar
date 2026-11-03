@@ -1,0 +1,21 @@
+# An inventory with no targets is a mistake (a truncated file, a glob that
+# matched nothing, the wrong environment), not a healthy fleet. sweep must
+# fail as a usage error, say why, and print nothing on stdout.
+exits 2 sweep empty.txt
+stderr 'no targets in the inventory'
+! stdout .
+
+# Comments and blank lines are not targets either.
+exits 2 sweep comments.txt
+stderr 'no targets in the inventory'
+
+# The same holds for an inventory read from stdin.
+stdin empty.txt
+exits 2 sweep
+stderr 'no targets in the inventory'
+! stdout .
+
+-- empty.txt --
+-- comments.txt --
+# staging: every service moved to the new cluster
+

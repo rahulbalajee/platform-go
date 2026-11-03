@@ -1,3 +1,5 @@
+// START ttyhead OMIT
+
 // Command ttydemo runs the same child program twice, first with its stdout
 // connected to a pipe and then to a pseudo-terminal, and prints exactly the
 // bytes the parent received each time.
@@ -29,6 +31,8 @@ func main() {
 		os.Exit(1)
 	}
 }
+
+// END ttyhead OMIT
 
 // START child OMIT
 // runChild behaves like many CLIs: colour and a redrawn progress line when
@@ -82,9 +86,12 @@ func run() error {
 
 // END run OMIT
 
+// START show OMIT
 func show(via string, out []byte) {
 	fmt.Printf("via %s:\n", via)
 	for line := range strings.Lines(string(out)) {
 		fmt.Printf("  %q\n", line)
 	}
 }
+
+// END show OMIT

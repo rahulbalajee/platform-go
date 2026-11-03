@@ -1,0 +1,13 @@
+panic: assignment to entry in nil map [recovered, repanicked]
+
+goroutine 19 [running]:
+sync.(*WaitGroup).Go.func1.1()
+        sync/waitgroup.go:251 +0x48
+panic({0x…?, 0x…?})
+        runtime/panic.go:859 +0x120
+main.main.func2()
+        deployctl/lab/gopanic/main.go:22 +0x34
+sync.(*WaitGroup).Go.func1()
+        sync/waitgroup.go:258 +0x48
+created by sync.(*WaitGroup).Go in goroutine 1
+        sync/waitgroup.go:238 +0x78

@@ -1,10 +1,12 @@
+// START limitshead OMIT
+
 // Command limits prints the resource limits this process really runs under:
 // cgroup v2 memory, CPU and PID limits, what the Go runtime derived from
 // them, and the process's file-descriptor limit.
 //
 // Run it inside a container to see the container's limits:
 //
-//	docker run --rm --cpus=1.5 --memory=256m pgo-ch05 /limits
+//	docker run --rm --cpus=1.5 --memory=256m oskit /limits
 package main
 
 import (
@@ -55,7 +57,8 @@ func run(stdout io.Writer, setMem bool) error {
 		fmt.Fprintf(w, "memory.current\t%s (peak %s)\n",
 			size(cg.MemoryCurrent), size(cg.MemoryPeak))
 		fmt.Fprintf(w, "cpu.max\t%s\n", cpus(cg.CPUs))
-		fmt.Fprintf(w, "pids.max\t%s (current %d)\n", count(cg.PidsMax), cg.PidsCurrent)
+		fmt.Fprintf(w, "pids.max\t%s (current %d)\n",
+			count(cg.PidsMax), cg.PidsCurrent)
 	}
 
 	fmt.Fprintf(w, "GOMAXPROCS\t%d (runtime.NumCPU %d)\n",
@@ -80,6 +83,8 @@ func run(stdout io.Writer, setMem bool) error {
 	}
 	return nil
 }
+
+// END limitshead OMIT
 
 // START memlimit OMIT
 // memLimitFor returns a Go soft memory limit for the cgroup: 90% of
@@ -116,6 +121,7 @@ func exhaustFDs() {
 
 // END exhaust OMIT
 
+// START format OMIT
 func size(b int64) string {
 	switch b {
 	case sysinfo.Unlimited, math.MaxInt64:
@@ -145,3 +151,5 @@ func atoi(s string) int {
 	_, _ = fmt.Sscan(s, &n)
 	return n
 }
+
+// END format OMIT

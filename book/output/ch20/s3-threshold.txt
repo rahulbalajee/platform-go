@@ -1,0 +1,7 @@
+--- FAIL: TestHealthCheckLifecycle (10.30s)
+    healthcheck_controller_test.go:169: condition not met within 10s: Healthy: &Condition{Type:Healthy,Status:True,ObservedGeneration:1,LastTransitionTime:2026-11-03 19:10:27 +0530 IST,Reason:ProbeSucceeded,Message:HTTP 200,}
+--- FAIL: TestApplyProbeStateMachine (0.00s)
+    status_test.go:56: step 4: got True/ProbeSucceeded failures=3 event=0; want False/ProbeFailing 3 1
+FAIL
+FAIL    watchtower/internal/controller  16.075s
+FAIL

@@ -1,3 +1,4 @@
+// START string OMIT
 package rollout
 
 import (
@@ -6,7 +7,8 @@ import (
 )
 
 func TestStringAndParse(t *testing.T) {
-	want := []string{"pending", "canary", "progressing", "paused", "complete", "rolled-back"}
+	want := []string{"pending", "canary", "progressing", "paused",
+		"complete", "rolled-back"}
 	for i, p := range Phases() {
 		if got := p.String(); got != want[i] {
 			t.Errorf("Phase(%d).String() = %q, want %q", i, got, want[i])
@@ -25,6 +27,9 @@ func TestStringAndParse(t *testing.T) {
 	}
 }
 
+// END string OMIT
+
+// START json OMIT
 func TestJSON(t *testing.T) {
 	type status struct {
 		Phase Phase `json:"phase"`
@@ -37,7 +42,8 @@ func TestJSON(t *testing.T) {
 		t.Errorf("marshal = %s", b)
 	}
 	var s status
-	if err := json.Unmarshal([]byte(`{"phase":"canary"}`), &s); err != nil || s.Phase != PhaseCanary {
+	err = json.Unmarshal([]byte(`{"phase":"canary"}`), &s)
+	if err != nil || s.Phase != PhaseCanary {
 		t.Errorf("unmarshal = %v, %v", s.Phase, err)
 	}
 	if err := json.Unmarshal([]byte(`{"phase":"bogus"}`), &s); err == nil {
@@ -47,3 +53,5 @@ func TestJSON(t *testing.T) {
 		t.Error("marshal of an invalid phase: want error")
 	}
 }
+
+// END json OMIT

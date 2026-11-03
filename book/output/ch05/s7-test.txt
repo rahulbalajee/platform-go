@@ -1,0 +1,7 @@
+?       oskit/cmd/atomicput     [no test files]
+?       oskit/cmd/lockdemo      [no test files]
+ok      oskit/cmd/loggen        (cached)
+ok      oskit/cmd/logscan       (cached)
+?       oskit/cmd/torn  [no test files]
+?       oskit/cmd/untar [no test files]
+ok      oskit/fsx       4.664s

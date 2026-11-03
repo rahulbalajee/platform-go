@@ -1,0 +1,2 @@
+cmd/stamp/main_test.go:76:33: testing.(*B).Context requires go1.24 or later (file is go1.23)
+cmd/stamp/main_test.go:82:36: testing.(*B).Context requires go1.24 or later (file is go1.23)

@@ -1,3 +1,5 @@
+// START operation OMIT
+
 package platformapi
 
 import (
@@ -7,8 +9,6 @@ import (
 	"iter"
 	"time"
 )
-
-// START operation OMIT
 
 // Operation is a long-running server-side operation acting on a T, such as
 // the rollout started by CreateDeployment. It is plain data: store its ID
@@ -29,7 +29,7 @@ type Operation[T any] struct {
 // Poll returns an iterator over snapshots of op, fetched every poll
 // interval (see WithPollInterval) until the operation is done. The last
 // snapshot yielded has Done set. A failed fetch yields the error and ends
-// the iteration; transient failures are retried first.
+// the iteration.
 //
 // Poll and Wait stop when ctx is done, but the operation itself continues
 // on the server. To stop a deployment, call CancelDeployment.
@@ -38,7 +38,7 @@ func (c *Client) Poll[T any](ctx context.Context, op *Operation[T],
 
 	return func(yield func(*Operation[T], error) bool) {
 		if op == nil || checkID("operation", op.ID) != nil {
-			yield(nil, errors.New("platformapi: Poll: operation has no ID"))
+			yield(nil, errors.New("github.com/rahulbalajee/platform-go/pkg/platformapi: Poll: operation has no ID"))
 			return
 		}
 		r := newRequest("GET", opts, "operations", op.ID)
@@ -55,7 +55,7 @@ func (c *Client) Poll[T any](ctx context.Context, op *Operation[T],
 				return
 			}
 			if err := sleep(ctx, c.poll); err != nil {
-				yield(nil, fmt.Errorf("platformapi: waiting for %s: %w", op.ID, err))
+				yield(nil, fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: waiting for %s: %w", op.ID, err))
 				return
 			}
 		}
@@ -82,10 +82,8 @@ func (c *Client) Wait[T any](ctx context.Context, op *Operation[T],
 			return cur.Result, nil
 		}
 	}
-	return nil, fmt.Errorf("platformapi: operation %s: polling ended early", op.ID)
+	return nil, fmt.Errorf("github.com/rahulbalajee/platform-go/pkg/platformapi: operation %s: polling ended early", op.ID)
 }
-
-// END wait OMIT
 
 // sleep waits for d or until ctx is done, whichever comes first.
 func sleep(ctx context.Context, d time.Duration) error {
@@ -98,3 +96,5 @@ func sleep(ctx context.Context, d time.Duration) error {
 		return nil
 	}
 }
+
+// END wait OMIT

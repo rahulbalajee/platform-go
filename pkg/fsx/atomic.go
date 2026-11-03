@@ -1,7 +1,7 @@
-// Package fsx has filesystem helpers that hold up under crashes and
-// concurrent access: atomic file replacement, advisory lock files for tools
-// that must not run twice, and archive extraction that cannot escape its
-// destination directory.
+// START atomichead OMIT
+
+// Package fsx has file system helpers that hold up under crashes,
+// concurrent access and hostile input.
 package fsx
 
 import (
@@ -23,6 +23,8 @@ func WriteFile(name string, data []byte, perm fs.FileMode) error {
 		return err
 	})
 }
+
+// END atomichead OMIT
 
 // START atomic OMIT
 // Write atomically replaces name with whatever fill writes. If fill or any

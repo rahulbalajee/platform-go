@@ -1,0 +1,14 @@
+fuzz: elapsed: 0s, gathering baseline coverage: 0/4 completed
+fuzz: elapsed: 0s, gathering baseline coverage: 4/4 completed, now fuzzing with 10 workers
+fuzz: minimizing 29-byte failing input file
+fuzz: elapsed: 0s, minimizing
+--- FAIL: FuzzParseRetryAfter (0.27s)
+    --- FAIL: FuzzParseRetryAfter (0.00s)
+        probe_fuzz_test.go:31: "+0" accepted, but it is neither digits nor an HTTP date
+    
+    Failing input written to testdata/fuzz/FuzzParseRetryAfter/0a2a901998b6f11e
+    To re-run:
+    go test -run=FuzzParseRetryAfter/0a2a901998b6f11e
+FAIL
+exit status 1
+FAIL    sweep/internal/sweep    2.289s

@@ -1,0 +1,5 @@
+sysinfo/proc.go:60:20: G115: integer overflow conversion int64 -> uint64 (gosec)
+                StartTime: uint64(p.int64(f[19])),
+                                 ^
+1 issues:
+* gosec: 1

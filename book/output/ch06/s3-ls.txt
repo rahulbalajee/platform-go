@@ -1,0 +1,4 @@
+report-json.golden
+report-jsonl.golden
+report-table.golden
+report-wide.golden

@@ -1,0 +1,2 @@
+cmd/ttydemo/main.go:19:2: no required module provides package github.com/creack/pty; to add it:
+        go get github.com/creack/pty

@@ -1,0 +1,2 @@
+loggen: short write
+exit status 1

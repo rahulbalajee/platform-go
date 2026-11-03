@@ -1,18 +1,4 @@
-/*
-Copyright 2026.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// START imports OMIT
 
 // Package controller reconciles HealthCheck objects.
 package controller
@@ -53,6 +39,9 @@ import (
 	"github.com/rahulbalajee/platform-go/projects/watchtower/internal/probe"
 )
 
+// END imports OMIT
+
+// START consts OMIT
 const (
 	// finalizerName guards external alert rules until they are deleted.
 	finalizerName = "watchtower.platformgo.dev/alert-cleanup"
@@ -60,7 +49,10 @@ const (
 	serviceNameField = ".spec.target.service.name"
 )
 
+// END consts OMIT
+
 // START reconciler OMIT
+
 // HealthCheckReconciler probes targets, reports health through status and
 // metrics, and keeps an alert rule in sync with each HealthCheck.
 type HealthCheckReconciler struct {
@@ -86,31 +78,39 @@ type probeRecord struct {
 	generation int64
 }
 
+// END reconciler OMIT
+
+// START rbac OMIT
+
 // +kubebuilder:rbac:groups=watchtower.platformgo.dev,resources=healthchecks,verbs=get;list;watch;update;patch
 // +kubebuilder:rbac:groups=watchtower.platformgo.dev,resources=healthchecks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=watchtower.platformgo.dev,resources=healthchecks/finalizers,verbs=update
 // +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch
-// +kubebuilder:rbac:groups=monitoring.coreos.com,resources=prometheusrules,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=events.k8s.io,resources=events,verbs=create;patch
+// +kubebuilder:rbac:groups=monitoring.coreos.com,resources=prometheusrules,verbs=get;list;watch;create;update;patch;delete
 
-// END reconciler OMIT
+// END rbac OMIT
 
 // START reconcile OMIT
+
 // Reconcile is level-triggered: it never asks "what changed?", only "what
 // should the world look like now?", and it is safe to run any number of
-// times. Each call probes once and schedules the next probe.
+// times. Each call probes at most once and schedules the next probe.
 func (r *HealthCheckReconciler) Reconcile(
 	ctx context.Context, req ctrl.Request,
 ) (ctrl.Result, error) {
 	var hc v1alpha1.HealthCheck
 	if err := r.Get(ctx, req.NamespacedName, &hc); err != nil {
 		if apierrors.IsNotFound(err) {
+			// START gone OMIT
 			forget(req.Namespace, req.Name) // gone: stop exporting its series
 			r.lastProbe.Delete(req.NamespacedName)
+			// END gone OMIT
 			return ctrl.Result{}, nil
 		}
 		return ctrl.Result{}, err
 	}
+	// START deleting OMIT
 
 	if !hc.DeletionTimestamp.IsZero() {
 		return ctrl.Result{}, r.finalize(ctx, &hc)
@@ -124,6 +124,7 @@ func (r *HealthCheckReconciler) Reconcile(
 			return ctrl.Result{}, err
 		}
 	}
+	// END deleting OMIT
 
 	base := hc.DeepCopy()
 	hc.Status.ObservedGeneration = hc.Generation
@@ -133,7 +134,14 @@ func (r *HealthCheckReconciler) Reconcile(
 	// Write status only if something changed. A steadily healthy check
 	// costs one GET from the cache and zero API writes per probe.
 	if !equality.Semantic.DeepEqual(base.Status, hc.Status) {
-		if err := r.Status().Patch(ctx, &hc, client.MergeFrom(base)); err != nil {
+		// The lock rejects the patch if hc is stale, for example because
+		// our own previous write hasn't reached the cache yet.
+		lock := client.MergeFromWithOptimisticLock{}
+		err := r.Status().Patch(ctx, &hc, client.MergeFromWithOptions(base, lock))
+		if apierrors.IsConflict(err) {
+			return ctrl.Result{RequeueAfter: time.Second}, nil // re-read, retry
+		}
+		if err != nil {
 			return ctrl.Result{}, err
 		}
 	}
@@ -143,6 +151,7 @@ func (r *HealthCheckReconciler) Reconcile(
 // END reconcile OMIT
 
 // START health OMIT
+
 // reconcileHealth probes the target if a probe is due and returns how long
 // to wait before the next reconcile.
 func (r *HealthCheckReconciler) reconcileHealth(
@@ -162,20 +171,25 @@ func (r *HealthCheckReconciler) reconcileHealth(
 		return interval
 	}
 	hc.Status.ResolvedURL = url
+	// START due OMIT
 
 	// Woken early by a watch event (an owned rule changed, say)? Keep the
 	// cadence, so failureThreshold x interval means what the user wrote.
 	if wait := r.untilDue(hc); wait > 0 {
 		return wait
 	}
+	// END due OMIT
 	res := r.Prober.Probe(ctx, probe.Spec{
 		URL:         url,
 		Timeout:     hc.Spec.Timeout.Duration,
 		StatusCodes: hc.Spec.Expect.StatusCodes,
 		MaxLatency:  durationOrZero(hc.Spec.Expect.MaxLatency),
 	})
+	// START record OMIT
 	r.lastProbe.Store(client.ObjectKeyFromObject(hc),
 		probeRecord{at: time.Now(), generation: hc.Generation})
+	// END record OMIT
+	// START observe OMIT
 	observe(hc, res)
 
 	switch applyProbe(hc, res) {
@@ -188,12 +202,19 @@ func (r *HealthCheckReconciler) reconcileHealth(
 		r.Recorder.Eventf(hc, nil, corev1.EventTypeNormal, "Recovered",
 			"Probe", "healthy again: %s", res.Message)
 	}
+	// END observe OMIT
 	return jitter(interval)
 }
 
+// END health OMIT
+
+// START untildue OMIT
+
 // untilDue returns zero if hc should be probed now, or how long until it
 // should. A spec change (new generation) always makes a probe due.
-func (r *HealthCheckReconciler) untilDue(hc *v1alpha1.HealthCheck) time.Duration {
+func (r *HealthCheckReconciler) untilDue(
+	hc *v1alpha1.HealthCheck,
+) time.Duration {
 	v, ok := r.lastProbe.Load(client.ObjectKeyFromObject(hc))
 	if !ok {
 		return 0
@@ -209,12 +230,16 @@ func (r *HealthCheckReconciler) untilDue(hc *v1alpha1.HealthCheck) time.Duration
 	return interval - elapsed
 }
 
-// END health OMIT
+// END untildue OMIT
+
+// START resolve OMIT
 
 // resolveURL returns the URL to probe. Service targets resolve to the
 // Service's cluster DNS name, after checking that the Service and port
 // exist so users get a precise reason instead of a DNS error.
-func (r *HealthCheckReconciler) resolveURL(ctx context.Context, hc *v1alpha1.HealthCheck) (string, error) {
+func (r *HealthCheckReconciler) resolveURL(
+	ctx context.Context, hc *v1alpha1.HealthCheck,
+) (string, error) {
 	t := hc.Spec.Target
 	if t.URL != "" {
 		return t.URL, nil
@@ -238,17 +263,26 @@ func (r *HealthCheckReconciler) resolveURL(ctx context.Context, hc *v1alpha1.Hea
 		net.JoinHostPort(host, strconv.Itoa(int(s.Port))), s.Path), nil
 }
 
+// END resolve OMIT
+
 // START alerting OMIT
-func (r *HealthCheckReconciler) reconcileAlerting(ctx context.Context, hc *v1alpha1.HealthCheck) {
+
+// reconcileAlerting keeps the alert rule for hc in sync with its spec and
+// reports the outcome in the AlertingReady condition.
+func (r *HealthCheckReconciler) reconcileAlerting(
+	ctx context.Context, hc *v1alpha1.HealthCheck,
+) {
 	if hc.Spec.Alert == nil { // alerting turned off (or never on)
 		if hc.Status.Alerting != nil {
 			if err := r.Alerts.Remove(ctx, hc); err != nil {
-				setAlerting(hc, metav1.ConditionFalse, v1alpha1.ReasonSyncFailed, err.Error())
+				setAlerting(hc, metav1.ConditionFalse,
+					v1alpha1.ReasonSyncFailed, err.Error())
 				return
 			}
 			hc.Status.Alerting = nil
 		}
-		meta.RemoveStatusCondition(&hc.Status.Conditions, v1alpha1.ConditionAlertingReady)
+		meta.RemoveStatusCondition(&hc.Status.Conditions,
+			v1alpha1.ConditionAlertingReady)
 		return
 	}
 	if _, ok := r.Alerts.(alerting.None); ok {
@@ -257,20 +291,25 @@ func (r *HealthCheckReconciler) reconcileAlerting(ctx context.Context, hc *v1alp
 			"the operator runs with --alert-backend=none")
 		return
 	}
+	// START gate OMIT
 	// External APIs are slow, rate-limited and sometimes billed per call:
 	// push only when the spec changed. In-cluster rules are compared against
 	// the informer cache on every pass, which also repairs manual edits.
 	if r.Alerts.External() && alertingSynced(hc, r.Alerts.Name()) {
 		return
 	}
+	// END gate OMIT
 
 	ref, err := r.Alerts.Ensure(ctx, hc)
 	switch {
 	case errors.Is(err, alerting.ErrUnavailable):
-		setAlerting(hc, metav1.ConditionFalse, v1alpha1.ReasonBackendUnavailable, err.Error())
+		setAlerting(hc, metav1.ConditionFalse,
+			v1alpha1.ReasonBackendUnavailable, err.Error())
 	case err != nil:
-		logf.FromContext(ctx).Error(err, "syncing alert rule", "backend", r.Alerts.Name())
-		setAlerting(hc, metav1.ConditionFalse, v1alpha1.ReasonSyncFailed, err.Error())
+		logf.FromContext(ctx).Error(err, "syncing alert rule",
+			"backend", r.Alerts.Name())
+		setAlerting(hc, metav1.ConditionFalse,
+			v1alpha1.ReasonSyncFailed, err.Error())
 	default:
 		hc.Status.Alerting = &v1alpha1.AlertingStatus{
 			Backend: r.Alerts.Name(), Ref: ref, ObservedGeneration: hc.Generation,
@@ -283,6 +322,7 @@ func (r *HealthCheckReconciler) reconcileAlerting(ctx context.Context, hc *v1alp
 // END alerting OMIT
 
 // START finalize OMIT
+
 // finalize runs while the HealthCheck is being deleted. Kubernetes keeps the
 // object (with deletionTimestamp set) until every finalizer is removed, so
 // the external rule is guaranteed a cleanup attempt, retried with backoff
@@ -291,7 +331,9 @@ func (r *HealthCheckReconciler) finalize(
 	ctx context.Context, hc *v1alpha1.HealthCheck,
 ) error {
 	forget(hc.Namespace, hc.Name)
+	// START forgetprobe OMIT
 	r.lastProbe.Delete(client.ObjectKeyFromObject(hc))
+	// END forgetprobe OMIT
 	if !controllerutil.ContainsFinalizer(hc, finalizerName) {
 		return nil
 	}
@@ -307,10 +349,12 @@ func (r *HealthCheckReconciler) finalize(
 // END finalize OMIT
 
 // START setup OMIT
+
 // SetupWithManager declares what the controller watches.
 func (r *HealthCheckReconciler) SetupWithManager(
 	ctx context.Context, mgr ctrl.Manager,
 ) error {
+	// START index OMIT
 	// Index HealthChecks by target Service, so a Service event maps to the
 	// checks that probe it with an indexed cache lookup, not a full scan.
 	err := mgr.GetFieldIndexer().IndexField(ctx,
@@ -324,6 +368,7 @@ func (r *HealthCheckReconciler) SetupWithManager(
 	if err != nil {
 		return err
 	}
+	// END index OMIT
 
 	b := ctrl.NewControllerManagedBy(mgr).
 		Named("healthcheck").
@@ -331,26 +376,35 @@ func (r *HealthCheckReconciler) SetupWithManager(
 		// them stops the controller from reconciling its own writes.
 		For(&v1alpha1.HealthCheck{},
 			builder.WithPredicates(predicate.GenerationChangedPredicate{})).
+		// START watches OMIT
 		// A Service appearing, disappearing or changing ports re-resolves
 		// the checks that target it immediately, not at the next interval.
 		Watches(&corev1.Service{},
 			handler.EnqueueRequestsFromMapFunc(r.checksForService),
 			builder.WithPredicates(servicePortsChanged)).
+		// END watches OMIT
 		WithOptions(controller.Options{
 			MaxConcurrentReconciles: r.MaxConcurrentReconciles,
 		})
+	// START owns OMIT
 
 	if r.WatchRules {
 		rule := &unstructured.Unstructured{}
 		rule.SetGroupVersionKind(alerting.PrometheusRuleGVK)
 		b = b.Owns(rule) // edits or deletes of our rules trigger a repair
 	}
+	// END owns OMIT
 	return b.Complete(r)
 }
 
 // END setup OMIT
 
-func (r *HealthCheckReconciler) checksForService(ctx context.Context, svc client.Object) []reconcile.Request {
+// START mapfunc OMIT
+
+// checksForService maps a Service event to the HealthChecks that target it.
+func (r *HealthCheckReconciler) checksForService(
+	ctx context.Context, svc client.Object,
+) []reconcile.Request {
 	var list v1alpha1.HealthCheckList
 	if err := r.List(ctx, &list, client.InNamespace(svc.GetNamespace()),
 		client.MatchingFields{serviceNameField: svc.GetName()}); err != nil {
@@ -359,7 +413,8 @@ func (r *HealthCheckReconciler) checksForService(ctx context.Context, svc client
 	}
 	reqs := make([]reconcile.Request, 0, len(list.Items))
 	for i := range list.Items {
-		reqs = append(reqs, reconcile.Request{NamespacedName: client.ObjectKeyFromObject(&list.Items[i])})
+		key := client.ObjectKeyFromObject(&list.Items[i])
+		reqs = append(reqs, reconcile.Request{NamespacedName: key})
 	}
 	return reqs
 }
@@ -369,9 +424,16 @@ var servicePortsChanged = predicate.Funcs{
 	UpdateFunc: func(e event.UpdateEvent) bool {
 		o, ok1 := e.ObjectOld.(*corev1.Service)
 		n, ok2 := e.ObjectNew.(*corev1.Service)
-		return !ok1 || !ok2 || !equality.Semantic.DeepEqual(o.Spec.Ports, n.Spec.Ports)
+		if !ok1 || !ok2 {
+			return true
+		}
+		return !equality.Semantic.DeepEqual(o.Spec.Ports, n.Spec.Ports)
 	},
 }
+
+// END mapfunc OMIT
+
+// START jitter OMIT
 
 // jitter returns d ±10%, so checks created together don't probe in lockstep.
 func jitter(d time.Duration) time.Duration {
@@ -387,3 +449,5 @@ func durationOrZero(d *metav1.Duration) time.Duration {
 	}
 	return d.Duration
 }
+
+// END jitter OMIT

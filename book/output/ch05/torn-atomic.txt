@@ -1,1 +1,0 @@
-atomic writes=226    reads=4944    torn=0 (empty 0, short 0, mixed 0)

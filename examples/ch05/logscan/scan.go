@@ -1,3 +1,5 @@
+// START lines OMIT
+
 package main
 
 import (
@@ -12,51 +14,6 @@ import (
 	"strings"
 )
 
-// Stats is what logscan reports about a log.
-type Stats struct {
-	Lines     int64
-	Bytes     int64
-	Status    [6]int64 // by class: Status[2] counts 2xx, ..., Status[5] 5xx
-	Truncated int64    // lines longer than the line limit
-	Malformed int64    // lines without a status field
-}
-
-func (s *Stats) add(line []byte) {
-	s.Lines++
-	s.Bytes += int64(len(line)) + 1
-	if c := statusClass(line); c >= 1 && c <= 5 {
-		s.Status[c]++
-	} else {
-		s.Malformed++
-	}
-}
-
-func (s *Stats) merge(o Stats) {
-	s.Lines += o.Lines
-	s.Bytes += o.Bytes
-	s.Truncated += o.Truncated
-	s.Malformed += o.Malformed
-	for i := range s.Status {
-		s.Status[i] += o.Status[i]
-	}
-}
-
-// statusClass returns the first digit of the fifth space-separated field
-// ("2" for "200"), without allocating.
-func statusClass(line []byte) int {
-	field := 0
-	for i := range len(line) {
-		if line[i] == ' ' {
-			field++
-			if field == 4 && i+1 < len(line) && line[i+1] >= '1' && line[i+1] <= '5' {
-				return int(line[i+1] - '0')
-			}
-		}
-	}
-	return 0
-}
-
-// START lines OMIT
 // Line is one line of input, without its newline.
 type Line struct {
 	Bytes     []byte // only valid until the next iteration
@@ -98,6 +55,26 @@ func Lines(r io.Reader, max int) iter.Seq2[Line, error] {
 
 // END lines OMIT
 
+// START scan OMIT
+// scan streams one log through Lines. Memory use is the line buffer plus
+// whatever the reader needs, whatever the size of the input.
+func scan(r io.Reader, maxLine int) (Stats, error) {
+	var st Stats
+	for line, err := range Lines(r, maxLine) {
+		if err != nil {
+			return st, err
+		}
+		if line.Truncated {
+			st.Truncated++
+		}
+		st.add(line.Bytes)
+	}
+	return st, nil
+}
+
+// END scan OMIT
+
+// START scanfs OMIT
 // scanFS scans every file in fsys that matches pattern, decompressing
 // names ending in .gz on the fly.
 func scanFS(fsys fs.FS, pattern string, maxLine int) (Stats, error) {
@@ -114,23 +91,6 @@ func scanFS(fsys fs.FS, pattern string, maxLine int) (Stats, error) {
 		total.merge(st)
 	}
 	return total, nil
-}
-
-// START compose OMIT
-// scan streams one log through Lines. Memory use is the line buffer plus
-// whatever the decompressor needs, independent of the file's size.
-func scan(r io.Reader, maxLine int) (Stats, error) {
-	var st Stats
-	for line, err := range Lines(r, maxLine) {
-		if err != nil {
-			return st, err
-		}
-		if line.Truncated {
-			st.Truncated++
-		}
-		st.add(line.Bytes)
-	}
-	return st, nil
 }
 
 // scanFile scans one file, adding a gzip reader for names ending in .gz.
@@ -152,4 +112,4 @@ func scanFile(fsys fs.FS, name string, maxLine int) (Stats, error) {
 	return scan(r, maxLine)
 }
 
-// END compose OMIT
+// END scanfs OMIT

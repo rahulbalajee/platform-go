@@ -1,0 +1,1 @@
+    procx_test.go:139: exit code 137 (signal: killed), want 143

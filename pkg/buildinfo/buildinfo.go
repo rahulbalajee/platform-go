@@ -1,3 +1,5 @@
+// START head OMIT
+
 // Package buildinfo reports how the running binary was built, for --version
 // flags, User-Agent headers and the build_info metric every service exports.
 //
@@ -6,12 +8,12 @@
 // a dirty flag in every binary (read with [debug.ReadBuildInfo]). Release
 // pipelines can override the version, revision and time with the linker:
 //
-//	go build -ldflags \
-//	  "-X github.com/rahulbalajee/platform-go/pkg/buildinfo.version=v1.4.0"
+//	go build -ldflags "-X $PKG.version=v1.4.0"
 //
-// Linker values win, because a pipeline knows things the toolchain cannot:
-// a tag created after the commit was built, or the commit of a source tree
-// that was copied into a container without its .git directory.
+// where $PKG is this package's import path. Linker values win, because a
+// pipeline knows things the toolchain cannot: a tag created after the commit
+// was built, or the commit of a source tree that was copied into a container
+// without its .git directory.
 package buildinfo
 
 import (
@@ -27,7 +29,10 @@ import (
 	"time"
 )
 
+// END head OMIT
+
 // START vars OMIT
+
 // Linker overrides, set with -ldflags "-X <package path>.name=value". They
 // must stay package-level string variables without an initializer that
 // calls a function: -X can only replace a string variable's static value.
@@ -40,6 +45,7 @@ var (
 // END vars OMIT
 
 // START info OMIT
+
 // Info describes one build of a program.
 type Info struct {
 	Name      string    `json:"name"`               // program name
@@ -58,6 +64,8 @@ const Devel = "devel"
 
 // END info OMIT
 
+// START get OMIT
+
 // overrides holds the linker-supplied values, so tests can vary them
 // without touching the package variables.
 type overrides struct {
@@ -74,7 +82,10 @@ var current = sync.OnceValue(func() Info {
 // package's import path, which callers may replace.
 func Get() Info { return current() }
 
+// END get OMIT
+
 // START from OMIT
+
 // from merges the toolchain's build information with linker overrides.
 // Precedence for each field: linker value, then toolchain value, then a
 // documented default. ok is false when the binary has no build information.
@@ -116,6 +127,8 @@ func from(bi *debug.BuildInfo, ok bool, ov overrides) Info {
 
 // END from OMIT
 
+// START parsetime OMIT
+
 // parseTime accepts RFC 3339 or Unix seconds (the SOURCE_DATE_EPOCH
 // convention from reproducible-builds.org). Anything else is ignored, so a
 // malformed pipeline value cannot stop the program from starting.
@@ -132,6 +145,10 @@ func parseTime(s string) (time.Time, bool) {
 	return time.Time{}, false
 }
 
+// END parsetime OMIT
+
+// START format OMIT
+
 // ShortRevision returns the first 12 characters of the revision, the same
 // abbreviation pseudo-versions use.
 func (i Info) ShortRevision() string {
@@ -141,7 +158,6 @@ func (i Info) ShortRevision() string {
 	return i.Revision
 }
 
-// START format OMIT
 // String returns the one-line human form, for example
 //
 //	sweep v1.4.0 (3f9c2a1b7d4e, 2026-11-02T14:07:31Z) go1.27.3 linux/amd64
@@ -170,6 +186,10 @@ func (i Info) String() string {
 	return strings.TrimSpace(b.String())
 }
 
+// END format OMIT
+
+// START write OMIT
+
 // Write prints the information in format "text" (one line, for humans) or
 // "json" (one object, for scripts and support bundles).
 func (i Info) Write(w io.Writer, format string) error {
@@ -186,7 +206,9 @@ func (i Info) Write(w io.Writer, format string) error {
 	}
 }
 
-// END format OMIT
+// END write OMIT
+
+// START useragent OMIT
 
 // UserAgent returns a User-Agent value such as
 // "sweep/v1.4.0 (go1.27.3; linux/amd64)", so server logs show which client
@@ -194,3 +216,5 @@ func (i Info) Write(w io.Writer, format string) error {
 func (i Info) UserAgent() string {
 	return fmt.Sprintf("%s/%s (%s; %s)", i.Name, i.Version, i.GoVersion, i.Platform)
 }
+
+// END useragent OMIT

@@ -1,0 +1,9 @@
+--- FAIL: TestRetriesReuseTheIdempotencyKey (0.00s)
+    retry_test.go:38: attempt sent key "31127bdf-567c-42f3-adcb-e99e61ecb8a5", request "00dc6acf-ac00-7000-b967-a73e38ac9694"; want "7502b13e-fbce-474e-bb9e-e273ef9f2007", "00dc6acf-ac00-7000-b967-a73e38ac9694"
+    retry_test.go:38: attempt sent key "d67d271d-a90f-4066-a2f1-ec14c187a32c", request "00dc6acf-ac00-7000-b967-a73e38ac9694"; want "7502b13e-fbce-474e-bb9e-e273ef9f2007", "00dc6acf-ac00-7000-b967-a73e38ac9694"
+FAIL
+FAIL    platformapi     1.335s
+ok      platformapi/examples/promote    0.622s
+ok      platformapi/platformapifake     (cached)
+?       platformapi/retry       [no test files]
+FAIL

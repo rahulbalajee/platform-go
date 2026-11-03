@@ -1,0 +1,2 @@
+main module    stamp v0.0.0-20261102140731-8e8d97b64ebd+dirty
+vcs.modified   true

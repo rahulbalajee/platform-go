@@ -1,0 +1,1 @@
+    status_test.go:56: step 4: got True/ProbeSucceeded failures=3 event=0; want False/ProbeFailing 3 1

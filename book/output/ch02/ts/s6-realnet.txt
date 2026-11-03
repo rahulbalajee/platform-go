@@ -1,0 +1,2 @@
+panic: test timed out after 10s
+                TestWaitFollowsRolloutToSuccess (10s)

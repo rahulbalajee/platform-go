@@ -1,0 +1,3 @@
+--- FAIL: TestCancelKillsTheWholeGroup (5.01s)
+    procx_test.go:180: process 56724 is still running
+    procx_test.go:197: process 56753 is still running

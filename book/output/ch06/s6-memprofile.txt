@@ -1,0 +1,1 @@
+cannot use -memprofile flag with multiple packages

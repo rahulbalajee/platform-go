@@ -19,7 +19,9 @@ func TestPrometheusRuleRender(t *testing.T) {
 	if err := v1alpha1.AddToScheme(scheme); err != nil {
 		t.Fatal(err)
 	}
-	p := &alerting.PrometheusRules{Scheme: scheme, Labels: map[string]string{"release": "kps"}}
+	p := &alerting.PrometheusRules{
+		Scheme: scheme, Labels: map[string]string{"release": "kps"},
+	}
 	hc := &v1alpha1.HealthCheck{
 		Name: "checkout", Namespace: "shop", UID: types.UID("u1"),
 		Spec: v1alpha1.HealthCheckSpec{Alert: &v1alpha1.AlertSpec{
@@ -33,13 +35,15 @@ func TestPrometheusRuleRender(t *testing.T) {
 	if u.GetName() != "watchtower-checkout" || u.GetLabels()["release"] != "kps" {
 		t.Errorf("name/labels = %s %v", u.GetName(), u.GetLabels())
 	}
-	refs := u.GetOwnerReferences()
-	if len(refs) != 1 || refs[0].Kind != "HealthCheck" || refs[0].Controller == nil || !*refs[0].Controller {
-		t.Errorf("owner refs = %+v, want one controller reference to the HealthCheck", refs)
+	owner := metav1.GetControllerOf(u)
+	if owner == nil || owner.Kind != "HealthCheck" || owner.UID != "u1" {
+		t.Errorf("controller = %+v, want the HealthCheck", owner)
 	}
-	rules, _, _ := unstructured.NestedSlice(u.Object, "spec", "groups")
-	rule := rules[0].(map[string]any)["rules"].([]any)[0].(map[string]any)
-	if rule["for"] != "90s" || !strings.Contains(rule["expr"].(string), `check_name="checkout"`) {
+	groups, _, _ := unstructured.NestedSlice(u.Object, "spec", "groups")
+	rules, _, _ := unstructured.NestedSlice(groups[0].(map[string]any), "rules")
+	rule := rules[0].(map[string]any)
+	expr, _ := rule["expr"].(string)
+	if rule["for"] != "90s" || !strings.Contains(expr, `check_name="checkout"`) {
 		t.Errorf("rule = %v", rule)
 	}
 }

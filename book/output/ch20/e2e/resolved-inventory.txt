@@ -1,0 +1,2 @@
+NAME        TARGET                                                 REASON
+inventory   http://inventory.shop.svc.cluster.local:8080/healthz   Pending

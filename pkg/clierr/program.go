@@ -1,3 +1,4 @@
+// START imports OMIT
 package clierr
 
 import (
@@ -11,13 +12,12 @@ import (
 	"runtime/debug"
 	"slices"
 	"strings"
-
-	"github.com/rahulbalajee/platform-go/pkg/lifecycle"
 )
 
+// END imports OMIT
 // START program OMIT
-// Program describes a command to Run and Main. Only Name is required. The
-// run function may set JSON and Logger after it has parsed its flags,
+// Program describes a command to Run and Main. Only Name is required.
+// The run function may set JSON and Logger after it has parsed its flags,
 // because Run reads them only after the function returns.
 type Program struct {
 	Name     string       // prefixes every message and names crash files
@@ -33,7 +33,6 @@ type Program struct {
 }
 
 // END program OMIT
-
 // START cleanup OMIT
 // Cleanup registers f to run after Run has reported the outcome, in
 // last-registered-first order, like testing.T.Cleanup. Use it for anything
@@ -49,7 +48,6 @@ func (p *Program) runCleanups() {
 }
 
 // END cleanup OMIT
-
 // START run OMIT
 // Run calls fn, recovers a panic on the calling goroutine, maps the outcome
 // to an exit code, and reports a failure exactly once: a message for the
@@ -67,6 +65,8 @@ func (p *Program) Run(ctx context.Context,
 	return p.report(ctx, fn(ctx))
 }
 
+// END run OMIT
+// START report OMIT
 func (p *Program) report(ctx context.Context, err error) Code {
 	code := CodeOf(err)
 	if code == ExitOK {
@@ -75,7 +75,7 @@ func (p *Program) report(ctx context.Context, err error) Code {
 	// Stopped by a signal: that decides the code, whatever error the
 	// cancelled work returned (usually a bare "context canceled").
 	cause := context.Cause(ctx)
-	if se, ok := errors.AsType[*lifecycle.SignalError](cause); ok &&
+	if se, ok := errors.AsType[*SignalError](cause); ok &&
 		code != ExitInternal {
 		code = signalCode(se.Signal)
 	}
@@ -92,18 +92,16 @@ func (p *Program) report(ctx context.Context, err error) Code {
 	return code
 }
 
-// END run OMIT
-
+// END report OMIT
 // START main OMIT
 // Main is the whole of a command's main function. It cancels the context
-// on SIGINT or SIGTERM (a second signal exits at once), calls Run, and
+// on SIGINT or SIGTERM (a second signal kills the process), calls Run, and
 // exits with the resulting code. It does not return.
 func (p *Program) Main(fn func(context.Context) error) {
 	// Run recovers panics on this goroutine only. For panics elsewhere and
 	// fatal runtime errors, keep a copy of the runtime's own crash output.
 	fatal := p.fatalOutput()
-	ctx, stop := lifecycle.NotifyContext(context.Background(),
-		lifecycle.Options{Stderr: p.stderr()})
+	ctx, stop := notifyContext(context.Background(), p.stderr())
 	code := p.Run(ctx, fn)
 	stop()
 	if fatal != "" {
@@ -113,7 +111,7 @@ func (p *Program) Main(fn func(context.Context) error) {
 }
 
 // END main OMIT
-
+// START fatal OMIT
 // fatalOutput points runtime/debug.SetCrashOutput at a fresh file in
 // CrashDir and returns its name, or "" if that is not possible.
 func (p *Program) fatalOutput() string {
@@ -129,6 +127,8 @@ func (p *Program) fatalOutput() string {
 	return f.Name()
 }
 
+// END fatal OMIT
+// START reportstruct OMIT
 // report is what a person (text) or a program (JSON) sees on stderr.
 type report struct {
 	ExitCode  int      `json:"exit_code"`
@@ -141,6 +141,7 @@ type report struct {
 	stack     []byte   // printed only when no crash file could be written
 }
 
+// END reportstruct OMIT
 // START print OMIT
 // print writes the report in one Write call, so it can't interleave with
 // other output, as text for people or as one JSON object for programs.
@@ -175,11 +176,10 @@ func (p *Program) print(r report) {
 	_, _ = io.WriteString(w, b.String())
 }
 
-// END print OMIT
-
 // indent keeps continuation lines of multi-line messages under the first.
 func indent(s string) string { return strings.ReplaceAll(s, "\n", "\n    ") }
 
+// END print OMIT
 // START log OMIT
 // log records the failure for operators: the whole cause chain and its
 // types, the code, the ID, and what cancelled the context, if anything.
@@ -202,7 +202,6 @@ func (p *Program) log(ctx context.Context, err, cause error, r report) {
 }
 
 // END log OMIT
-
 // START crash OMIT
 // crash saves pe to a new file in CrashDir and points the report at it.
 // os.CreateTemp picks an unguessable name and opens it with O_EXCL and mode
@@ -227,7 +226,6 @@ func (p *Program) crash(r *report, pe *PanicError) {
 }
 
 // END crash OMIT
-
 // START crashreport OMIT
 // crashReport is everything a maintainer needs to reproduce a panic: what
 // was built from which commit, with which toolchain, and the stack.
@@ -254,7 +252,7 @@ func (p *Program) crashReport(pe *PanicError) []byte {
 }
 
 // END crashreport OMIT
-
+// START stderr OMIT
 func (p *Program) stderr() io.Writer {
 	if p.Stderr != nil {
 		return p.Stderr
@@ -262,6 +260,8 @@ func (p *Program) stderr() io.Writer {
 	return os.Stderr
 }
 
+// END stderr OMIT
+// START logger OMIT
 func (p *Program) logger() *slog.Logger {
 	if p.Logger != nil {
 		return p.Logger
@@ -269,6 +269,8 @@ func (p *Program) logger() *slog.Logger {
 	return slog.New(slog.DiscardHandler)
 }
 
+// END logger OMIT
+// START crashdir OMIT
 func (p *Program) crashDir() string {
 	if p.CrashDir != "" {
 		return p.CrashDir
@@ -276,6 +278,8 @@ func (p *Program) crashDir() string {
 	return os.TempDir()
 }
 
+// END crashdir OMIT
+// START exit OMIT
 func (p *Program) exit(code int) {
 	if p.Exit != nil {
 		p.Exit(code)
@@ -283,3 +287,5 @@ func (p *Program) exit(code int) {
 	}
 	os.Exit(code)
 }
+
+// END exit OMIT

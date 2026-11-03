@@ -1,0 +1,5 @@
+main module    stamp v0.0.0-20261102140902-d69c56baa0e7
+vcs            git
+vcs.revision   d69c56baa0e75e569839d084950c051afd6d4c22
+vcs.time       2026-11-02T14:09:02Z
+vcs.modified   false

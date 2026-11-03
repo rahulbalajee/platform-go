@@ -1,0 +1,3 @@
+Downloading sigs.k8s.io/controller-tools/cmd/controller-gen@v0.22.0
+"~/watchtower/bin/controller-gen" rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+"~/watchtower/bin/controller-gen" object paths="./..."

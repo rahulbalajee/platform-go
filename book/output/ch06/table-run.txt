@@ -1,8 +1,0 @@
-=== RUN   TestParseTargets
-=== RUN   TestParseTargets/tcp/ipv6_literal
-=== RUN   TestParseTargets/tls/host_and_port
---- PASS: TestParseTargets (0.00s)
-    --- PASS: TestParseTargets/tcp/ipv6_literal (0.00s)
-    --- PASS: TestParseTargets/tls/host_and_port (0.00s)
-PASS
-ok  	github.com/rahulbalajee/platform-go/internal/sweep	0.469s

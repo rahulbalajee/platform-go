@@ -1,0 +1,14 @@
+ M go.mod
+ M go.sum
+?? cmd/sweep/golden_test.go
+?? cmd/sweep/testdata/golden/run-json.golden
+?? cmd/sweep/testdata/golden/run-stderr.golden
+?? internal/sweep/fake_test.go
+?? internal/sweep/report_test.go
+?? internal/sweep/sweeptest/fleet.go
+?? internal/sweep/sweeptest/fleet_test.go
+?? internal/sweep/target_test.go
+?? internal/sweep/testdata/golden/report-json.golden
+?? internal/sweep/testdata/golden/report-jsonl.golden
+?? internal/sweep/testdata/golden/report-table.golden
+?? internal/sweep/testdata/golden/report-wide.golden

@@ -1,0 +1,2 @@
+invalid value "many" for flag -parallel: parse error
+deployctl: invalid value "many" for flag -parallel: parse error

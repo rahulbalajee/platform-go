@@ -1,0 +1,10 @@
+File: sweep.test
+Type: alloc_space
+Time: 2026-11-03 18:30:17 IST
+Showing nodes accounting for 1086.71MB, 85.28% of 1274.23MB total
+Dropped 38 nodes (cum <= 6.37MB)
+Showing top 3 nodes out of 14
+      flat  flat%   sum%        cum   cum%
+  410.58MB 32.22% 32.22%   410.58MB 32.22%  sweep/internal/sweep.(*tableReporter).Add
+  349.06MB 27.39% 59.62%   349.06MB 27.39%  text/tabwriter.(*Writer).append
+  327.07MB 25.67% 85.28%   327.07MB 25.67%  text/tabwriter.(*Writer).addLine

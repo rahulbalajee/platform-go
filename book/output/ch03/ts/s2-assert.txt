@@ -1,0 +1,1 @@
+cmd/deployctl/client.go:140:16: type assertion on error will fail on wrapped errors. Use errors.As to check for specific errors (errorlint)

@@ -1,0 +1,5 @@
+?       oskit/cmd/atomicput     [no test files]
+ok      oskit/cmd/loggen        (cached)
+ok      oskit/cmd/logscan       (cached)
+?       oskit/cmd/torn  [no test files]
+ok      oskit/fsx       2.948s

@@ -1,3 +1,4 @@
+// START imports OMIT
 package main
 
 import (
@@ -11,6 +12,9 @@ import (
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
 )
 
+// END imports OMIT
+
+// START config OMIT
 // Config is deployctl.json.
 type Config struct {
 	API     string   `json:"api"`     // base URL of the deployment API
@@ -18,7 +22,8 @@ type Config struct {
 	Targets []string `json:"targets"` // where to deploy it
 }
 
-// START config OMIT
+// END config OMIT
+// START load OMIT
 // loadConfig reads and validates the config file. Every failure is a
 // clierr.Error with the same ID, so the docs link and the hint are right
 // whichever way the file is wrong.
@@ -59,8 +64,8 @@ func configError(code clierr.Code, err error, msg, hint string) error {
 		Hint: hint, Docs: docs + "#dpl-config", Err: err}
 }
 
-// END config OMIT
-
+// END load OMIT
+// START init OMIT
 // initConfig writes a starter config, refusing to overwrite an existing one.
 func initConfig(path string, stdout io.Writer) error {
 	data, _ := json.MarshalIndent(Config{
@@ -84,3 +89,5 @@ func initConfig(path string, stdout io.Writer) error {
 	fmt.Fprintf(stdout, "wrote %s\n", path)
 	return nil
 }
+
+// END init OMIT

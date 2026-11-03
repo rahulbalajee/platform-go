@@ -1,0 +1,1 @@
+cmd/deployctl/config.go:30:16: Error return value of `json.Unmarshal` is not checked (errcheck)

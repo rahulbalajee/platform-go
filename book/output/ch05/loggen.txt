@@ -1,3 +1,0 @@
-$ loggen -lines 30000000 -long-at 1000000 > access.log
-$ wc -lc access.log
- 30000000 2293825701 access.log

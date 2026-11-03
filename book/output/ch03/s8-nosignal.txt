@@ -1,0 +1,5 @@
+--- FAIL: TestInterruptExits130 (1.08s)
+    main_test.go:225: wait = signal: interrupt, want exit status 130; stderr:
+FAIL
+FAIL    deployctl/cmd/deployctl 2.680s
+FAIL

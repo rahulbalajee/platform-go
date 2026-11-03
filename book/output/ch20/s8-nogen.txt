@@ -1,0 +1,5 @@
+--- FAIL: TestReconcileKeepsProbeCadence (0.01s)
+    healthcheck_controller_test.go:437: 1 probes after a spec change, want 2
+FAIL
+FAIL    watchtower/internal/controller  16.619s
+FAIL

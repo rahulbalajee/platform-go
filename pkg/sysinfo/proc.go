@@ -1,16 +1,29 @@
+// START imports OMIT
+
+// Package sysinfo reads what the Linux kernel knows about processes and
+// containers: process state from procfs, and memory, CPU and PID limits
+// from the cgroup v2 file system.
+//
+// Every reader takes an fs.FS rooted at "/". Production code passes Host();
+// tests pass a testing/fstest.MapFS, so the parsing is tested on any OS.
 package sysinfo
 
 import (
-	"bufio"
 	"bytes"
 	"cmp"
 	"fmt"
 	"io/fs"
+	"os"
 	"path"
 	"slices"
 	"strconv"
 	"strings"
 )
+
+// Host returns the real file system, rooted at "/".
+func Host() fs.FS { return os.DirFS("/") }
+
+// END imports OMIT
 
 // START stat OMIT
 // Stat is the parsed /proc/<pid>/stat line: the kernel's record of a process.
@@ -52,6 +65,7 @@ func parseStat(b []byte) (Stat, error) {
 
 // END stat OMIT
 
+// START readstat OMIT
 // ReadStat parses /proc/<pid>/stat. Use pid "self" for the caller.
 func ReadStat(fsys fs.FS, pid string) (Stat, error) {
 	b, err := fs.ReadFile(fsys, path.Join("proc", pid, "stat"))
@@ -97,6 +111,9 @@ func Processes(fsys fs.FS) ([]Stat, error) {
 	return out, nil
 }
 
+// END readstat OMIT
+
+// START status OMIT
 // Status is /proc/<pid>/status as key/value pairs ("VmRSS" -> "5120 kB").
 type Status map[string]string
 
@@ -107,13 +124,12 @@ func ReadStatus(fsys fs.FS, pid string) (Status, error) {
 		return nil, err
 	}
 	st := Status{}
-	sc := bufio.NewScanner(bytes.NewReader(b))
-	for sc.Scan() {
-		if k, v, ok := strings.Cut(sc.Text(), ":"); ok {
+	for line := range strings.Lines(string(b)) {
+		if k, v, ok := strings.Cut(line, ":"); ok {
 			st[k] = strings.TrimSpace(v)
 		}
 	}
-	return st, sc.Err()
+	return st, nil
 }
 
 // Bytes returns a "kB" field such as VmRSS or VmHWM in bytes, or 0.
@@ -127,3 +143,5 @@ func CountFDs(fsys fs.FS, pid string) (int, error) {
 	ents, err := fs.ReadDir(fsys, path.Join("proc", pid, "fd"))
 	return len(ents), err
 }
+
+// END status OMIT

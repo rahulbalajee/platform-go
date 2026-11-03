@@ -1,0 +1,8 @@
+--- FAIL: TestNewAcceptsBaseURLWithPathPrefix (0.00s)
+    client_test.go:59: platformapi: GET /api/v1/environments/prod: decoding response: json: Unmarshal(non-pointer platformapi.Environment)
+--- FAIL: TestGetEnvironment (0.00s)
+    client_test.go:73: platformapi: GET /v1/environments/staging: decoding response: json: Unmarshal(non-pointer platformapi.Environment)
+FAIL
+FAIL    platformapi     0.657s
+?       platformapi/platformapifake     [no test files]
+FAIL

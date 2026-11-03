@@ -1,7 +1,0 @@
-=== RUN   TestSweepAgainstFleetContainer
---- PASS: TestSweepAgainstFleetContainer (2.30s)
-=== RUN   TestTCPProbeSeesPostgresStop
-    containers_test.go:159: dial tcp [::1]:55020: connect: connection refused (after 3 attempts)
---- PASS: TestTCPProbeSeesPostgresStop (1.13s)
-PASS
-ok  	github.com/rahulbalajee/platform-go/examples/ch06/containers	3.898s

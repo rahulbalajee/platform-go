@@ -1,0 +1,1 @@
+go: golang.org/x/tools/cmd/stringer@v0.52.0: reading file://$LAB/mvs/proxy/golang.org/x/tools/cmd/stringer/@v/v0.52.0.info: no such file or directory

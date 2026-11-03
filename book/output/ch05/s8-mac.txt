@@ -1,0 +1,3 @@
+zombies is PID 56210
+  PID  PPID S  COMM
+0 zombie(s)

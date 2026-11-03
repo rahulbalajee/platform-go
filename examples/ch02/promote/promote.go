@@ -1,3 +1,5 @@
+// START head OMIT
+
 // Package promote is a small consumer of platformapi, written the way the
 // ship CLI uses it: it declares the narrow interface it needs.
 package promote
@@ -9,6 +11,8 @@ import (
 
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 )
+
+// END head OMIT
 
 // START platform OMIT
 
@@ -57,7 +61,8 @@ func Promote(ctx context.Context, p Platform,
 	var version string
 	for d, err := range p.ListDeployments(ctx, f, platformapi.PageSize(1)) {
 		if err != nil {
-			return nil, fmt.Errorf("finding the %s version in %s: %w", service, from, err)
+			return nil, fmt.Errorf("finding the %s version in %s: %w",
+				service, from, err)
 		}
 		version = d.Version
 		break // newest first: the first item is all we need

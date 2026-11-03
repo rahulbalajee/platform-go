@@ -1,0 +1,1 @@
+Error: build linters: plugin(logcheck): plugin "logcheck" not found

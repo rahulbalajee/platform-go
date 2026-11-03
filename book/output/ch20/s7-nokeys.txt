@@ -1,0 +1,6 @@
+--- FAIL: TestDatadogWithoutCredentialsIsUnavailable (0.00s)
+    datadog_test.go:109: err = datadog API: HTTP 403: {"errors":["Forbidden"]}
+        , want ErrUnavailable
+FAIL
+FAIL    watchtower/internal/alerting    0.552s
+FAIL

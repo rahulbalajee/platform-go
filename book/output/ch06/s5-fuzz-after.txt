@@ -1,0 +1,3 @@
+fuzz: elapsed: 1m1s, execs: 968823 (0/sec), new interesting: 238 (total: 257)
+PASS
+ok      sweep/internal/sweep    61.659s

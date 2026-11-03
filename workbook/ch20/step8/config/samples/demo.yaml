@@ -1,0 +1,92 @@
+# A small "shop" to watch: one in-cluster service, one public site, one
+# endpoint that always fails (it answers 503), and one check whose Service
+# doesn't exist yet. The app objects carry demo=app, so they can be applied
+# first with `kubectl apply -l demo=app`.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shop
+  labels: {demo: app}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storefront
+  namespace: shop
+  labels: {demo: app}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: storefront}
+  template:
+    metadata:
+      labels: {app: storefront}
+    spec:
+      containers:
+      - name: app
+        image: watchtower-demoapp:dev   # built and loaded by hack/e2e-kind.sh
+        imagePullPolicy: Never
+        command: [/demoapp]
+        ports: [{containerPort: 8080}]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storefront
+  namespace: shop
+  labels: {demo: app}
+spec:
+  selector: {app: storefront}
+  ports: [{port: 80, targetPort: 8080}]
+---
+# START storefront OMIT
+apiVersion: watchtower.platformgo.dev/v1alpha1
+kind: HealthCheck
+metadata:
+  name: storefront
+  namespace: shop
+spec:
+  target:
+    service: {name: storefront, port: 80}
+  interval: 10s
+  alert:
+    severity: critical
+    for: 2m
+    runbookURL: https://runbooks.example.com/shop/storefront
+# END storefront OMIT
+---
+apiVersion: watchtower.platformgo.dev/v1alpha1
+kind: HealthCheck
+metadata:
+  name: go-dev
+  namespace: shop
+spec:
+  target:
+    url: https://go.dev/
+  interval: 30s
+  expect:
+    maxLatency: 2s
+---
+apiVersion: watchtower.platformgo.dev/v1alpha1
+kind: HealthCheck
+metadata:
+  name: payments-api
+  namespace: shop
+spec:
+  target:
+    service: {name: storefront, port: 80, path: /status/503}
+  interval: 10s
+  failureThreshold: 3
+  alert:
+    severity: critical
+    summary: Payments API is returning errors
+---
+apiVersion: watchtower.platformgo.dev/v1alpha1
+kind: HealthCheck
+metadata:
+  name: inventory
+  namespace: shop
+spec:
+  target:
+    service: {name: inventory, port: 8080}
+  interval: 10s

@@ -1,0 +1,8 @@
+--- PASS: TestCancelKillsTheWholeGroup (0.01s)
+--- PASS: TestGraceEscalatesToSIGKILL (0.21s)
+--- PASS: TestWaitKillsAbandonedDescendants (0.02s)
+--- PASS: TestWaitDoesNotHangOnInheritedPipes (0.33s)
+--- PASS: TestArgumentsAreNotInterpretedByAShell (0.01s)
+--- PASS: TestForwardRelaysSignals (0.01s)
+--- PASS: TestExitCode (0.00s)
+ok      oskit/procx     0.903s

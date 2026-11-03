@@ -1,0 +1,5 @@
+warning: GOCOVERDIR not set, no coverage data emitted
+STATUS  TARGET                         LATENCY  TRIES  DETAIL
+UP      http://127.0.0.1:8099/ok       1ms      1      200 OK
+DOWN    http://127.0.0.1:8099/missing  1ms      1      unhealthy status 404 Not Found
+checked 2/2 targets in 1ms: 1 up, 1 down

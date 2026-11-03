@@ -1,0 +1,7 @@
+ok      platformapi     1.884s
+?       platformapi/evolve/after        [no test files]
+?       platformapi/evolve/before       [no test files]
+ok      platformapi/examples/promote    3.086s
+ok      platformapi/examples/tour       4.722s
+ok      platformapi/platformapifake     2.173s
+?       platformapi/retry       [no test files]

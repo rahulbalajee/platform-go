@@ -1,1 +1,1 @@
-$DEMO/platform-go/go.work
+$LAB/platform-go/go.work

@@ -1,0 +1,3 @@
+?       watchtower/api/v1alpha1 [no test files]
+?       watchtower/cmd  [no test files]
+ok      watchtower/internal/controller  7.255s

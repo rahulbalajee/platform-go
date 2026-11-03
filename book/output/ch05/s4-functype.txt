@@ -1,0 +1,3 @@
+# oskit/cmd/torn
+cmd/torn/main.go:14:2: "io/fs" imported and not used
+cmd/torn/main.go:43:10: cannot use os.WriteFile (value of type func(name string, data []byte, perm os.FileMode) error) as writeFunc value in return statement

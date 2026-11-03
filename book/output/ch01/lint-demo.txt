@@ -1,0 +1,7 @@
+7 issues:
+* bodyclose: 1
+* errorlint: 2
+* gosec: 1
+* nilerr: 1
+* noctx: 1
+* usestdlibvars: 1

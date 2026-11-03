@@ -1,0 +1,5 @@
+cmd/deployctl/client.go:41:24: response body must be closed (bodyclose)
+        resp, err := c.HTTP.Do(req)
+                              ^
+1 issues:
+* bodyclose: 1

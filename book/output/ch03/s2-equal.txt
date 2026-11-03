@@ -1,0 +1,5 @@
+cmd/deployctl/config.go:31:7: comparing with == will fail on wrapped errors. Use errors.Is to check for a specific error (errorlint)
+        case err == fs.ErrNotExist: // a sentinel: compare, don't parse
+             ^
+1 issues:
+* errorlint: 1

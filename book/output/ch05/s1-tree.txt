@@ -1,0 +1,5 @@
+./cmd/loggen/copy_test.go
+./cmd/loggen/count.go
+./cmd/loggen/gen_test.go
+./cmd/loggen/gen.go
+./cmd/loggen/main.go

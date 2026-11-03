@@ -1,0 +1,11 @@
+Incompatible changes:
+- Environment: old is comparable, new is not
+- Limiter.Tokens: added
+- Operation: old is comparable, new is not
+- PageSize: changed from func(int) CallOption to func(int32) CallOption
+- StateCancelled: value changed from "cancelled" to "canceled"
+Compatible changes:
+- (*Client).GetOperation: added
+- Environment.Labels: added
+- Operation.Labels: added
+- TokenSourceFunc.String: added
