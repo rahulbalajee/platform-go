@@ -1,0 +1,8 @@
+Setting up envtest binaries for Kubernetes version 1.37...
+	…/api/v1alpha1		coverage: 0.0% of statements
+	…/cmd		coverage: 0.0% of statements
+	…/hack/demoapp		coverage: 0.0% of statements
+ok  	…/internal/alerting	0.609s	coverage: 63.3% of statements
+	…/internal/alerting/ddfake		coverage: 0.0% of statements
+ok  	…/internal/controller	13.611s	coverage: 78.6% of statements
+ok  	…/internal/probe	1.224s	coverage: 90.3% of statements

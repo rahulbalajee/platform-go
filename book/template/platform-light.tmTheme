@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Platform Light: a restrained, GitHub-light-inspired theme tuned for print and screen. -->
+<plist version="1.0">
+<dict>
+  <key>name</key><string>Platform Light</string>
+  <key>settings</key>
+  <array>
+    <dict><key>settings</key><dict>
+      <key>background</key><string>#F7F8FA</string>
+      <key>foreground</key><string>#1F2328</string>
+    </dict></dict>
+    <dict><key>name</key><string>Comment</string>
+      <key>scope</key><string>comment, punctuation.definition.comment</string>
+      <key>settings</key><dict><key>foreground</key><string>#6E7781</string><key>fontStyle</key><string>italic</string></dict></dict>
+    <dict><key>name</key><string>Keyword</string>
+      <key>scope</key><string>keyword, storage.modifier, keyword.control, keyword.operator.word, storage.type.function, keyword.function, keyword.type, keyword.struct, keyword.interface, keyword.map, keyword.channel, keyword.var, keyword.const, keyword.import, keyword.package</string>
+      <key>settings</key><dict><key>foreground</key><string>#CF222E</string></dict></dict>
+    <dict><key>name</key><string>Go declaration keywords</string>
+      <key>scope</key><string>storage.type.keyword, keyword.declaration</string>
+      <key>settings</key><dict><key>foreground</key><string>#CF222E</string></dict></dict>
+    <dict><key>name</key><string>String</string>
+      <key>scope</key><string>string, string.quoted, string.unquoted</string>
+      <key>settings</key><dict><key>foreground</key><string>#0A3069</string></dict></dict>
+    <dict><key>name</key><string>Escape</string>
+      <key>scope</key><string>constant.character.escape, constant.other.placeholder</string>
+      <key>settings</key><dict><key>foreground</key><string>#116329</string></dict></dict>
+    <dict><key>name</key><string>Number / constant</string>
+      <key>scope</key><string>constant.numeric, constant.language, support.constant, constant.other</string>
+      <key>settings</key><dict><key>foreground</key><string>#0550AE</string></dict></dict>
+    <dict><key>name</key><string>Function name</string>
+      <key>scope</key><string>entity.name.function, support.function, meta.function-call variable.function, variable.function</string>
+      <key>settings</key><dict><key>foreground</key><string>#8250DF</string></dict></dict>
+    <dict><key>name</key><string>Types</string>
+      <key>scope</key><string>entity.name.type, support.type, storage.type, entity.other.inherited-class</string>
+      <key>settings</key><dict><key>foreground</key><string>#953800</string></dict></dict>
+    <dict><key>name</key><string>Tags / keys</string>
+      <key>scope</key><string>entity.name.tag, meta.mapping.key string, support.type.property-name, entity.name.tag.yaml</string>
+      <key>settings</key><dict><key>foreground</key><string>#116329</string></dict></dict>
+    <dict><key>name</key><string>Package / import path</string>
+      <key>scope</key><string>entity.name.namespace, entity.name.import</string>
+      <key>settings</key><dict><key>foreground</key><string>#0A3069</string></dict></dict>
+    <dict><key>name</key><string>Invalid</string>
+      <key>scope</key><string>invalid</string>
+      <key>settings</key><dict><key>foreground</key><string>#82071E</string></dict></dict>
+  </array>
+</dict>
+</plist>

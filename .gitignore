@@ -1,0 +1,20 @@
+# Build outputs
+/platform-go.pdf
+/bin/
+*.test
+*.out
+cover.out
+
+# Book build scratch
+/book/_*.typ
+/book/*.pdf
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+
+# Never commit secrets
+.env
+*.pem
+!book/**/*.pem

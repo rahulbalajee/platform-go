@@ -1,0 +1,92 @@
+// Package sweep checks many network targets concurrently (HTTP endpoints,
+// TCP ports, TLS certificates, DNS names) with bounded parallelism, per-host
+// politeness, a global rate limit, per-attempt timeouts, and retries.
+package sweep
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"net"
+	"net/url"
+	"strings"
+)
+
+// Kind identifies which prober handles a target.
+type Kind string
+
+const (
+	KindHTTP Kind = "http" // http:// and https:// URLs
+	KindTCP  Kind = "tcp"  // tcp://host:port
+	KindTLS  Kind = "tls"  // tls://host:port, checks certificate validity
+	KindDNS  Kind = "dns"  // dns://name
+)
+
+// Target is one parsed line of input.
+type Target struct {
+	Index int    // position in the input; used to restore input order
+	Raw   string // the line as written
+	Kind  Kind
+	URL   *url.URL
+}
+
+// Host returns the host[:port] used for per-host concurrency limits.
+func (t Target) Host() string { return t.URL.Host }
+
+// ParseTargets reads one target per line. Blank lines and lines starting with
+// # are ignored. All syntax errors are reported together, with line numbers,
+// so a user can fix an inventory file in one pass.
+func ParseTargets(r io.Reader) ([]Target, error) {
+	var (
+		targets []Target
+		errs    []string
+		line    int
+	)
+	sc := bufio.NewScanner(r)
+	for sc.Scan() {
+		line++
+		raw := strings.TrimSpace(sc.Text())
+		if raw == "" || strings.HasPrefix(raw, "#") {
+			continue
+		}
+		t, err := parseTarget(raw)
+		if err != nil {
+			errs = append(errs, fmt.Sprintf("line %d: %v", line, err))
+			continue
+		}
+		t.Index = len(targets)
+		targets = append(targets, t)
+	}
+	if err := sc.Err(); err != nil {
+		return nil, fmt.Errorf("reading targets: %w", err)
+	}
+	if len(errs) > 0 {
+		return nil, fmt.Errorf("invalid targets:\n  %s", strings.Join(errs, "\n  "))
+	}
+	return targets, nil
+}
+
+func parseTarget(raw string) (Target, error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return Target{}, err
+	}
+	t := Target{Raw: raw, URL: u}
+	switch u.Scheme {
+	case "http", "https":
+		t.Kind = KindHTTP
+	case "tcp", "tls":
+		t.Kind = Kind(u.Scheme)
+		if _, port, err := net.SplitHostPort(u.Host); err != nil || port == "" {
+			return Target{}, fmt.Errorf("%q: %s targets need host:port", raw, u.Scheme)
+		}
+	case "dns":
+		t.Kind = KindDNS
+	default:
+		return Target{}, fmt.Errorf("%q: unsupported scheme %q (want http, https, tcp, tls, dns)", raw, u.Scheme)
+	}
+	if u.Hostname() == "" {
+		return Target{}, fmt.Errorf("%q: missing host", raw)
+	}
+	return t, nil
+}

@@ -1,0 +1,47 @@
+Name:         payments-api
+Namespace:    shop
+Labels:       <none>
+Annotations:  <none>
+API Version:  watchtower.platformgo.dev/v1alpha1
+Kind:         HealthCheck
+Metadata:
+  Creation Timestamp:  2026-11-03T07:35:39Z
+  Generation:          1
+  Resource Version:    8868
+  UID:                 60ad1f4e-3d90-4210-a878-7d7281f43fcf
+Spec:
+  Alert:
+    For:              2m
+    Severity:         critical
+    Summary:          Payments API is returning errors
+  Failure Threshold:  3
+  Interval:           10s
+  Target:
+    URL:    https://httpbin.org/status/503
+  Timeout:  5s
+Status:
+  Alerting:
+    Backend:              prometheus
+    Observed Generation:  1
+    Ref:                  watchtower-payments-api
+  Conditions:
+    Last Transition Time:  2026-11-03T07:36:07Z
+    Message:               unexpected status 503
+    Observed Generation:   1
+    Reason:                ProbeFailing
+    Status:                False
+    Type:                  Healthy
+    Last Transition Time:  2026-11-03T07:35:48Z
+    Message:               prometheus rule watchtower-payments-api is up to date
+    Observed Generation:   1
+    Reason:                RuleSynced
+    Status:                True
+    Type:                  AlertingReady
+  Consecutive Failures:    3
+  Last Failure:            unexpected status 503
+  Observed Generation:     1
+  Resolved URL:            https://httpbin.org/status/503
+Events:
+  Type     Reason        Age   From        Message
+  ----     ------        ----  ----        -------
+  Warning  ProbeFailing  0s    watchtower  failed 3 consecutive probes: unexpected status 503

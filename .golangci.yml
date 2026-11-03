@@ -1,0 +1,49 @@
+# golangci-lint v2 configuration shared by every module in the repository.
+# Philosophy: enable linters that find real bugs in tooling code (leaked
+# response bodies, ignored contexts, wrapped-error mistakes, insecure exec),
+# not linters that argue about taste.
+version: "2"
+
+run:
+  go: "1.27"
+  timeout: 5m
+
+linters:
+  default: standard # errcheck, govet, ineffassign, staticcheck, unused
+  enable:
+    - bodyclose      # unclosed HTTP response bodies leak connections
+    - errorlint      # errors.Is/As instead of == and type switches
+    - gocritic
+    - gosec          # exec, file permissions, TLS settings
+    - misspell
+    - nilerr         # returning nil when err != nil
+    - noctx          # HTTP requests and dials without a context
+    - unconvert
+    - usestdlibvars
+    - modernize      # same analyzers as `go fix` modernizers
+  settings:
+    errcheck:
+      exclude-functions:
+        - fmt.Fprintln
+        - fmt.Fprintf
+        - fmt.Fprint
+    gosec:
+      excludes:
+        - G104 # duplicate of errcheck
+  exclusions:
+    presets:
+      - comments
+      - std-error-handling
+      - common-false-positives
+    rules:
+      - path: _test\.go
+        linters: [gosec, noctx, bodyclose]
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/rahulbalajee/platform-go

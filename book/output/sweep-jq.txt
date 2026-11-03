@@ -1,0 +1,4 @@
+{"target":"dns://does-not-exist.invalid","attempts":1,"error":"lookup does-not-exist.invalid: no such host"}
+{"target":"tcp://127.0.0.1:9","attempts":3,"error":"dial tcp 127.0.0.1:9: connect: connection refused (after 3 attempts)"}
+{"target":"https://expired.badssl.com/","attempts":1,"error":"Get \"https://expired.badssl.com/\": tls: failed to verify certificate: x509: certificate has expired or is not yet valid: “*.badssl.com” certificate is expired"}
+{"target":"https://httpbin.org/status/404","attempts":1,"error":"unhealthy status 404 Not Found"}

@@ -1,0 +1,4 @@
+{"index":10,"target":"dns://does-not-exist.invalid","kind":"dns","status":"down","attempts":1,"latency_ns":3354958,"error":"lookup does-not-exist.invalid: no such host"}
+{"index":9,"target":"dns://registry.k8s.io","kind":"dns","status":"up","attempts":1,"latency_ns":1588417,"detail":"2 address(es): 2600:1901:0:bbc4::"}
+{"index":6,"target":"tls://github.com:443","kind":"tls","status":"up","attempts":1,"latency_ns":107223584,"detail":"cert \"github.com\" expires in 86d"}
+{"index":1,"target":"https://kubernetes.io/","kind":"http","status":"up","attempts":1,"latency_ns":171844125,"detail":"200 OK"}
