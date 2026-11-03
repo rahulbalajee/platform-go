@@ -638,7 +638,8 @@ retries use.
 The `Is` method lets callers write `errors.Is(err, platformapi.ErrNotFound)`
 without the SDK exporting a sentinel per status code, and without callers
 comparing `StatusCode` against numbers. It is defined on `*APIError`, so the
-pointer is the error type: `errors.AsType[*platformapi.APIError](err)`. Two
+pointer is the error type that callers ask for:
+`errors.AsType[*platformapi.APIError](err)`. Two
 sentinels is a deliberately small vocabulary. They name the conditions
 callers really branch on (create it if it doesn't exist, wait if someone
 else is deploying), and everything else is in the `*APIError`.
@@ -700,6 +701,6 @@ one-line server that behaves like a web application firewall.
     ([#ts("s3-equal.txt")], [An error was compared with `!=` (or `==`) instead of `errors.Is`. It works until someone wraps the error.], [`errors.Is(err, platformapi.ErrNotFound)`.]),
     ([#ts("s3-nois.txt")], [`*APIError` has no `Is` method, so `errors.Is` compares pointers, and an `*APIError` is never equal to the sentinel.], [Add the `Is` method.]),
     ([#ts("s3-escape.txt")], [The ID was not escaped, so `..` climbed out of `/v1/deployments/`; the server redirected and the client fetched another resource.], [Escape every segment with `url.PathEscape`; see "Three ways to get a resource".]),
-    ([#ts("s3-astype.txt")], [`errors.AsType` was asked for `APIError`, a value type, but only `*APIError` has the `Error` method.], [Ask for the pointer: `errors.AsType[*platformapi.APIError]`.]),
+    ([#ts("s3-astype.txt")], [`errors.AsType` was asked for `APIError`, a value type, but only `*APIError` has the `Error` method.], [Ask for the pointer type, `*platformapi.APIError`, as the type argument.]),
   )
 ]

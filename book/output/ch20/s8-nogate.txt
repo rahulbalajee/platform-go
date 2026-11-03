@@ -1,5 +1,5 @@
---- FAIL: TestReconcileKeepsProbeCadence (0.00s)
+--- FAIL: TestReconcileKeepsProbeCadence (0.01s)
     healthcheck_controller_test.go:421: 4 probes, want 1: early reconciles must not probe
 FAIL
-FAIL    watchtower/internal/controller  15.586s
+FAIL    watchtower/internal/controller  18.572s
 FAIL

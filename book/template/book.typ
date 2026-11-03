@@ -409,7 +409,9 @@
   for (i, ex) in items.pos().enumerate() {
     let k = i + 1
     let id = str(chapter) + "." + str(k)
-    [#block(above: 1.2em, below: 1.2em, breakable: true)[
+    // Keep an exercise in one piece (so its "Solution" line can't strand on
+    // a page of its own) unless it is too tall for that to be sensible.
+    let inner = [
       #block(below: 0pt, sticky: true)[
         #text(font: fonts.sans, size: 9pt, weight: "bold", fill: c.godark)[Exercise #id]
         #h(5pt) #_badge(ex.tier) #h(5pt)
@@ -427,7 +429,11 @@
           link(q.first().location())[Solution: page #_page-of(q.first().location()) →]
         } else [Solution: Appendix D.]
       }
-    ] #label("ex-" + str(chapter) + "-" + str(k))]
+    ]
+    [#layout(size => {
+      let h = measure(block(width: size.width, inner)).height
+      block(above: 1.2em, below: 1.2em, breakable: h > 400pt, inner)
+    }) #label("ex-" + str(chapter) + "-" + str(k))]
   }
 }
 

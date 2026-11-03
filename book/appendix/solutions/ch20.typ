@@ -88,7 +88,8 @@
   client choose the rule's `uid`. Derive it from the HealthCheck's UID, and
   `Ensure` becomes "update by uid, create if missing": no tag search, and a
   crash between create and status write can't produce a duplicate, because
-  a second create with the same uid fails instead of making a twin.
+  a second create with the same uid fails with a 409 conflict (the rule
+  store's unique constraint) instead of making a twin.
 
   *Provenance.* Rules created through the provisioning API are marked as
   provisioned, and Grafana's UI refuses to edit them unless the request

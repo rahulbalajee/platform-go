@@ -1,2 +1,2 @@
-payments-api turned unhealthy 15s after it was created
-NAME           HEALTHY   REASON             FAILURES   ALERTING     AGE
+payments-api turned unhealthy 17s after it was created
+FAIL: 3 failures 10s apart took 17s: probes ran early

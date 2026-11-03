@@ -345,7 +345,8 @@ The first version of `reconcileHealth` probed on every reconcile, and the
 unit tests and envtest suite all passed. The end-to-end run on kind caught
 the bug. The `payments-api` check, with a 10-second interval and a failure
 threshold of 3, should turn unhealthy about 20 seconds after it is created:
-three failures, two intervals apart. On kind it took 11. The creation event
+three failures, two intervals apart. On kind it took 17, and in other runs
+as little as 11. The creation event
 triggered a reconcile and a probe. Creating its PrometheusRule triggered a
 second reconcile through the `Owns` watch, and that probed too. Here is the
 step 7 code under the script you are about to write:
@@ -432,7 +433,13 @@ way out can't probe alongside it:
 #src("workbook/ch20/step8/hack/e2e-kind.sh", region: "build")
 
 The demo goes in app first, so every check can probe from its first
-reconcile, and the cadence assertion is the one that caught the bug:
+reconcile, and the cadence assertion is the one that caught the bug. Pick
+its bound from the schedule, not from one run. With 10% jitter on a
+10-second interval, timer-driven probes land at about 0, 9 to 11, and 18 to
+22 seconds. Nothing else touches `payments-api` once its rule exists, so a
+gated operator can't reach the third failure before 18 seconds. An earlier
+version of this script failed only below 15, and an ungated run that
+happened to take exactly 15 seconds passed it:
 
 #src("workbook/ch20/step8/hack/e2e-kind.sh", region: "demo")
 #src("workbook/ch20/step8/hack/e2e-kind.sh", region: "cadence")

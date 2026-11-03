@@ -29,8 +29,8 @@ widths:
 book: widths
 	typst compile --root . --font-path book/fonts book/main.typ platform-go.pdf
 
-capture: ## re-run every chapter's capture script (each runs from a copy; needs Docker, kind, network)
-	for s in book/scripts/capture-ch*.sh; do cp "$$s" "$${TMPDIR:-/tmp}/run-$$(basename $$s)" && bash "$${TMPDIR:-/tmp}/run-$$(basename $$s)" || exit 1; done
+capture: ## re-run every chapter's capture script (Docker, kind, network)
+	bash book/scripts/capture-all.sh
 
-workbook: ## verify the build track: coverage, step and solution modules, exercises, sync
+workbook: ## verify the build track (see book/AUTHORING.md)
 	python3 book/scripts/check_workbook.py --race
