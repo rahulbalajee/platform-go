@@ -1,10 +1,11 @@
-watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="success"} 2
+watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="failure"} 1
+watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="success"} 1
 watchtower_healthcheck_probes_total{check_name="inventory",check_namespace="shop",result="failure"} 1
 watchtower_healthcheck_probes_total{check_name="inventory",check_namespace="shop",result="success"} 1
 watchtower_healthcheck_probes_total{check_name="payments-api",check_namespace="shop",result="failure"} 4
 watchtower_healthcheck_probes_total{check_name="storefront",check_namespace="shop",result="failure"} 1
 watchtower_healthcheck_probes_total{check_name="storefront",check_namespace="shop",result="success"} 3
-watchtower_healthcheck_up{check_name="go-dev",check_namespace="shop"} 1
+watchtower_healthcheck_up{check_name="go-dev",check_namespace="shop"} 0
 watchtower_healthcheck_up{check_name="inventory",check_namespace="shop"} 1
 watchtower_healthcheck_up{check_name="payments-api",check_namespace="shop"} 0
 watchtower_healthcheck_up{check_name="storefront",check_namespace="shop"} 1

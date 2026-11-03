@@ -1,8 +1,8 @@
 customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com serverside-applied
-sha256:50e61a875c952f3bc7da52557f1295522ec92653d5eb0a9cb667c2c9b4e35413
-sha256:584a45a979c7baaa0cf2244ea0126c0c1246f40e0d090e41195d77dcef91cd8c
-Image: "watchtower:dev" with ID "sha256:50e61a875c952f3bc7da52557f1295522ec92653d5eb0a9cb667c2c9b4e35413" not yet present on node "watchtower-control-plane", loading...
-Image: "watchtower-demoapp:dev" with ID "sha256:584a45a979c7baaa0cf2244ea0126c0c1246f40e0d090e41195d77dcef91cd8c" not yet present on node "watchtower-control-plane", loading...
+sha256:d5683ca820bb8d3be5459d65b3a54982c1f185662a992e5cd8344be435f8f7f3
+sha256:9924dc946367366bb18b67b73ce54d5c9cdbd19c2987e7c4db2fcbad43af0d70
+Image: "watchtower:dev" with ID "sha256:d5683ca820bb8d3be5459d65b3a54982c1f185662a992e5cd8344be435f8f7f3" not yet present on node "watchtower-control-plane", loading...
+Image: "watchtower-demoapp:dev" with ID "sha256:9924dc946367366bb18b67b73ce54d5c9cdbd19c2987e7c4db2fcbad43af0d70" not yet present on node "watchtower-control-plane", loading...
 "~/watchtower/bin/controller-gen" rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 cd config/manager && "~/watchtower/bin/kustomize" edit set image controller=watchtower:dev
 "~/watchtower/bin/kustomize" build config/default | "kubectl" apply -f -
@@ -25,6 +25,7 @@ deployment.apps/watchtower-controller-manager restarted
 Waiting for deployment "watchtower-controller-manager" rollout to finish: 1 old replicas are pending termination...
 Waiting for deployment "watchtower-controller-manager" rollout to finish: 1 old replicas are pending termination...
 deployment "watchtower-controller-manager" successfully rolled out
+namespace "shop" deleted
 namespace/shop created
 deployment.apps/storefront created
 service/storefront created
@@ -57,10 +58,10 @@ Annotations:  <none>
 API Version:  watchtower.platformgo.dev/v1alpha1
 Kind:         HealthCheck
 Metadata:
-  Creation Timestamp:  2026-11-03T14:13:00Z
+  Creation Timestamp:  2026-11-03T14:23:23Z
   Generation:          1
-  Resource Version:    54034
-  UID:                 0636198f-db75-495c-9c80-911f038bb8a3
+  Resource Version:    55765
+  UID:                 aba0052c-16cd-4076-9275-69ffe85bfbc8
 Spec:
   Alert:
     For:              2m
@@ -81,13 +82,13 @@ Status:
     Observed Generation:  1
     Ref:                  watchtower-payments-api
   Conditions:
-    Last Transition Time:  2026-11-03T14:13:25Z
+    Last Transition Time:  2026-11-03T14:23:48Z
     Message:               unexpected status 503
     Observed Generation:   1
     Reason:                ProbeFailing
     Status:                False
     Type:                  Healthy
-    Last Transition Time:  2026-11-03T14:13:05Z
+    Last Transition Time:  2026-11-03T14:23:28Z
     Message:               prometheus rule watchtower-payments-api is up to date
     Observed Generation:   1
     Reason:                RuleSynced
@@ -109,7 +110,7 @@ $ kubectl get prometheusrule watchtower-storefront -n shop -o yaml
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  creationTimestamp: "2026-11-03T14:13:05Z"
+  creationTimestamp: "2026-11-03T14:23:28Z"
   generation: 1
   labels:
     app.kubernetes.io/managed-by: watchtower
@@ -121,9 +122,9 @@ metadata:
     controller: true
     kind: HealthCheck
     name: storefront
-    uid: e8c415ff-98fa-4b6d-b76b-22f808b73bd6
-  resourceVersion: "53988"
-  uid: c2bbe34c-404b-4833-9292-0eca6d57ed50
+    uid: e07055fa-6168-4b48-81c8-55f9ad0d4da6
+  resourceVersion: "55721"
+  uid: 24d30499-0d91-473c-bdd9-75351b9a10f9
 spec:
   groups:
   - name: watchtower.shop.storefront
@@ -158,22 +159,23 @@ inventory   http://inventory.shop.svc.cluster.local:8080/healthz   Pending
 healthcheck.watchtower.platformgo.dev/inventory condition met
 $ kubectl get healthchecks -n shop
 NAME           HEALTHY   REASON           FAILURES   ALERTING     AGE
-go-dev         True      ProbeSucceeded                           39s
+go-dev         True      ProbeSucceeded   1                       39s
 inventory      True      ProbeSucceeded                           39s
 payments-api   False     ProbeFailing     3          prometheus   39s
 storefront     True      ProbeSucceeded              prometheus   39s
-serviceaccount/metrics-probe created
+serviceaccount/metrics-probe unchanged
 clusterrolebinding.rbac.authorization.k8s.io/watchtower-metrics-probe unchanged
 $ metrics
-watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="success"} 2
+watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="failure"} 1
+watchtower_healthcheck_probes_total{check_name="go-dev",check_namespace="shop",result="success"} 1
 watchtower_healthcheck_probes_total{check_name="inventory",check_namespace="shop",result="failure"} 1
 watchtower_healthcheck_probes_total{check_name="inventory",check_namespace="shop",result="success"} 1
 watchtower_healthcheck_probes_total{check_name="payments-api",check_namespace="shop",result="failure"} 4
 watchtower_healthcheck_probes_total{check_name="storefront",check_namespace="shop",result="failure"} 1
 watchtower_healthcheck_probes_total{check_name="storefront",check_namespace="shop",result="success"} 3
-watchtower_healthcheck_up{check_name="go-dev",check_namespace="shop"} 1
+watchtower_healthcheck_up{check_name="go-dev",check_namespace="shop"} 0
 watchtower_healthcheck_up{check_name="inventory",check_namespace="shop"} 1
 watchtower_healthcheck_up{check_name="payments-api",check_namespace="shop"} 0
 watchtower_healthcheck_up{check_name="storefront",check_namespace="shop"} 1
 e2e OK
-hack/e2e-kind.sh: line 155: 78127 Terminated: 15          kubectl -n $ns port-forward $svc 8443:8443 > /dev/null 2>&1
+hack/e2e-kind.sh: line 156: 83193 Terminated: 15          kubectl -n $ns port-forward $svc 8443:8443 > /dev/null 2>&1

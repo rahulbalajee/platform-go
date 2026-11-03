@@ -90,7 +90,7 @@ created=$(hc '{.metadata.creationTimestamp}')
 failed=$(hc '{.status.conditions[?(@.type=="Healthy")].lastTransitionTime}')
 secs=$(( $(epoch "$failed") - $(epoch "$created") ))
 echo "payments-api turned unhealthy ${secs}s after it was created"
-if (( secs < 15 )); then
+if (( secs < 18 )); then # gated: probes at ~0, 9-11, 18-22s (10% jitter)
   echo "FAIL: 3 failures 10s apart took ${secs}s: probes ran early" >&2
   exit 1
 fi

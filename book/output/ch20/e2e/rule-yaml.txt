@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  creationTimestamp: "2026-11-03T14:13:05Z"
+  creationTimestamp: "2026-11-03T14:23:28Z"
   generation: 1
   labels:
     app.kubernetes.io/managed-by: watchtower
@@ -13,9 +13,9 @@ metadata:
     controller: true
     kind: HealthCheck
     name: storefront
-    uid: e8c415ff-98fa-4b6d-b76b-22f808b73bd6
-  resourceVersion: "53988"
-  uid: c2bbe34c-404b-4833-9292-0eca6d57ed50
+    uid: e07055fa-6168-4b48-81c8-55f9ad0d4da6
+  resourceVersion: "55721"
+  uid: 24d30499-0d91-473c-bdd9-75351b9a10f9
 spec:
   groups:
   - name: watchtower.shop.storefront

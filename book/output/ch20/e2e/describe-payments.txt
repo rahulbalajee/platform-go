@@ -5,10 +5,10 @@ Annotations:  <none>
 API Version:  watchtower.platformgo.dev/v1alpha1
 Kind:         HealthCheck
 Metadata:
-  Creation Timestamp:  2026-11-03T14:13:00Z
+  Creation Timestamp:  2026-11-03T14:23:23Z
   Generation:          1
-  Resource Version:    54034
-  UID:                 0636198f-db75-495c-9c80-911f038bb8a3
+  Resource Version:    55765
+  UID:                 aba0052c-16cd-4076-9275-69ffe85bfbc8
 Spec:
   Alert:
     For:              2m
@@ -29,13 +29,13 @@ Status:
     Observed Generation:  1
     Ref:                  watchtower-payments-api
   Conditions:
-    Last Transition Time:  2026-11-03T14:13:25Z
+    Last Transition Time:  2026-11-03T14:23:48Z
     Message:               unexpected status 503
     Observed Generation:   1
     Reason:                ProbeFailing
     Status:                False
     Type:                  Healthy
-    Last Transition Time:  2026-11-03T14:13:05Z
+    Last Transition Time:  2026-11-03T14:23:28Z
     Message:               prometheus rule watchtower-payments-api is up to date
     Observed Generation:   1
     Reason:                RuleSynced
