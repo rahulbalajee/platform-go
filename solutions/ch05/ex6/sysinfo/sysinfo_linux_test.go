@@ -24,9 +24,14 @@ func TestRealProcSelf(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if st.PID != os.Getpid() || st.PPID != os.Getppid() || st.State != 'R' {
-		t.Fatalf("stat = %+v, want pid %d ppid %d state R",
+	if st.PID != os.Getpid() || st.PPID != os.Getppid() {
+		t.Fatalf("stat = %+v, want pid %d ppid %d",
 			st, os.Getpid(), os.Getppid())
+	}
+	// State is the main thread's, and it is usually asleep while another
+	// thread runs this test, so accept S as well as R.
+	if st.State != 'R' && st.State != 'S' {
+		t.Errorf("State = %q, want R or S", st.State)
 	}
 	if st.Threads < 2 {
 		t.Errorf("Threads = %d; the Go runtime always runs several", st.Threads)

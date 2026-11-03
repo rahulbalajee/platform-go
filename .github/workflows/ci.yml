@@ -83,8 +83,14 @@ jobs:
   # lints and passes its race tests; every new or changed line of every step is
   # printed in the book; exercise tests fail on their base step; final steps
   # match the production code they became.
+  # One job per chapter, so the build track checks run in parallel and a
+  # failure names its chapter. Add a chapter here when it joins the track.
   workbook:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chapter: ["00", "01", "02", "03", "04", "05", "06", "20"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
@@ -94,20 +100,32 @@ jobs:
         with:
           python-version: "3.13"
       - name: envtest binaries (operator build steps)
+        if: matrix.chapter == '20'
         working-directory: projects/watchtower
         run: |
           make setup-envtest
           echo "KUBEBUILDER_ASSETS=$(bin/setup-envtest use 1.37.0 --bin-dir "$PWD/bin" -p path)" >> "$GITHUB_ENV"
       - name: Build track checks
-        run: python3 book/scripts/check_workbook.py --race
+        run: python3 book/scripts/check_workbook.py --race --chapter ${{ matrix.chapter }}
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
       - name: Lint every step and solution module
         run: |
-          for m in $(find workbook solutions -name go.mod -not -path workbook/go.mod -not -path '*/exercises/*' -exec dirname {} \; | sort); do
+          ch=ch${{ matrix.chapter }}
+          for m in $(find workbook/$ch solutions/$ch -name go.mod -not -path '*/exercises/*' -exec dirname {} \; | sort); do
             echo "== $m"
             (cd "$m" && golangci-lint run --config "$GITHUB_WORKSPACE/.golangci.yml" ./...) || exit 1
           done
+
+  # Fails if a chapter directory exists that the matrix above doesn't list.
+  workbook-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          want=$(ls -d workbook/ch* | sed 's#workbook/ch##' | sort | tr '\n' ' ')
+          have=$(grep -o 'chapter: \[.*\]' .github/workflows/ci.yml | tr -dc '0-9 ' | tr -s ' ' | sed 's/^ //')
+          [[ "$want" == "$have " || "$want" == "$have" ]] || { echo "matrix lists '$have', workbook has '$want'"; exit 1; }
 
   # Reachable known vulnerabilities fail the build (Chapter 1). govulncheck is
   # pinned as a tool in examples/ch01/tools/go.mod.
