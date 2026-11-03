@@ -427,8 +427,13 @@ actual PrometheusRule CRD:
 #src("workbook/ch20/step8/hack/e2e-kind.sh", region: "cluster")
 
 Then it builds both images, loads them into kind, deploys with kustomize, and
-waits until the new pod holds the leader Lease, so an old pod still on its
-way out can't probe alongside it:
+waits until the old pod is gone and the new one holds the leader Lease, so
+an old pod still on its way out can't probe alongside it. The first version
+of this wait picked "the newest pod" by `creationTimestamp` and failed on a
+fresh cluster: the deploy and the restart created both pods in the same
+second, timestamps have 1-second resolution, and the tie picked the old pod.
+It looked like a leader-election bug until the diagnostics showed the
+"new" pod no longer existed:
 
 #src("workbook/ch20/step8/hack/e2e-kind.sh", region: "build")
 

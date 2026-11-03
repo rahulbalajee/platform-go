@@ -56,18 +56,24 @@ make deploy IMG="$IMG"
 deploy=deploy/watchtower-controller-manager
 kubectl -n watchtower-system rollout restart "$deploy"
 kubectl -n watchtower-system rollout status "$deploy" --timeout=180s
-# Wait until the new pod leads. The old one may still be reconciling on its
-# way out, and two operators would probe the demo checks twice as often.
-pod=$(kubectl -n watchtower-system get pods -l control-plane=controller-manager \
-  --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].metadata.name}')
+# Wait until the old pod is gone and the new one leads: two operators would
+# probe the demo checks twice as often. Don't pick "the newest pod" by
+# creationTimestamp; it has 1s resolution, and on a fresh cluster the
+# deploy and the restart create both pods within the same second.
 for _ in $(seq 60); do
+  pods=$(kubectl -n watchtower-system get pods -o name \
+    -l control-plane=controller-manager)
   holder=$(kubectl -n watchtower-system get lease 8bdb4b95.platformgo.dev \
     -o jsonpath='{.spec.holderIdentity}')
-  [[ $holder == "${pod}_"* ]] && break
+  [[ $pods != *$'\n'* && -n $holder && $holder == "${pods#pod/}_"* ]] && break
   sleep 1
 done
-[[ $holder == "${pod}_"* ]] || {
-  echo "FAIL: $pod never led (lease holder: ${holder:-none})" >&2; exit 1; }
+[[ $pods != *$'\n'* && -n $holder && $holder == "${pods#pod/}_"* ]] || {
+  echo "FAIL: no single leading pod (pods: ${pods//$'\n'/ }," \
+    "lease holder: ${holder:-none})" >&2
+  kubectl -n watchtower-system get pods,lease -o wide >&2
+  exit 1
+}
 # END build OMIT
 
 # START demo OMIT
