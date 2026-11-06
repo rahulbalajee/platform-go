@@ -39,6 +39,7 @@ func TestNotFoundIsAnAPIError(t *testing.T) {
 // END head OMIT
 
 // START escape OMIT
+
 func TestIDsCannotEscapeTheirPath(t *testing.T) {
 	client, fake := newClient(t)
 	_, err := client.GetDeployment(t.Context(), "../environments/prod")

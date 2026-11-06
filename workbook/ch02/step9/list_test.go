@@ -41,6 +41,7 @@ func TestListDeploymentsFollowsPageTokens(t *testing.T) {
 // END head OMIT
 
 // START breaktest OMIT
+
 func TestBreakStopsFetchingPages(t *testing.T) {
 	client, fake := newClient(t)
 	var seen []string
@@ -62,6 +63,7 @@ func TestBreakStopsFetchingPages(t *testing.T) {
 // END breaktest OMIT
 
 // START errtest OMIT
+
 func TestListErrorEndsIteration(t *testing.T) {
 	client, fake := newClient(t)
 	var items, errs int
@@ -87,6 +89,7 @@ func TestListErrorEndsIteration(t *testing.T) {
 // END errtest OMIT
 
 // START collecttest OMIT
+
 func TestCollectReturnsPartialResults(t *testing.T) {
 	calls := 0
 	expiring := platformapi.TokenSourceFunc(func(context.Context) (string, error) {
@@ -132,6 +135,7 @@ func TestListServicesFiltersByTeam(t *testing.T) {
 // END collecttest OMIT
 
 // START logstest OMIT
+
 func TestDeploymentLogsStream(t *testing.T) {
 	client, _ := newClient(t)
 	logs, err := client.DeploymentLogs(t.Context(), "d-8")

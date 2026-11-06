@@ -20,6 +20,7 @@ import (
 // END head OMIT
 
 // START golden OMIT
+
 var update = flag.Bool("update", false, "rewrite golden files in testdata/golden")
 
 // golden compares got with testdata/golden/<name>.golden. With -update it
@@ -51,6 +52,7 @@ func golden(t *testing.T, name string, got []byte) {
 // END top OMIT
 
 // START fixture OMIT
+
 // sampleRun is a fixed, fully deterministic sweep: every field a reporter
 // prints is pinned, including latencies and the elapsed time. Results are
 // listed in completion order, which differs from input order on purpose.
@@ -84,6 +86,7 @@ func sampleRun() ([]sweep.Result, sweep.Summary) {
 // END fixture OMIT
 
 // START test OMIT
+
 func TestReportersGolden(t *testing.T) {
 	for _, format := range []string{"table", "wide", "json", "jsonl"} {
 		t.Run(format, func(t *testing.T) {

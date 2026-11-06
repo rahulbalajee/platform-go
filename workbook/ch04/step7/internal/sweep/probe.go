@@ -20,6 +20,7 @@ import (
 // END imports OMIT
 
 // START prober OMIT
+
 // A Prober performs one attempt against a target. It returns a short,
 // human-readable detail (for example "200 OK") and an error if the target is
 // unhealthy. Probers must honour ctx: the runner enforces per-attempt
@@ -40,6 +41,7 @@ func (f ProberFunc) Probe(ctx context.Context, t Target) (string, error) {
 // END prober OMIT
 
 // START http OMIT
+
 // HTTPProber issues a GET and treats 2xx/3xx as healthy, 429 and 5xx as
 // retryable failures, and other 4xx as permanent failures.
 type HTTPProber struct {
@@ -94,6 +96,7 @@ func (p HTTPProber) Probe(ctx context.Context, t Target) (string, error) {
 // END http OMIT
 
 // START retryafter OMIT
+
 // parseRetryAfter reads a Retry-After value: delay-seconds or an HTTP date.
 func parseRetryAfter(v string) (time.Duration, bool) {
 	if v == "" {
@@ -114,6 +117,7 @@ func parseRetryAfter(v string) (time.Duration, bool) {
 // END retryafter OMIT
 
 // START tcp OMIT
+
 // TCPProber succeeds if a TCP connection can be established.
 type TCPProber struct {
 	Dial func(ctx context.Context, network, addr string) (net.Conn, error)
@@ -131,6 +135,7 @@ func (p TCPProber) Probe(ctx context.Context, t Target) (string, error) {
 // END tcp OMIT
 
 // START tlstype OMIT
+
 // TLSProber performs a TLS handshake and fails, permanently, if the leaf
 // certificate expires within MinValidity. Expiring certificates are the
 // single most common self-inflicted outage this tool can catch early.
@@ -144,6 +149,7 @@ type TLSProber struct {
 // END tlstype OMIT
 
 // START tlsprobe OMIT
+
 func (p TLSProber) Probe(ctx context.Context, t Target) (string, error) {
 	raw, err := p.Dial(ctx, "tcp", t.URL.Host)
 	if err != nil {
@@ -182,6 +188,7 @@ func (p TLSProber) Probe(ctx context.Context, t Target) (string, error) {
 // END tlsprobe OMIT
 
 // START dnstype OMIT
+
 // DNSProber resolves a name. It deliberately bypasses any cache: the point
 // is to test resolution itself.
 type DNSProber struct {
@@ -191,6 +198,7 @@ type DNSProber struct {
 // END dnstype OMIT
 
 // START dnsprobe OMIT
+
 func (p DNSProber) Probe(ctx context.Context, t Target) (string, error) {
 	addrs, err := p.Resolver.LookupHost(ctx, t.URL.Hostname())
 	if err != nil {
@@ -205,6 +213,7 @@ func (p DNSProber) Probe(ctx context.Context, t Target) (string, error) {
 // END dnsprobe OMIT
 
 // START humandays OMIT
+
 func humanDays(d time.Duration) string {
 	days := d.Hours() / 24
 	if days >= 2 || days <= -2 {

@@ -18,6 +18,7 @@ import (
 // END head OMIT
 
 // START fake OMIT
+
 // step is one scripted outcome of a probe attempt.
 type step struct {
 	detail string
@@ -58,6 +59,7 @@ func (p *scriptedProber) Probe(ctx context.Context, t sweep.Target) (string, err
 // END fake OMIT
 
 // START starts OMIT
+
 // Starts returns the start time of every attempt against target.
 func (p *scriptedProber) Starts(target string) []time.Time {
 	p.mu.Lock()
@@ -85,6 +87,7 @@ func runOnce(t *testing.T, cfg sweep.Config, inv string) map[string]sweep.Result
 // END starts OMIT
 
 // START retryafter OMIT
+
 func TestRunnerHonoursRetryAfter(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		const target = "https://api.example.com/healthz"
@@ -113,6 +116,7 @@ func TestRunnerHonoursRetryAfter(t *testing.T) {
 // END retryafter OMIT
 
 // START ratelimit OMIT
+
 func TestRunnerRateLimitSpacesAttempts(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		scripts := map[string][]step{}
@@ -144,6 +148,7 @@ func TestRunnerRateLimitSpacesAttempts(t *testing.T) {
 // END ratelimit OMIT
 
 // START unknown OMIT
+
 func TestRunnerReportsUnknownKind(t *testing.T) {
 	got := runOnce(t, sweep.Config{
 		Concurrency: 1, PerHost: 1, Timeout: time.Second,
@@ -159,6 +164,7 @@ func TestRunnerReportsUnknownKind(t *testing.T) {
 // END unknown OMIT
 
 // START outofsteps OMIT
+
 func TestScriptedProberRunsOutOfSteps(t *testing.T) {
 	fake := newScriptedProber(map[string][]step{})
 	_, err := fake.Probe(t.Context(), sweep.Target{Raw: "dns://x"})

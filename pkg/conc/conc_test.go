@@ -22,6 +22,7 @@ func TestMain(m *testing.M) { goleak.VerifyTestMain(m) }
 // END head OMIT
 
 // START map OMIT
+
 func TestMapPreservesOrderAndBoundsConcurrency(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var inFlight, peak atomic.Int64
@@ -83,6 +84,7 @@ func TestMapFailFastCancelsSiblings(t *testing.T) {
 // END map OMIT
 
 // START stream OMIT
+
 func TestStreamYieldsInCompletionOrder(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		delays := []time.Duration{3 * time.Second, 1 * time.Second, 2 * time.Second}
@@ -164,6 +166,7 @@ func TestStreamParentCancelStillDeliversStartedResults(t *testing.T) {
 // END stream OMIT
 
 // START keyed OMIT
+
 func TestKeyedSemaphoreLimitsPerKey(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		sem := conc.NewKeyedSemaphore(2)

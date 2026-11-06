@@ -1,4 +1,5 @@
 // START imports OMIT
+
 package buildinfo
 
 import (
@@ -88,6 +89,7 @@ func runFromTests(t *testing.T, tests []fromTest) {
 // END from OMIT
 
 // START toolchain OMIT
+
 func TestFrom(t *testing.T) {
 	platform := runtime.GOOS + "/" + runtime.GOARCH
 	commit := time.Date(2026, 11, 2, 14, 7, 31, 0, time.UTC)
@@ -123,6 +125,7 @@ func TestFrom(t *testing.T) {
 // END toolchain OMIT
 
 // START string OMIT
+
 func TestString(t *testing.T) {
 	info := Info{
 		Name: "sweep", Version: "v1.4.0",
@@ -186,6 +189,7 @@ func TestGet(t *testing.T) {
 // END get OMIT
 
 // START overrides OMIT
+
 func TestFromOverrides(t *testing.T) {
 	platform := runtime.GOOS + "/" + runtime.GOARCH
 	commit := time.Date(2026, 11, 2, 14, 7, 31, 0, time.UTC)
@@ -238,6 +242,7 @@ func TestParseTime(t *testing.T) {
 // END overrides OMIT
 
 // START write OMIT
+
 func TestUserAgent(t *testing.T) {
 	i := Info{
 		Name: "sweep", Version: "v1.4.0",

@@ -32,6 +32,7 @@ type Cmd struct {
 // END head OMIT
 
 // START command OMIT
+
 // Command returns a Cmd that runs name with args, without a shell, in a new
 // process group. When ctx is done the whole group gets SIGTERM. If the
 // command has not exited WaitDelay (DefaultGrace) later, it gets SIGKILL,
@@ -52,6 +53,7 @@ func Command(ctx context.Context, name string, args ...string) *Cmd {
 // END command OMIT
 
 // START wait OMIT
+
 // Wait waits for the command to exit, then kills anything still running in
 // its process group: descendants that the command started and abandoned.
 func (c *Cmd) Wait() error {
@@ -65,6 +67,7 @@ func (c *Cmd) Wait() error {
 // END wait OMIT
 
 // START run OMIT
+
 // Run starts the command and waits for it.
 func (c *Cmd) Run() error {
 	if err := c.Start(); err != nil {
@@ -106,6 +109,7 @@ func (c *Cmd) Signal(sig syscall.Signal) error {
 // END run OMIT
 
 // START forward OMIT
+
 // Forward relays the given signals, when this process receives them, to
 // the command's process group until stop is called. Call it after Start.
 // A child in its own group no longer gets terminal-generated signals
@@ -137,6 +141,7 @@ func (c *Cmd) Forward(sigs ...os.Signal) (stop func()) {
 // END forward OMIT
 
 // START exitcode OMIT
+
 // ExitCode maps an error from Run or Wait to a shell-style exit status: 0
 // for success, the child's own status if it exited, 128+n if it was killed
 // by signal n, and -1 if it never ran.

@@ -37,6 +37,7 @@ func TestWaitFollowsRolloutToSuccess(t *testing.T) {
 // END waittest OMIT
 
 // START canceltest OMIT
+
 func TestCancellingWaitDoesNotCancelTheDeployment(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, fake := newClient(t)
@@ -60,6 +61,7 @@ func TestCancellingWaitDoesNotCancelTheDeployment(t *testing.T) {
 // END canceltest OMIT
 
 // START failtest OMIT
+
 func TestWaitReportsFailedRollout(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, fake := newClient(t)
@@ -100,6 +102,7 @@ func TestWaitAfterCancel(t *testing.T) {
 // END failtest OMIT
 
 // START polltest OMIT
+
 func TestPollYieldsEverySnapshot(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, _ := newClient(t)

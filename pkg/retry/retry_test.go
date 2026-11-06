@@ -1,4 +1,5 @@
 // START head OMIT
+
 package retry_test
 
 import (
@@ -17,6 +18,7 @@ var errFlaky = errors.New("flaky")
 // END head OMIT
 
 // START backoff OMIT
+
 func TestDoRetriesUntilSuccessWithinBackoffCeiling(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		p := retry.Policy{
@@ -49,6 +51,7 @@ func TestDoRetriesUntilSuccessWithinBackoffCeiling(t *testing.T) {
 // END backoff OMIT
 
 // START classify OMIT
+
 func TestDoStopsOnPermanent(t *testing.T) {
 	calls := 0
 	bad := errors.New("404 not found")
@@ -81,6 +84,7 @@ func TestDoExhaustionWrapsLastError(t *testing.T) {
 // END classify OMIT
 
 // START after OMIT
+
 func TestDoHonoursRetryAfter(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		p := retry.Policy{
@@ -127,6 +131,7 @@ func TestDoAbortsWhenContextEnds(t *testing.T) {
 // END after OMIT
 
 // START value OMIT
+
 func TestValueGenericMethod(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		calls := 0

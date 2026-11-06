@@ -14,6 +14,7 @@
 package main
 
 // START imports OMIT
+
 import (
 	"context"
 	"errors"
@@ -33,6 +34,7 @@ import (
 // END imports OMIT
 
 // START version OMIT
+
 // version is stamped at build time: -ldflags "-X main.version=v1.2.3".
 var version = "dev"
 
@@ -46,6 +48,7 @@ const (
 )
 
 // START main OMIT
+
 func main() {
 	ctx, stop := lifecycle.NotifyContext(context.Background(), lifecycle.Options{})
 	code := run(ctx, os.Args[1:], os.Stdin, os.Stdout, os.Stderr)
@@ -56,6 +59,7 @@ func main() {
 // END main OMIT
 
 // START flags OMIT
+
 // options is the parsed command line.
 type options struct {
 	concurrency int
@@ -94,6 +98,7 @@ func parseFlags(args []string, stderr io.Writer) (options, error) {
 // END flags OMIT
 
 // START run OMIT
+
 // run is main without the process-global side effects, so tests can call it
 // directly with fake arguments, streams and a cancellable context. It
 // returns the exit status.
@@ -170,6 +175,7 @@ func isSignal(ctx context.Context) bool {
 // END run OMIT
 
 // START read OMIT
+
 // readTargets parses the inventory from the named files, in order, or from
 // stdin when there are none.
 func readTargets(paths []string, stdin io.Reader) ([]sweep.Target, error) {
@@ -191,6 +197,7 @@ func readTargets(paths []string, stdin io.Reader) ([]sweep.Target, error) {
 // END read OMIT
 
 // START newrunner OMIT
+
 // newRunner turns the command line into a validated sweep.Runner.
 func newRunner(o options) (*sweep.Runner, error) {
 	return sweep.NewRunner(sweep.Config{
@@ -210,6 +217,7 @@ func newRunner(o options) (*sweep.Runner, error) {
 // END newrunner OMIT
 
 // START probers OMIT
+
 // defaultProbers wires one prober per target kind. HTTP, TCP and TLS share
 // a resolver that caches lookups and merges concurrent ones.
 func defaultProbers(minCert time.Duration) map[sweep.Kind]sweep.Prober {

@@ -70,6 +70,7 @@ func TestWriteMissingDirectory(t *testing.T) {
 // END basic OMIT
 
 // START torn OMIT
+
 // TestReadersNeverSeeTornFiles rewrites a file in a loop while readers read
 // it. Every read must be one complete version: never empty, never short,
 // never a mix of two versions.

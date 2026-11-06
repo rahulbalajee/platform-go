@@ -13,6 +13,7 @@ import (
 // END imports OMIT
 
 // START stat OMIT
+
 func file(s string) *fstest.MapFile { return &fstest.MapFile{Data: []byte(s)} }
 
 func TestReadStatHostileComm(t *testing.T) {
@@ -57,6 +58,7 @@ func TestProcessesSkipsNonPIDs(t *testing.T) {
 // END stat OMIT
 
 // START status OMIT
+
 func TestStatusBytes(t *testing.T) {
 	fsys := fstest.MapFS{"proc/self/status": file(
 		"Name:\tlimits\nVmHWM:\t    5120 kB\nVmRSS:\t    4096 kB\nThreads:\t5\n")}
@@ -72,6 +74,7 @@ func TestStatusBytes(t *testing.T) {
 // END status OMIT
 
 // START fstest OMIT
+
 // A container started with --memory=256m --cpus=1.5 --pids-limit=100, as
 // its own cgroup namespace shows it: the group is the root of the tree.
 func containerFS() fstest.MapFS {
@@ -106,6 +109,7 @@ func TestReadCgroupInContainer(t *testing.T) {
 // END fstest OMIT
 
 // START ancestor OMIT
+
 // TestReadCgroupTakesTightestAncestor: a systemd service in a slice. The
 // slice caps memory at 1 GiB and the service sets 2 GiB, so 1 GiB wins;
 // CPU is limited only on the service.

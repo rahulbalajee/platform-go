@@ -27,6 +27,7 @@ func project(ts []sweep.Target) []parsed {
 }
 
 // START table OMIT
+
 func TestParseTargets(t *testing.T) {
 	tests := []struct {
 		name string
@@ -75,6 +76,7 @@ func TestParseTargets(t *testing.T) {
 // END table OMIT
 
 // START errors OMIT
+
 func TestParseTargetsRejects(t *testing.T) {
 	tests := map[string]struct{ in, want string }{
 		"unsupported scheme": {"ftp://files.example.com", `unsupported scheme "ftp"`},

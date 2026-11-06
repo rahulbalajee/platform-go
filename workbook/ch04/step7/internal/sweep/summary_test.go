@@ -14,6 +14,7 @@ import (
 // END head OMIT
 
 // START summary OMIT
+
 func TestSummary(t *testing.T) {
 	sum := sweep.Summary{Total: 4, Elapsed: 1500 * time.Millisecond}
 	statuses := []sweep.Status{sweep.StatusUp, sweep.StatusDown, sweep.StatusUp}
@@ -32,6 +33,7 @@ func TestSummary(t *testing.T) {
 // END summary OMIT
 
 // START jsonl OMIT
+
 func TestJSONLWritesEachResultImmediately(t *testing.T) {
 	var buf bytes.Buffer
 	rep, err := sweep.NewReporter("jsonl", &buf)
@@ -54,6 +56,7 @@ func TestJSONLWritesEachResultImmediately(t *testing.T) {
 // END jsonl OMIT
 
 // START table OMIT
+
 func TestTableIsInInputOrder(t *testing.T) {
 	var buf bytes.Buffer
 	rep, err := sweep.NewReporter("table", &buf)

@@ -16,6 +16,7 @@ import (
 // END head OMIT
 
 // START fleet OMIT
+
 // Fleet is an http.Handler with one path per behaviour a health checker
 // must classify correctly:
 //
@@ -68,6 +69,7 @@ func (f *Fleet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // END fleet OMIT
 
 // START record OMIT
+
 func (f *Fleet) record(path string) int {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -104,6 +106,7 @@ func (f *Fleet) WaitFor(ctx context.Context, path string, n int) error {
 // END record OMIT
 
 // START server OMIT
+
 // NewServer starts a Fleet on a real loopback socket, for tests that run
 // separate processes, and closes it when the test ends.
 func NewServer(t testing.TB) (*httptest.Server, *Fleet) {

@@ -64,6 +64,7 @@ func TestEchoesRequestIDAndChecksToken(t *testing.T) {
 // END faketest OMIT
 
 // START pagetest OMIT
+
 func TestRejectsBadPageTokensAndSizes(t *testing.T) {
 	srv := httptest.NewServer(platformapifake.New())
 	defer srv.Close()

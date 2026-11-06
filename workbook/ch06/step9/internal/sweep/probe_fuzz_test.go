@@ -12,6 +12,7 @@ import (
 // END head OMIT
 
 // START fuzz OMIT
+
 // FuzzParseRetryAfter checks the Retry-After parser on arbitrary header
 // values: a value it accepts is a delay, and delays are never negative.
 func FuzzParseRetryAfter(f *testing.F) {
@@ -32,6 +33,7 @@ func FuzzParseRetryAfter(f *testing.F) {
 // END fuzz OMIT
 
 // START table OMIT
+
 func TestParseRetryAfter(t *testing.T) {
 	future := time.Now().Add(90 * time.Second).UTC().Format(http.TimeFormat)
 	tests := []struct {

@@ -40,6 +40,7 @@ type Cgroup struct {
 // END head OMIT
 
 // START cgroup OMIT
+
 // ReadCgroup reads the limits and usage of the calling process's cgroup.
 func ReadCgroup(fsys fs.FS) (Cgroup, error) {
 	rel, err := selfCgroup(fsys)
@@ -73,6 +74,7 @@ func ReadCgroup(fsys fs.FS) (Cgroup, error) {
 // END cgroup OMIT
 
 // START helpers OMIT
+
 // selfCgroup returns the v2 path from /proc/self/cgroup ("0::/some/path").
 func selfCgroup(fsys fs.FS) (string, error) {
 	b, err := fs.ReadFile(fsys, "proc/self/cgroup")

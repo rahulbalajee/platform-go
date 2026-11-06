@@ -24,6 +24,7 @@ type Reporter interface {
 // END head OMIT
 
 // START summary OMIT
+
 // Summary describes a finished (or interrupted) run.
 type Summary struct {
 	Total       int           `json:"total"`
@@ -68,6 +69,7 @@ func (s Summary) String() string {
 // END summary OMIT
 
 // START new OMIT
+
 // NewReporter returns a reporter for format "table", "wide", "json" or
 // "jsonl". "table" truncates long details to keep rows on one line; "wide"
 // prints them in full, like kubectl's -o wide.
@@ -89,6 +91,7 @@ func NewReporter(format string, w io.Writer) (Reporter, error) {
 // END new OMIT
 
 // START table OMIT
+
 // tableReporter buffers results and prints them in input order, because a
 // human scanning a table expects it to match the inventory file.
 type tableReporter struct {
@@ -143,6 +146,7 @@ func symbol(s Status) string {
 // END table OMIT
 
 // START json OMIT
+
 // jsonlReporter streams one JSON object per line as results complete:
 // ideal for piping into jq or a log shipper while the sweep is running.
 type jsonlReporter struct{ enc *json.Encoder }

@@ -19,6 +19,7 @@ import (
 // END head OMIT
 
 // START retrytest OMIT
+
 func TestRetriesReuseTheIdempotencyKey(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		client, fake := newClient(t)
@@ -49,6 +50,7 @@ func TestRetriesReuseTheIdempotencyKey(t *testing.T) {
 // END retrytest OMIT
 
 // START retryafter OMIT
+
 func TestRetryAfterIsHonoured(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		policy := retry.Policy{MaxAttempts: 3, MaxDelay: time.Minute}
@@ -68,6 +70,7 @@ func TestRetryAfterIsHonoured(t *testing.T) {
 // END retryafter OMIT
 
 // START permanent OMIT
+
 func TestClientErrorsAreNotRetried(t *testing.T) {
 	client, fake := newClient(t)
 	_, err := client.GetDeployment(t.Context(), "d-404")
@@ -130,6 +133,7 @@ func (c *cachingTokens) InvalidateToken(rejected string) {
 // END caching OMIT
 
 // START rotation OMIT
+
 func TestRejectedTokenIsRefreshedOnce(t *testing.T) {
 	current := "token-1"
 	tokens := &cachingTokens{issue: func() string { return current }}

@@ -15,6 +15,7 @@ import (
 )
 
 // START fixture OMIT
+
 // fleet is a fake service with one path per behaviour we care about. It
 // runs on httptest.NewTestServer's in-memory network (Go 1.27), so inside a
 // synctest bubble every sleep and timeout happens in virtual time. peak
@@ -55,6 +56,7 @@ func fleet(t *testing.T, peak *atomic.Int64) *httptest.Server {
 // END fixture OMIT
 
 // START helpers OMIT
+
 // newRunner builds a Runner whose HTTP checks go to srv. Tests set the
 // knobs they care about; the others get roomy defaults.
 func newRunner(t *testing.T, srv *httptest.Server, cfg sweep.Config) *sweep.Runner {
@@ -92,6 +94,7 @@ func targets(t *testing.T, base string, paths ...string) []sweep.Target {
 // END helpers OMIT
 
 // START outcomes OMIT
+
 func TestRunnerOutcomes(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var peak atomic.Int64
@@ -141,6 +144,7 @@ func TestRunnerOutcomes(t *testing.T) {
 // END outcomes OMIT
 
 // START cancel OMIT
+
 func TestRunnerCancellationMarksInFlightTargets(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var peak atomic.Int64
@@ -172,6 +176,7 @@ func TestRunnerCancellationMarksInFlightTargets(t *testing.T) {
 // END cancel OMIT
 
 // START limit OMIT
+
 func TestRunnerRespectsConcurrencyLimit(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var peak atomic.Int64
@@ -205,6 +210,7 @@ func TestRunnerRespectsConcurrencyLimit(t *testing.T) {
 // END limit OMIT
 
 // START perhost OMIT
+
 func TestRunnerRespectsPerHostLimit(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		var peak atomic.Int64
@@ -234,6 +240,7 @@ func TestRunnerRespectsPerHostLimit(t *testing.T) {
 // END perhost OMIT
 
 // START cert OMIT
+
 func TestUntrustedCertificateIsNotRetried(t *testing.T) {
 	srv := httptest.NewTLSServer(http.NotFoundHandler())
 	defer srv.Close()
@@ -258,6 +265,7 @@ func TestUntrustedCertificateIsNotRetried(t *testing.T) {
 // END cert OMIT
 
 // START parse OMIT
+
 func TestParseTargetsReportsAllErrors(t *testing.T) {
 	_, err := sweep.ParseTargets(strings.NewReader(`
 # inventory

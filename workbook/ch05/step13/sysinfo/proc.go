@@ -26,6 +26,7 @@ func Host() fs.FS { return os.DirFS("/") }
 // END imports OMIT
 
 // START stat OMIT
+
 // Stat is the parsed /proc/<pid>/stat line: the kernel's record of a process.
 type Stat struct {
 	PID, PPID int
@@ -66,6 +67,7 @@ func parseStat(b []byte) (Stat, error) {
 // END stat OMIT
 
 // START readstat OMIT
+
 // ReadStat parses /proc/<pid>/stat. Use pid "self" for the caller.
 func ReadStat(fsys fs.FS, pid string) (Stat, error) {
 	b, err := fs.ReadFile(fsys, path.Join("proc", pid, "stat"))
@@ -114,6 +116,7 @@ func Processes(fsys fs.FS) ([]Stat, error) {
 // END readstat OMIT
 
 // START status OMIT
+
 // Status is /proc/<pid>/status as key/value pairs ("VmRSS" -> "5120 kB").
 type Status map[string]string
 

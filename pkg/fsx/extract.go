@@ -55,6 +55,7 @@ func ExtractTar(r io.Reader, root *os.Root, lim Limits) error {
 // END tar OMIT
 
 // START extract OMIT
+
 // extractEntry writes one archive entry through root. budget is the number
 // of content bytes the archive may still write.
 func extractEntry(

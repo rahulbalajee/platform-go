@@ -15,6 +15,7 @@ import (
 // END head OMIT
 
 // START fuzz OMIT
+
 // FuzzParseTargets checks ParseTargets' contract on arbitrary input: it
 // never panics, and anything it accepts can be probed and parses again to
 // the same result.

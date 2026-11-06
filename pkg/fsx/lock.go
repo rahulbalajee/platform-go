@@ -43,6 +43,7 @@ type Lock struct {
 // END lockhead OMIT
 
 // START trylock OMIT
+
 // TryLock takes an exclusive lock on path, creating the file if needed. It
 // does not wait: if another process holds the lock it returns a
 // *LockedError describing the holder.
@@ -79,6 +80,7 @@ func TryLock(path string) (*Lock, error) {
 // END trylock OMIT
 
 // START acquire OMIT
+
 // Acquire waits until it holds the lock on path or ctx is done. It polls
 // with backoff, because a blocking flock cannot be interrupted by a
 // context. Waiters are not served in FIFO order.
@@ -119,6 +121,7 @@ func (l *Lock) Unlock() error {
 // END acquire OMIT
 
 // START holder OMIT
+
 // recordHolder writes who holds the lock, for the error message other
 // processes print. It is diagnostic only; the kernel lock is the truth.
 func (l *Lock) recordHolder() error {

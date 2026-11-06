@@ -12,6 +12,7 @@ import (
 )
 
 // START fleet OMIT
+
 // Fleet is an http.Handler with one path per behaviour a health checker
 // must classify correctly:
 //

@@ -37,6 +37,7 @@ func TestEveryCallHasARequestID(t *testing.T) {
 // END head OMIT
 
 // START ctx OMIT
+
 func TestCancelledContextStopsTheCall(t *testing.T) {
 	client, fake := newClient(t)
 	ctx, cancel := context.WithCancel(t.Context())
@@ -67,6 +68,7 @@ func TestDeadlineCoversTheTokenFetch(t *testing.T) {
 // END ctx OMIT
 
 // START create OMIT
+
 func TestCreateDeploymentSendsAnIdempotencyKey(t *testing.T) {
 	client, fake := newClient(t)
 	op, err := client.CreateDeployment(t.Context(), staging)
@@ -111,6 +113,7 @@ func TestIdempotencyKeyMakesCreateRepeatable(t *testing.T) {
 // END create OMIT
 
 // START validate OMIT
+
 func TestCreateValidatesRequiredFields(t *testing.T) {
 	client, fake := newClient(t)
 	_, err := client.CreateDeployment(t.Context(),

@@ -1,4 +1,5 @@
 // START head OMIT
+
 // Package clierr is the error and exit-code layer shared by the
 // command-line tools in this book. A command's run function returns an
 // error; clierr maps it to an exit code from a documented contract and
@@ -14,6 +15,7 @@ import (
 
 // END head OMIT
 // START codes OMIT
+
 // Code is a process exit status. The values are a contract with shells, CI
 // systems and wrapper scripts: renumbering one breaks somebody's pipeline.
 type Code int
@@ -33,6 +35,7 @@ const (
 
 // END codes OMIT
 // START string OMIT
+
 // String returns the short name used in logs and test failures.
 func (c Code) String() string {
 	switch c {
@@ -57,6 +60,7 @@ func (c Code) String() string {
 
 // END string OMIT
 // START codeof OMIT
+
 // timeouter is the behaviour that net.Error, os.ErrDeadlineExceeded and
 // context.DeadlineExceeded share. AsType needs the embedded error.
 type timeouter interface {

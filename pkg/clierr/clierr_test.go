@@ -1,4 +1,5 @@
 // START imports OMIT
+
 package clierr_test
 
 import (
@@ -25,10 +26,12 @@ import (
 
 // END imports OMIT
 // START testmain OMIT
+
 func TestMain(m *testing.M) { goleak.VerifyTestMain(m) }
 
 // END testmain OMIT
 // START fixtures OMIT
+
 var update = flag.Bool("update", false, "rewrite testdata/*.golden")
 
 // netTimeout behaves like a *net.OpError for an i/o timeout.
@@ -46,6 +49,7 @@ func (g *gaveUp) Unwrap() error { return g.last }
 
 // END fixtures OMIT
 // START codeof OMIT
+
 func TestCodeOf(t *testing.T) {
 	usage := &clierr.Error{Code: clierr.ExitUsage, Message: "bad flag"}
 	tests := []struct {
@@ -91,6 +95,7 @@ func TestCodeOf(t *testing.T) {
 
 // END codeof OMIT
 // START partial OMIT
+
 // partial is the multi-target failure used by the golden tests.
 func partial() error {
 	return &clierr.Error{
@@ -108,6 +113,7 @@ func partial() error {
 
 // END partial OMIT
 // START golden OMIT
+
 // TestReportGolden pins the exact text people and scripts see. Run
 // `go test -update` in this package after an intended change, and review
 // the diff of testdata/*.golden like any other code change.
@@ -150,6 +156,7 @@ func TestReportGolden(t *testing.T) {
 
 // END golden OMIT
 // START help OMIT
+
 func TestHelpIsSilentSuccess(t *testing.T) {
 	var stderr bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &stderr}
@@ -161,6 +168,7 @@ func TestHelpIsSilentSuccess(t *testing.T) {
 
 // END help OMIT
 // START signal OMIT
+
 func TestSignalCauseDecidesCode(t *testing.T) {
 	ctx, cancel := context.WithCancelCause(t.Context())
 	cancel(&clierr.SignalError{Signal: syscall.SIGTERM})
@@ -177,6 +185,7 @@ func TestSignalCauseDecidesCode(t *testing.T) {
 
 // END signal OMIT
 // START panic OMIT
+
 func TestPanicBecomesCrashReport(t *testing.T) {
 	dir := t.TempDir()
 	var stderr bytes.Buffer
@@ -210,6 +219,7 @@ func TestPanicBecomesCrashReport(t *testing.T) {
 
 // END panic OMIT
 // START safe OMIT
+
 func TestSafeCarriesPanicsAcrossGoroutines(t *testing.T) {
 	errs := make([]error, 3)
 	var wg sync.WaitGroup
@@ -244,6 +254,7 @@ func TestSafeCarriesPanicsAcrossGoroutines(t *testing.T) {
 
 // END safe OMIT
 // START fallback OMIT
+
 func TestCrashFallsBackToStderr(t *testing.T) {
 	var stderr bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &stderr,
@@ -261,6 +272,7 @@ func TestCrashFallsBackToStderr(t *testing.T) {
 
 // END fallback OMIT
 // START logrecord OMIT
+
 func TestLogRecordForOperators(t *testing.T) {
 	var log bytes.Buffer
 	p := &clierr.Program{Name: "x", Stderr: &bytes.Buffer{},
@@ -290,6 +302,7 @@ func TestLogRecordForOperators(t *testing.T) {
 
 // END logrecord OMIT
 // START secret OMIT
+
 func TestSecretNeverPrints(t *testing.T) {
 	tok := clierr.Secret("ghp_live_0123456789")
 	var log bytes.Buffer

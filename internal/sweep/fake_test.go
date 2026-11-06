@@ -14,6 +14,7 @@ import (
 )
 
 // START fake OMIT
+
 // step is one scripted outcome of a probe attempt.
 type step struct {
 	detail string
@@ -78,6 +79,7 @@ func runOnce(t *testing.T, cfg sweep.Config, inv string) map[string]sweep.Result
 }
 
 // START retryafter OMIT
+
 func TestRunnerHonoursRetryAfter(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		const target = "https://api.example.com/healthz"
@@ -106,6 +108,7 @@ func TestRunnerHonoursRetryAfter(t *testing.T) {
 // END retryafter OMIT
 
 // START ratelimit OMIT
+
 func TestRunnerRateLimitSpacesAttempts(t *testing.T) {
 	synctest.Test(t, func(t *testing.T) {
 		scripts := map[string][]step{}

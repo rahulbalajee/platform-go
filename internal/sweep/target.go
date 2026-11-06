@@ -38,6 +38,7 @@ func (t Target) Host() string { return t.URL.Host }
 // END head OMIT
 
 // START parse OMIT
+
 // ParseTargets reads one target per line. Blank lines and lines starting with
 // # are ignored. All syntax errors are reported together, with line numbers,
 // so a user can fix an inventory file in one pass.
@@ -74,6 +75,7 @@ func ParseTargets(r io.Reader) ([]Target, error) {
 // END parse OMIT
 
 // START parse1 OMIT
+
 func parseTarget(raw string) (Target, error) {
 	u, err := url.Parse(raw)
 	if err != nil {

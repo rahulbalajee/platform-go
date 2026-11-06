@@ -67,6 +67,7 @@ func sandbox(t *testing.T) (string, *os.Root) {
 // END helpers OMIT
 
 // START good OMIT
+
 func TestExtractTarGoodArchive(t *testing.T) {
 	_, root := sandbox(t)
 	archive := makeTar(t,
@@ -88,6 +89,7 @@ func TestExtractTarGoodArchive(t *testing.T) {
 // END good OMIT
 
 // START attacks OMIT
+
 func TestExtractTarRejectsEscapes(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -119,6 +121,7 @@ func TestExtractTarRejectsEscapes(t *testing.T) {
 // END attacks OMIT
 
 // START planted OMIT
+
 // TestExtractTarRefusesPlantedSymlink covers a symlink that already exists
 // in the destination (planted by an earlier step or another user): os.Root
 // refuses to follow it outside the root.

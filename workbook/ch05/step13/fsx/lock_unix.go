@@ -13,6 +13,7 @@ import (
 var errWouldBlock = unix.EWOULDBLOCK
 
 // START flock OMIT
+
 func lockFile(f *os.File) error   { return flock(f, unix.LOCK_EX|unix.LOCK_NB) }
 func unlockFile(f *os.File) error { return flock(f, unix.LOCK_UN) }
 

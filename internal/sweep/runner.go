@@ -19,6 +19,7 @@ import (
 // END imports OMIT
 
 // START status OMIT
+
 // Status is the outcome of checking one target.
 type Status string
 
@@ -31,6 +32,7 @@ const (
 // END status OMIT
 
 // START result OMIT
+
 // Result is the report for one target. It is designed to be printed as a
 // table row or serialised as one JSON line.
 type Result struct {
@@ -47,6 +49,7 @@ type Result struct {
 // END result OMIT
 
 // START config OMIT
+
 // Config holds every knob that shapes a sweep's load on the outside world.
 type Config struct {
 	Concurrency int           // targets in flight across the whole run
@@ -94,6 +97,7 @@ func NewRunner(cfg Config) (*Runner, error) {
 // END config OMIT
 
 // START run OMIT
+
 // Run checks every target and yields results as they complete. Breaking out
 // of the loop cancels the remaining work; cancelling ctx stops new checks
 // and marks in-flight ones as cancelled. Either way, no goroutine outlives
@@ -105,6 +109,7 @@ func (r *Runner) Run(ctx context.Context, targets []Target) iter.Seq[Result] {
 // END run OMIT
 
 // START check OMIT
+
 // errAttemptTimeout is the cancellation cause of a single timed-out attempt,
 // distinguishing "this target is slow" from "the user pressed Ctrl-C".
 var errAttemptTimeout = errors.New("attempt timed out")

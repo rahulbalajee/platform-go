@@ -38,6 +38,7 @@ func (s *syncBuffer) String() string {
 // END head OMIT
 
 // START test OMIT
+
 func TestTwoStageShutdown(t *testing.T) {
 	exited := make(chan int, 1)
 	var stderr syncBuffer

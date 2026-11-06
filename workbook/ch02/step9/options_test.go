@@ -36,6 +36,7 @@ func TestNewReportsEveryProblem(t *testing.T) {
 // END head OMIT
 
 // START identified OMIT
+
 func TestEveryRequestIsIdentified(t *testing.T) {
 	client, fake := newClient(t)
 	if _, err := client.GetService(t.Context(), "checkout"); err != nil {

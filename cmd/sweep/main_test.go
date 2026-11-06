@@ -1,6 +1,7 @@
 package main
 
 // START imports OMIT
+
 import (
 	"bytes"
 	"context"
@@ -20,6 +21,7 @@ import (
 // END imports OMIT
 
 // START e2e OMIT
+
 // TestRunEndToEnd drives the real entry point against real sockets: one
 // healthy HTTP server, one that answers 503, and a TCP port nobody listens on.
 func TestRunEndToEnd(t *testing.T) {
@@ -74,6 +76,7 @@ func TestRunEndToEnd(t *testing.T) {
 // END e2e OMIT
 
 // START usage OMIT
+
 func TestRunUsageErrors(t *testing.T) {
 	const inv = "https://example.com\n"
 	for name, tc := range map[string]struct {
@@ -101,6 +104,7 @@ func TestRunUsageErrors(t *testing.T) {
 // END usage OMIT
 
 // START interrupted OMIT
+
 func TestRunInterruptedExitsWith130(t *testing.T) {
 	ctx, cancel := context.WithCancelCause(t.Context())
 	cancel(&lifecycle.SignalError{Signal: syscall.SIGINT}) // as if Ctrl-C came first
@@ -119,6 +123,7 @@ func TestRunInterruptedExitsWith130(t *testing.T) {
 // END interrupted OMIT
 
 // START closedport OMIT
+
 // closedPort returns an address that refuses connections.
 func closedPort(t *testing.T) string {
 	t.Helper()

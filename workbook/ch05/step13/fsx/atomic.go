@@ -27,6 +27,7 @@ func WriteFile(name string, data []byte, perm fs.FileMode) error {
 // END atomichead OMIT
 
 // START atomic OMIT
+
 // Write atomically replaces name with whatever fill writes. If fill or any
 // step fails, name is left untouched and the temporary file is removed.
 func Write(name string, perm fs.FileMode, fill func(io.Writer) error) (err error) {

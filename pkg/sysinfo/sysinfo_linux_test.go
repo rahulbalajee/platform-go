@@ -16,6 +16,7 @@ import (
 // END imports OMIT
 
 // START proc OMIT
+
 // These tests read the real /proc and /sys/fs/cgroup of the test process.
 // They only compile on Linux; run them in CI, or in a container.
 
@@ -54,6 +55,7 @@ func TestRealProcesses(t *testing.T) {
 // END proc OMIT
 
 // START cgroup OMIT
+
 func TestRealStatusAndFDs(t *testing.T) {
 	status, err := sysinfo.ReadStatus(sysinfo.Host(), strconv.Itoa(os.Getpid()))
 	if err != nil || status.Bytes("VmRSS") <= 0 {

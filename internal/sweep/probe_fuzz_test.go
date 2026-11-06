@@ -8,6 +8,7 @@ import (
 )
 
 // START fuzz OMIT
+
 // FuzzParseRetryAfter checks the Retry-After parser on arbitrary header
 // values: a value it accepts is a delay, and delays are never negative.
 func FuzzParseRetryAfter(f *testing.F) {

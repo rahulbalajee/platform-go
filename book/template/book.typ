@@ -63,7 +63,15 @@
     assert(end != none, message: "region '" + region + "' has no END in " + path)
     lines = lines.slice(start + 1, end)
   }
-  _trim-blank(lines.filter(l => not l.contains("OMIT"))).join("\n")
+  // Dropping a marker can leave two blank lines in a row (a blank line keeps
+  // each marker out of go doc); gofmt never writes two, so collapse them.
+  let kept = ()
+  for l in lines.filter(l => not l.contains("OMIT")) {
+    if not (l.trim() == "" and kept.len() > 0 and kept.last().trim() == "") {
+      kept.push(l)
+    }
+  }
+  _trim-blank(kept).join("\n")
 }
 
 #let _lang-of(path) = {

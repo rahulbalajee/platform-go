@@ -33,6 +33,7 @@ type cacheEntry struct {
 // END head OMIT
 
 // START lookup OMIT
+
 // LookupHost returns cached addresses or performs one shared lookup for all
 // concurrent callers of the same host.
 func (r *CachingResolver) LookupHost(ctx context.Context, host string) (
@@ -68,6 +69,7 @@ func (r *CachingResolver) LookupHost(ctx context.Context, host string) (
 // END lookup OMIT
 
 // START cache OMIT
+
 func (r *CachingResolver) cached(host string) ([]string, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -90,6 +92,7 @@ func (r *CachingResolver) store(host string, addrs []string) {
 // END cache OMIT
 
 // START dial OMIT
+
 // DialContext dials addr ("host:port") using cached resolution, trying each
 // address in turn. It has the signature http.Transport.DialContext expects.
 func (r *CachingResolver) DialContext(ctx context.Context, network, addr string) (

@@ -6,6 +6,7 @@ import (
 )
 
 // START safe OMIT
+
 // PanicError is a recovered panic carried as an error. Stack is the stack
 // of the goroutine that panicked, captured before it unwound.
 type PanicError struct {

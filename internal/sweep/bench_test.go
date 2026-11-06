@@ -53,6 +53,7 @@ func results(n int) []sweep.Result {
 }
 
 // START parse OMIT
+
 func BenchmarkParseTargets(b *testing.B) {
 	inv := inventory(1000) // setup before b.Loop is not timed
 	for b.Loop() {
@@ -66,6 +67,7 @@ func BenchmarkParseTargets(b *testing.B) {
 // END parse OMIT
 
 // START report OMIT
+
 func BenchmarkReport(b *testing.B) {
 	rs := results(1000)
 	for _, format := range []string{"table", "json", "jsonl"} {

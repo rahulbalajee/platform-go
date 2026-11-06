@@ -10,6 +10,7 @@ import (
 )
 
 // START signalerror OMIT
+
 // SignalError is the cause Main gives its context when a signal arrives,
 // so the report and the exit code can say which signal stopped the run.
 type SignalError struct{ Signal os.Signal }
@@ -27,6 +28,7 @@ func signalCode(sig os.Signal) Code {
 
 // END signalerror OMIT
 // START notify OMIT
+
 // notifyContext returns a context that the first SIGINT or SIGTERM cancels
 // with a *SignalError cause. It then stops catching signals, so the next one
 // gets the handling the process started with: from a terminal, that kills

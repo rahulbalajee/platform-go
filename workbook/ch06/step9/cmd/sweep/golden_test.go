@@ -20,11 +20,13 @@ import (
 // END head OMIT
 
 // START update OMIT
+
 var update = flag.Bool("update", false, "rewrite golden files in testdata/golden")
 
 // END update OMIT
 
 // START scrub OMIT
+
 var (
 	loopbackRE = regexp.MustCompile(`127\.0\.0\.1:\d+`)
 	elapsedRE  = regexp.MustCompile(` in [0-9.]+(µs|ms|s|m[0-9.]+s): `)
@@ -62,6 +64,7 @@ func scrubJSON(t *testing.T, doc []byte) []byte {
 // END scrub OMIT
 
 // START golden OMIT
+
 // TestRunGolden runs the whole CLI against a fake fleet over real sockets
 // and compares scrubbed stdout and stderr with golden files.
 func TestRunGolden(t *testing.T) {
@@ -87,6 +90,7 @@ func TestRunGolden(t *testing.T) {
 // END golden OMIT
 
 // START goldenfile OMIT
+
 func goldenFile(t *testing.T, name string, got []byte) {
 	t.Helper()
 	// Not a relative path: tests that call t.Chdir would look in the wrong place.

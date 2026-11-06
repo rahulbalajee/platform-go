@@ -21,6 +21,7 @@ import (
 // END head OMIT
 
 // START parse1 OMIT
+
 // target parses a single inventory line.
 func target(t *testing.T, line string) sweep.Target {
 	t.Helper()
@@ -34,6 +35,7 @@ func target(t *testing.T, line string) sweep.Target {
 // END parse1 OMIT
 
 // START tcp OMIT
+
 func TestTCPProber(t *testing.T) {
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -56,6 +58,7 @@ func TestTCPProber(t *testing.T) {
 // END tcp OMIT
 
 // START tls OMIT
+
 func TestTLSProberChecksExpiry(t *testing.T) {
 	srv := httptest.NewTLSServer(http.NotFoundHandler())
 	defer srv.Close()
@@ -90,6 +93,7 @@ func TestTLSProberChecksExpiry(t *testing.T) {
 // END tls OMIT
 
 // START dns OMIT
+
 func TestDNSProberResolvesLocalhost(t *testing.T) {
 	p := sweep.DNSProber{Resolver: net.DefaultResolver}
 	detail, err := p.Probe(t.Context(), target(t, "dns://localhost"))
@@ -101,6 +105,7 @@ func TestDNSProberResolvesLocalhost(t *testing.T) {
 // END dns OMIT
 
 // START dispatch OMIT
+
 func TestRunnerDispatchesByKind(t *testing.T) {
 	up := sweep.ProberFunc(func(context.Context, sweep.Target) (string, error) {
 		return "fake connect", nil

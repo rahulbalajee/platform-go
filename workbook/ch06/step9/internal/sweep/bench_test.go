@@ -18,6 +18,7 @@ import (
 // END head OMIT
 
 // START helpers OMIT
+
 // inventory returns an n-line inventory that mixes target kinds, comments
 // and blank lines, like a real one.
 func inventory(n int) string {
@@ -60,6 +61,7 @@ func results(n int) []sweep.Result {
 // END helpers OMIT
 
 // START parse OMIT
+
 func BenchmarkParseTargets(b *testing.B) {
 	inv := inventory(1000) // setup before b.Loop is not timed
 	for b.Loop() {
@@ -74,6 +76,7 @@ func BenchmarkParseTargets(b *testing.B) {
 
 // START benches OMIT
 // START report OMIT
+
 func BenchmarkReport(b *testing.B) {
 	rs := results(1000)
 	for _, format := range []string{"table", "json", "jsonl"} {
@@ -92,6 +95,7 @@ func BenchmarkReport(b *testing.B) {
 // END report OMIT
 
 // START decode OMIT
+
 // BenchmarkDecodeJSONL measures the consumer's side: a deploy gate reading
 // 1,000 lines of sweep -o jsonl.
 func BenchmarkDecodeJSONL(b *testing.B) {

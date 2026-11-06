@@ -120,6 +120,7 @@ func readLine(t *testing.T, r io.Reader) string {
 // END helpers OMIT
 
 // START test OMIT
+
 func TestCancelKillsTheWholeGroup(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
@@ -144,6 +145,7 @@ func TestCancelKillsTheWholeGroup(t *testing.T) {
 // END test OMIT
 
 // START grace OMIT
+
 func TestGraceEscalatesToSIGKILL(t *testing.T) {
 	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
@@ -200,6 +202,7 @@ func TestWaitDoesNotHangOnInheritedPipes(t *testing.T) {
 // END grace OMIT
 
 // START misc OMIT
+
 func TestArgumentsAreNotInterpretedByAShell(t *testing.T) {
 	evil := `$(touch pwned); rm -rf "$HOME" #`
 	out, err := child(t.Context(), "args", evil, "*").Output()

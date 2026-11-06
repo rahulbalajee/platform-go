@@ -15,6 +15,7 @@ import (
 // END head OMIT
 
 // START project OMIT
+
 // parsed is the part of a Target the tests care about. Comparing a
 // projection keeps *url.URL internals out of the assertions.
 type parsed struct {
@@ -36,6 +37,7 @@ func project(ts []sweep.Target) []parsed {
 // END top OMIT
 
 // START table OMIT
+
 func TestParseTargets(t *testing.T) {
 	tests := []struct {
 		name string
@@ -84,6 +86,7 @@ func TestParseTargets(t *testing.T) {
 // END table OMIT
 
 // START errors OMIT
+
 func TestParseTargetsRejects(t *testing.T) {
 	tests := map[string]struct{ in, want string }{
 		"unsupported scheme": {"ftp://files.example.com", `unsupported scheme "ftp"`},
