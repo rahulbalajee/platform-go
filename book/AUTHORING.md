@@ -213,7 +213,11 @@ Start the chapter file with `#import "../template/book.typ": *`, then:
 - `#src("path/from/repo/root.go", region: "name")` shows code between
   `// START name OMIT` and `// END name OMIT` in the file (those marker lines are
   dropped). Without `region:` it shows the whole file. Works for YAML, Makefiles,
-  txtar and so on.
+  txtar and so on. In Go files, put a blank line after a top-level marker
+  that sits directly above a doc comment, a declaration or the `package`
+  clause; otherwise the marker becomes part of the doc comment and shows up
+  in `go doc` and on pkg.go.dev. The template collapses the extra blank line.
+  Check with `go doc -all ./yourpkg | grep OMIT` (no output).
 - `#code(file: "label")[```go ... ```]` for short inline-authored snippets
   (anti-patterns, sketches). Keep these rare; real code goes through `src`.
 - `#output("chNN/file.txt", cmd: "the exact command")` shows captured output
