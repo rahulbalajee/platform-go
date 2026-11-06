@@ -32,8 +32,12 @@ Exit status: 0 success, 1 failure (a deploy failed), 2 usage error,
 75 temporary failure (retry later), 77 not authorised, 130 interrupted.`,
 		Version: f.Version,
 	})
-	root.PersistentFlags().StringVar(&f.Server, "server", "",
-		"platform API URL (default $PLAT_SERVER)")
+	pf := root.PersistentFlags()
+	pf.StringVar(&f.Server, "server", "",
+		"platform API `URL` (default: the context's, or $PLAT_SERVER)")
+	pf.StringVar(&f.Context, "context", "",
+		"use this `CONTEXT` (default: $PLAT_CONTEXT, or the current context)")
+	_ = root.RegisterFlagCompletionFunc("context", completeContexts(f))
 
 	root.AddCommand(
 		newVersionCmd(f, nil),
@@ -42,6 +46,11 @@ Exit status: 0 success, 1 failure (a deploy failed), 2 usage error,
 		newDeployCmd(f, nil),
 		newDeploymentsCmd(f),
 		newLogsCmd(f, nil),
+		newLoginCmd(f, nil),
+		newLogoutCmd(f),
+		newWhoamiCmd(f),
+		newAuthCmd(f),
+		newConfigCmd(f),
 		newDocsCmd(),
 	)
 	root.SetIn(f.IO.In)

@@ -46,10 +46,11 @@ func TestSaveAndLoad(t *testing.T) {
 
 func TestUnknownKeyIsAnError(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.yaml")
-	if err := os.WriteFile(path, []byte("current_context: dev\n"), 0o600); err != nil {
+	err := os.WriteFile(path, []byte("current_context: dev\n"), 0o600)
+	if err != nil {
 		t.Fatal(err)
 	}
-	_, err := config.Load(path)
+	_, err = config.Load(path)
 	if err == nil || !strings.Contains(err.Error(), `"current_context"`) {
 		t.Fatalf("err = %v, want one naming the misspelt key", err)
 	}

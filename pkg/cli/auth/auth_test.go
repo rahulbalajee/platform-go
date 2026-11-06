@@ -38,6 +38,11 @@ func provider(t *testing.T) *oauth2.Config {
 	return auth.NewConfig("plat", prov.Endpoint())
 }
 
+// fixed adapts a ready configuration to NewSource's lazy parameter.
+func fixed(cfg *oauth2.Config) func() (*oauth2.Config, error) {
+	return func() (*oauth2.Config, error) { return cfg, nil }
+}
+
 // login logs in and stores the token, then marks it expired, as if the
 // person had logged in yesterday.
 func expiredLogin(t *testing.T, cfg *oauth2.Config, s auth.Store) *auth.Token {
@@ -82,7 +87,8 @@ func TestSourceRefreshesAndSaves(t *testing.T) {
 	old := expiredLogin(t, cfg, s)
 
 	lock := filepath.Join(t.TempDir(), "refresh.lock")
-	got, err := auth.NewSource(context.Background(), cfg, s, "dev", lock).Token()
+	src := auth.NewSource(context.Background(), fixed(cfg), s, "dev", lock)
+	got, err := src.Token()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,7 +96,8 @@ func TestSourceRefreshesAndSaves(t *testing.T) {
 		t.Fatal("expired token returned without a refresh")
 	}
 	saved, _ := auth.Load(s, "dev")
-	if saved.AccessToken != got.AccessToken || saved.RefreshToken == old.RefreshToken {
+	if saved.AccessToken != got.AccessToken ||
+		saved.RefreshToken == old.RefreshToken {
 		t.Error("the refreshed tokens were not saved")
 	}
 	if saved.IDToken == "" { // a refresh may bring a new ID token, or none
@@ -117,7 +124,7 @@ func TestConcurrentProcessesRefreshOnce(t *testing.T) {
 	errs := make([]error, 4)
 	for i := range tokens {
 		wg.Go(func() {
-			ts := auth.NewSource(context.Background(), cfg, store, "dev", lock)
+			ts := auth.NewSource(context.Background(), fixed(cfg), store, "dev", lock)
 			tokens[i], errs[i] = ts.Token()
 		})
 	}
@@ -146,7 +153,7 @@ func TestRevokedRefreshTokenMeansLogInAgain(t *testing.T) {
 			RefreshToken: tok.RefreshToken, Expiry: time.Unix(1, 0)}).Token()
 	}
 	lock := filepath.Join(t.TempDir(), "refresh.lock")
-	_, err := auth.NewSource(context.Background(), cfg, s, "dev", lock).Token()
+	_, err := auth.NewSource(context.Background(), fixed(cfg), s, "dev", lock).Token()
 	if !errors.Is(err, auth.ErrLoginExpired) {
 		t.Fatalf("err = %v, want ErrLoginExpired", err)
 	}
@@ -194,7 +201,7 @@ func TestInvalidatedTokenIsRefreshed(t *testing.T) {
 	if err := auth.Save(s, "dev", tok); err != nil {
 		t.Fatal(err)
 	}
-	src := auth.NewSource(context.Background(), cfg, s, "dev",
+	src := auth.NewSource(context.Background(), fixed(cfg), s, "dev",
 		filepath.Join(t.TempDir(), "refresh.lock"))
 	first, err := src.Token()
 	if err != nil || first.AccessToken != tok.AccessToken {

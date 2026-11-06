@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/rahulbalajee/platform-go/pkg/cli/auth"
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 )
@@ -24,6 +25,16 @@ func explain(err error, what string) error {
 	if err == nil {
 		return nil
 	}
+	switch {
+	case errors.Is(err, auth.ErrNotFound):
+		return &clierr.Error{Code: clierr.ExitNoPerm, ID: "PLAT-LOGIN",
+			Message: "not logged in to this context",
+			Hint:    "Run 'plat login'.", Err: err}
+	case errors.Is(err, auth.ErrLoginExpired):
+		return &clierr.Error{Code: clierr.ExitNoPerm, ID: "PLAT-LOGIN",
+			Message: "your login has expired or was revoked",
+			Hint:    "Run 'plat login' again.", Err: err}
+	}
 	if errors.Is(err, platformapi.ErrNotFound) {
 		return &clierr.Error{Code: clierr.ExitFailure,
 			Message: what + " not found", Err: err}
@@ -33,7 +44,7 @@ func explain(err error, what string) error {
 		case http.StatusUnauthorized:
 			return &clierr.Error{Code: clierr.ExitNoPerm, ID: "PLAT-AUTH",
 				Message: "the platform rejected your credentials",
-				Hint:    "Set PLAT_TOKEN to a valid token.", Err: err}
+				Hint:    "Run 'plat login', or check PLAT_TOKEN.", Err: err}
 		case http.StatusForbidden:
 			return &clierr.Error{Code: clierr.ExitNoPerm, ID: "PLAT-DENIED",
 				Message: "you are not allowed to do that: " + ae.Message,

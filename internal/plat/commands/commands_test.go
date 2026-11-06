@@ -14,6 +14,7 @@ import (
 
 	"github.com/rahulbalajee/platform-go/internal/plat/factory"
 	"github.com/rahulbalajee/platform-go/pkg/cli"
+	"github.com/rahulbalajee/platform-go/pkg/cli/auth"
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi/platformapifake"
@@ -41,12 +42,25 @@ func newTestPlat(t *testing.T) *testPlat {
 	ios, _, _, _ := cli.Test()
 	out, errOut := new(strings.Builder), new(strings.Builder)
 	ios.Out, ios.ErrOut = out, errOut
-	f := factory.New(ios, "v0.0.0-test")
+	f := isolated(t, factory.New(ios, "v0.0.0-test"), nil)
 	f.Client = func() (*platformapi.Client, error) {
 		return platformapi.New(srv.URL,
 			platformapi.WithPollInterval(time.Millisecond))
 	}
 	return &testPlat{t: t, api: api, f: f, out: out, errOut: errOut}
+}
+
+// isolated keeps f away from the real user's configuration, keychain and
+// environment: a developer's own `plat login` must not change test results.
+func isolated(t *testing.T, f *factory.Factory, env map[string]string,
+) *factory.Factory {
+	t.Helper()
+	dir := t.TempDir()
+	f.Getenv = func(k string) string { return env[k] }
+	f.ConfigDir = func() (string, error) { return dir, nil }
+	store := &auth.Memory{}
+	f.Store = func() (auth.Store, error) { return store, nil }
+	return f
 }
 
 // run executes `plat args...` and returns its error, as main would see it.
@@ -184,11 +198,8 @@ func TestTokenFromTheEnvironment(t *testing.T) {
 		{"", clierr.ExitNoPerm},
 	} {
 		ios, _, _, _ := cli.Test()
-		f := factory.New(ios, "test")
-		f.Getenv = func(k string) string {
-			return map[string]string{
-				"PLAT_SERVER": srv.URL, "PLAT_TOKEN": tc.token}[k]
-		}
+		f := isolated(t, factory.New(ios, "test"), map[string]string{
+			"PLAT_SERVER": srv.URL, "PLAT_TOKEN": tc.token})
 		err := cli.Execute(context.Background(), NewRoot(f),
 			[]string{"envs", "list"})
 		if got := clierr.CodeOf(err); got != tc.want {
@@ -200,8 +211,7 @@ func TestTokenFromTheEnvironment(t *testing.T) {
 
 func TestNoServerIsAUsageError(t *testing.T) {
 	ios, _, _, _ := cli.Test()
-	f := factory.New(ios, "test")
-	f.Getenv = func(string) string { return "" }
+	f := isolated(t, factory.New(ios, "test"), nil)
 	err := cli.Execute(context.Background(), NewRoot(f), []string{"envs", "ls"})
 	e := wantCode(t, err, clierr.ExitUsage)
 	if e.Message != "no platform server configured" {

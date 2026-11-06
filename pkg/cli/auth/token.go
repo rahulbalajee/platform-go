@@ -129,6 +129,8 @@ func NewConfig(clientID string, ep oauth2.Endpoint, scopes ...string) *oauth2.Co
 // Source returns a token source for the token stored under key. It returns
 // the stored access token while it is valid, and otherwise refreshes it and
 // saves the result. ctx bounds the refresh and the wait for the lock.
+// cfg is called only when a refresh is needed: for an OIDC provider it
+// runs discovery, a network round trip most commands never need.
 //
 // Refresh tokens rotate: each one works once. Two plat processes that
 // both find an expired token (a deploy in one terminal, logs in another)
@@ -136,8 +138,8 @@ func NewConfig(clientID string, ep oauth2.Endpoint, scopes ...string) *oauth2.Co
 // the login. So the refresh holds lockPath, a file lock shared by every
 // process, and re-reads the store after taking it: the process that lost
 // the race finds the token the winner just saved.
-func NewSource(ctx context.Context, cfg *oauth2.Config, s Store, key,
-	lockPath string,
+func NewSource(ctx context.Context, cfg func() (*oauth2.Config, error),
+	s Store, key, lockPath string,
 ) *Source {
 	return &Source{ctx: ctx, cfg: cfg, store: s, key: key, lockPath: lockPath}
 }
@@ -146,7 +148,7 @@ func NewSource(ctx context.Context, cfg *oauth2.Config, s Store, key,
 // concurrent use.
 type Source struct {
 	ctx           context.Context
-	cfg           *oauth2.Config
+	cfg           func() (*oauth2.Config, error)
 	store         Store
 	key, lockPath string
 
@@ -215,8 +217,12 @@ func (s *Source) refresh(t *Token) (*Token, error) {
 	// Hand x/oauth2 the refresh token alone. Given the whole token, its
 	// TokenSource returns the access token unchanged while it looks valid,
 	// which is exactly the case after Invalidate.
+	cfg, err := s.cfg()
+	if err != nil {
+		return nil, err
+	}
 	only := &oauth2.Token{RefreshToken: t.RefreshToken}
-	fresh, err := s.cfg.TokenSource(s.ctx, only).Token()
+	fresh, err := cfg.TokenSource(s.ctx, only).Token()
 	if re, ok := errors.AsType[*oauth2.RetrieveError](err); ok &&
 		re.ErrorCode == "invalid_grant" {
 		return nil, fmt.Errorf("%w (%s)", ErrLoginExpired, re.ErrorDescription)
