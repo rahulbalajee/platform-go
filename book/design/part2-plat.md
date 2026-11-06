@@ -17,6 +17,9 @@ Decisions confirmed by the user:
 - Chapter 8 login: an in-repo OIDC provider that every build step uses
   (offline, testable), plus a real "log in with GitHub" via the device flow
   and a GitHub OAuth App that the user registers (public client ID only).
+  The app is registered: client ID `Ov23li5W53rwQVezfLOU`, device flow
+  enabled, expiring user tokens left on (plat must refresh them; confirm
+  that refresh works without a client secret for an OAuth App).
 
 ## Where the code lives
 
