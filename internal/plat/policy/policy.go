@@ -16,6 +16,7 @@ package policy
 // START imports OMIT
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
@@ -135,13 +136,14 @@ func Blocking(results []Result) []Result {
 // END result OMIT
 // START env OMIT
 
-// Limits on evaluation. CEL estimates the cost of every operation; a rule
-// over a list of history costs a few units per element. One million is
+// Limits on evaluation. CEL charges every operation a cost; a rule over a
+// list of history costs a few units per element. One million is
 // Kubernetes' limit per expression, far above any rule over 20 deployments
-// and far below a rule that could stall a deploy.
+// and far below a rule that could stall a deploy. The cost limit is the
+// same on every machine; DefaultTimeout is a backstop in wall-clock time.
 const (
-	costLimit = 1_000_000
-	evalTime  = time.Second
+	costLimit      = 1_000_000
+	DefaultTimeout = time.Second
 )
 
 // newEnv declares the variables and their types, so a rule that misspells
@@ -164,6 +166,9 @@ func newEnv() (*cel.Env, error) {
 
 // Set is a list of compiled policies, ready to check deployments.
 type Set struct {
+	// Timeout bounds the evaluation of each policy; zero means
+	// DefaultTimeout.
+	Timeout  time.Duration
 	policies []compiled
 }
 
@@ -298,17 +303,20 @@ func loadFile(path string) (*Set, error) {
 func (s *Set) Check(ctx context.Context, in Input) []Result {
 	vars := map[string]any{"request": in.Request, "service": in.Service,
 		"history": in.History, "now": in.Now}
+	timeout := cmp.Or(s.Timeout, DefaultTimeout)
 	var out []Result
 	for _, p := range s.policies {
 		r := Result{Name: p.Name, Kind: "cel", Source: p.source}
-		r.Status, r.Message = p.check(ctx, vars)
+		r.Status, r.Message = p.check(ctx, vars, timeout)
 		out = append(out, r)
 	}
 	return out
 }
 
-func (p compiled) check(ctx context.Context, vars map[string]any) (Status, string) {
-	ctx, cancel := context.WithTimeout(ctx, evalTime)
+func (p compiled) check(ctx context.Context, vars map[string]any,
+	timeout time.Duration,
+) (Status, string) {
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	if p.match != nil {
 		ok, err := evalBool(ctx, p.match, vars)

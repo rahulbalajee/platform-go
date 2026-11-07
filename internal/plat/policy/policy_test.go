@@ -147,12 +147,10 @@ func TestLoadErrors(t *testing.T) {
 	}
 }
 
-// A rule that would take too long is stopped by the cost limit and
-// reported as an error, which blocks the deployment. CEL charges for work,
-// not time: joining two 10 KB strings costs about 2,000 units, so this rule
-// reaches the limit of a million within a few hundred joins, on any
-// machine, long before the one-second time limit could stop it instead.
-func TestCostLimit(t *testing.T) {
+// expensive is a rule that would take far too long: 40,000 joins of two
+// 10 KB strings.
+func expensive(t *testing.T) (*policy.Set, policy.Input) {
+	t.Helper()
 	s := load(t, `policies:
   - name: expensive
     rule: >-
@@ -163,12 +161,34 @@ func TestCostLimit(t *testing.T) {
 	for range 200 {
 		in.History = append(in.History, policy.Deployment{ID: "d", Version: long})
 	}
+	return s, in
+}
+
+// The cost limit stops an expensive rule, and the stop is an error, which
+// blocks the deployment. CEL charges for work, not time: a join of two
+// 10 KB strings costs about 2,000 units, so the limit of a million is
+// reached within a few hundred joins on any machine. The time limit is
+// lifted here, so only the cost limit can be what stopped the rule.
+func TestCostLimit(t *testing.T) {
+	s, in := expensive(t)
+	s.Timeout = time.Minute
 	start := time.Now()
 	rs := s.Check(context.Background(), in)
 	t.Logf("stopped after %v", time.Since(start))
 	if rs[0].Status != policy.Error ||
 		!strings.Contains(rs[0].Message, "cost limit") {
 		t.Errorf("got %+v, want an error for the cost limit", rs[0])
+	}
+}
+
+// The time limit is the backstop for work the cost model undercounts.
+func TestTimeLimit(t *testing.T) {
+	s, in := expensive(t)
+	s.Timeout = time.Millisecond
+	rs := s.Check(context.Background(), in)
+	if rs[0].Status != policy.Error ||
+		!strings.Contains(rs[0].Message, "deadline exceeded") {
+		t.Errorf("got %+v, want an error for the deadline", rs[0])
 	}
 }
 
