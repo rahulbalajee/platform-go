@@ -2,5 +2,5 @@
     --- FAIL: TestCodeOf/explicit_beats_inferred (0.00s)
         clierr_test.go:65: CodeOf(read tcp 10.0.0.1:443: i/o timeout) = 75 (tempfail), want 1 (failure)
 FAIL
-FAIL    deployctl/pkg/clierr    0.407s
+FAIL    deployctl/pkg/clierr    0.469s
 FAIL

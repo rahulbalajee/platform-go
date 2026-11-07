@@ -24,8 +24,8 @@ Goroutine 17 (finished) created at:
           sa-east-1   failed   0s
           us-east-1   deployed 0s
           us-west-2   deployed 0s
-          eu-west-1   failed   300ms
+          eu-west-1   failed   310ms
         2 deployed
 FAIL
-FAIL    deployctl/cmd/deployctl 1.531s
+FAIL    deployctl/cmd/deployctl 1.483s
 FAIL

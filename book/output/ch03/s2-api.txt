@@ -1,7 +1,7 @@
-22:40:50.306372 fake deploy API on http://127.0.0.1:8787
-22:40:51.310191 GET "/v1/whoami"
-22:40:51.311224 POST "/v1/deploy/us-east-1"
-22:40:51.412537 POST "/v1/deploy/us-west-2"
-22:40:51.514297 POST "/v1/deploy/eu-west-1"
-22:40:51.615176 POST "/v1/deploy/eu-west-1"
-22:40:51.816891 POST "/v1/deploy/eu-west-1"
+16:09:59.184782 fake deploy API on http://127.0.0.1:8787
+16:09:59.920095 GET "/v1/whoami"
+16:09:59.921228 POST "/v1/deploy/us-east-1"
+16:10:00.022752 POST "/v1/deploy/us-west-2"
+16:10:00.124446 POST "/v1/deploy/eu-west-1"
+16:10:00.225537 POST "/v1/deploy/eu-west-1"
+16:10:00.426988 POST "/v1/deploy/eu-west-1"

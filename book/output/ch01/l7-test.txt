@@ -1,1 +1,1 @@
-ok  	stamp/cmd/stamp	0.434s
+ok  	stamp/cmd/stamp	0.430s

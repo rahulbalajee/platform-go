@@ -1,4 +1,4 @@
 deploying checkout v1.4.2 to 4 targets
   us-east-1   deployed 100ms
   us-west-2   deployed 100ms
-deployctl: deploy v1.4.2 to eu-west-1: 3 attempts, last: HTTP 503: health check failing on 3/3 replicas (request req-UJNPGP4Q4E)
+deployctl: deploy v1.4.2 to eu-west-1: 3 attempts, last: HTTP 503: health check failing on 3/3 replicas (request req-UTDGUIAQG7)

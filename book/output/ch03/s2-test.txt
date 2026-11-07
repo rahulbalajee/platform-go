@@ -1,4 +1,4 @@
-ok      deployctl/cmd/deployctl 1.084s
+ok      deployctl/cmd/deployctl 1.099s
 ?       deployctl/cmd/fakeapi   [no test files]
 ?       deployctl/internal/fakeapi      [no test files]
 ?       deployctl/lab/chain     [no test files]

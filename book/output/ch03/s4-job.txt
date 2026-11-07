@@ -1,1 +1,1 @@
-job.batch/deploy-checkout-v1-4-2 created (server dry run)
+(the kind cluster was not available for this capture)

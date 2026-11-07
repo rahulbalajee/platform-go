@@ -2,6 +2,7 @@
   watchtower:
   examples:
   workbook:
+  workbook-matrix:
   vuln:
   watchtower-e2e:
   book:

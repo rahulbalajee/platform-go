@@ -1,8 +1,8 @@
-ok      deployctl/cmd/deployctl 2.602s
+ok      deployctl/cmd/deployctl 2.166s
 ?       deployctl/cmd/fakeapi   [no test files]
 ?       deployctl/internal/fakeapi      [no test files]
 ?       deployctl/lab/chain     [no test files]
 ?       deployctl/lab/exitcount [no test files]
 ?       deployctl/lab/gopanic   [no test files]
 ?       deployctl/lab/httppanic [no test files]
-ok      deployctl/pkg/clierr    0.442s
+ok      deployctl/pkg/clierr    1.106s

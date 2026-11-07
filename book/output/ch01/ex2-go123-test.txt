@@ -1,4 +1,4 @@
 cmd/stamp/main_test.go:82:36: testing.(*B).Context requires go1.24 or later (file is go1.23)
-ok  	stamp/buildinfo	0.450s
+ok  	stamp/buildinfo	0.499s
 FAIL	stamp/cmd/stamp [build failed]
 FAIL

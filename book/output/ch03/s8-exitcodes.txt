@@ -1,4 +1,4 @@
---- PASS: TestExitCodes (1.19s)
+--- PASS: TestExitCodes (1.21s)
     --- PASS: TestExitCodes/help (0.21s)
     --- PASS: TestExitCodes/bad_flag (0.01s)
     --- PASS: TestExitCodes/unknown_command (0.01s)
@@ -8,4 +8,4 @@
     --- PASS: TestExitCodes/partial (0.52s)
     --- PASS: TestExitCodes/timeout (0.32s)
     --- PASS: TestExitCodes/ok (0.12s)
-ok      deployctl/cmd/deployctl 1.974s
+ok      deployctl/cmd/deployctl 1.887s

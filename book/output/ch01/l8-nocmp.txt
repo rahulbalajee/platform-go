@@ -2,5 +2,5 @@
 buildinfo/buildinfo_test.go:10:2: no required module provides package github.com/google/go-cmp/cmp; to add it:
 	go get github.com/google/go-cmp/cmp
 FAIL	stamp/buildinfo [setup failed]
-ok  	stamp/cmd/stamp	0.527s
+ok  	stamp/cmd/stamp	0.524s
 FAIL

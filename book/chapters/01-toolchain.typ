@@ -465,23 +465,28 @@ tagging `+incompatible` versions from before modules existed.
 === Reading the build list
 
 The module graph is a list of edges: "this module version requires at least
-that module version". Here it is for the repository's root module:
+that module version". `go mod graph` prints it, one edge per line, and for
+the repository's root module that is too many lines to read whole, so filter
+it:
 
 #session(
   ("cd \"$LAB/platform-go\"", none),
-  ("go mod graph", "ch01/mod-graph.txt"),
+  ("go mod graph | wc -l", "ch01/mod-graph-count.txt"),
+  ("go mod graph | grep '^go.uber.org/goleak'", "ch01/mod-graph-goleak.txt"),
 )
 
-The `go` and `toolchain` requirements appear as nodes in the graph, alongside
-the modules. Every `go.mod` contributes edges, including those of modules you
-never import directly, such as `goleak`'s dependency on `testify`.
+Every `go.mod` contributes edges, including those of modules you never
+import directly. `goleak` is a test helper the root module requires; the
+second command shows what it requires in turn, `testify` among them, and
+`testify`'s own requirements are edges in the same graph. The `go` and
+`toolchain` requirements appear as nodes too, alongside the modules.
 
 The algorithm that turns this graph into the set of versions used for a build
 is *minimal version selection* (MVS), designed by Russ Cox for Go modules.
 It is short: start at the main module, walk every reachable requirement, and
 for each module keep the _highest_ version anyone requires. That list is the
-build list. The root module's graph is small enough to show the rule on the
-one dependency every module shares, the Go toolchain itself. Since Go 1.21,
+build list. The rule is easiest to see on the one dependency every module
+shares, the Go toolchain itself. Since Go 1.21,
 a `go` line is a requirement like any other: `go@1.26.0` means "this module
 needs at least Go 1.26.0", and `go get` manages it the way it manages
 `require` lines.
@@ -491,8 +496,9 @@ needs at least Go 1.26.0", and `go get` manages it the way it manages
   ("go list -m go", "ch01/mod-go-list.txt"),
 )
 
-`go-cmp` asks for Go 1.21, three `golang.org/x` modules for 1.26.0, and the
-root module for 1.27.0. MVS selects 1.27.0, the maximum of the minimums, and
+The minimums run from Go 1.21 (`go-cmp`) to 1.26.0 (Bubble Tea and the
+`golang.org/x` modules), and the root module asks for 1.27.0. MVS selects
+1.27.0, the maximum of the minimums, and
 that is the oldest toolchain that can build this module. The same rule
 explains the toolchain switch in Lab 1: when a dependency upgrade arrives with
 a higher `go` line, `go get` raises yours to match, and every developer's
@@ -1275,10 +1281,14 @@ reasons that apply to any large project in a shared repository.
   ("cd projects/watchtower && go list -m all | wc -l", "ch01/mod-count-wt.txt"),
 )
 
-The operator needs 183 modules, most of them Kubernetes and its transitive
+The root module, which holds `sweep`, `plat` and the shared libraries, needs
+52.
+The operator needs 183, most of them Kubernetes and its transitive
 dependencies. In one module, a developer working on `sweep` would download
 them, every `go.mod` change would involve them, and MVS would apply
-Kubernetes' requirements to the CLI's build. Worse, Kubernetes libraries move
+Kubernetes' requirements to the CLI's build. The root module guards this on
+purpose: Chapter 9 needs one small package from `client-go`, and copies it
+rather than require a module that would add 42 more. Worse, Kubernetes libraries move
 in lockstep (`k8s.io/api`, `apimachinery` and `client-go` at matching minor
 versions), so a CLI dependency that drags `x/net` forward can force an
 operator upgrade nobody planned.

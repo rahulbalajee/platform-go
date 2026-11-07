@@ -2,7 +2,7 @@ deploying checkout v1.4.2 to 2 targets
   us-east-1   deployed 100ms
 
 interrupt: stopping (press Ctrl-C again to force)
-  ap-south-1  failed   1.07s
+  ap-south-1  failed   1.02s
 deployctl: deploy of v1.4.2 interrupted; 1 of 2 targets not updated [DPL-INTERRUPTED]
   - ap-south-1: stopped before the API answered
   hint: re-run the same command to finish the rollout

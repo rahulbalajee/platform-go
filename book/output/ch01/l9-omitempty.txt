@@ -1,5 +1,5 @@
 --- FAIL: TestJSONOmitsUnknownFields (0.00s)
     buildinfo_test.go:266: "time" present for a build without VCS information: {"name":"sweep","version":"devel","time":"0001-01-01T00:00:00Z","modified":false,"module":"example.com/fleet","goVersion":"go1.27.3","platform":"darwin/arm64"}
 FAIL
-FAIL	stamp/buildinfo	0.502s
+FAIL	stamp/buildinfo	0.501s
 FAIL

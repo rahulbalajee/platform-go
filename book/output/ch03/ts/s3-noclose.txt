@@ -1,3 +1,3 @@
 panic: test timed out after 10s
-goroutine 35 [chan receive]:
+goroutine 20 [chan receive]:
 deployctl/cmd/deployctl.rollout(...)

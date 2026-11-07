@@ -1,6 +1,6 @@
---- FAIL: TestLinkerOverrides (0.55s)
+--- FAIL: TestLinkerOverrides (0.23s)
     main_test.go:88: got  "stamp devel go1.27.3 darwin/arm64\n"
         want prefix "stamp v9.8.7 (0123456789ab, 2026-11-02T14:07:31Z) go1."
 FAIL
-FAIL	github.com/you/stamp/cmd/stamp	1.085s
+FAIL	github.com/you/stamp/cmd/stamp	0.658s
 FAIL

@@ -138,7 +138,8 @@ echo "== lab 1: which Go runs (the reader's PATH starts with go1.26.4)"
 echo "== lab 2: minimal version selection"
 (
   cd "$clone"
-  cap mod-graph.txt 'go mod graph'
+  cap mod-graph-count.txt 'go mod graph | wc -l'
+  cap mod-graph-goleak.txt "go mod graph | grep '^go.uber.org/goleak'"
   cap mod-go-graph.txt "go mod graph | grep ' go@'"
   cap mod-go-list.txt 'go list -m go'
   cd projects/watchtower
