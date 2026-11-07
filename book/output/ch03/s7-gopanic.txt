@@ -1,6 +1,6 @@
 panic: assignment to entry in nil map [recovered, repanicked]
 
-goroutine 6 [running]:
+goroutine 35 [running]:
 sync.(*WaitGroup).Go.func1.1()
         sync/waitgroup.go:251 +0x48
 panic({0x…?, 0x…?})

@@ -1,8 +1,8 @@
 --- FAIL: TestLogFileRecordsTheFailure (0.00s)
     run_test.go:277: the log lacks the failure record:
-        {"time":"2026-11-07T16:10:54.908506+05:30","level":"DEBUG","msg":"api call","method":"GET","path":"/v1/whoami","token":"[REDACTED]"}
-        {"time":"2026-11-07T16:10:54.909149+05:30","level":"DEBUG","msg":"api call","method":"POST","path":"/v1/deploy/sa-east-1","token":"[REDACTED]"}
-        {"time":"2026-11-07T16:10:54.909182+05:30","level":"DEBUG","msg":"api call","method":"POST","path":"/v1/deploy/us-east-1","token":"[REDACTED]"}
+        {"time":"2026-11-07T17:02:32.95336+05:30","level":"DEBUG","msg":"api call","method":"GET","path":"/v1/whoami","token":"[REDACTED]"}
+        {"time":"2026-11-07T17:02:32.954061+05:30","level":"DEBUG","msg":"api call","method":"POST","path":"/v1/deploy/sa-east-1","token":"[REDACTED]"}
+        {"time":"2026-11-07T17:02:32.954084+05:30","level":"DEBUG","msg":"api call","method":"POST","path":"/v1/deploy/us-east-1","token":"[REDACTED]"}
 FAIL
-FAIL    deployctl/cmd/deployctl 2.160s
+FAIL    deployctl/cmd/deployctl 2.104s
 FAIL

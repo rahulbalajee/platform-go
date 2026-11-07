@@ -18,5 +18,5 @@ testing.tRunner(0x…, 0x…)
         $GOROOT/src/testing/testing.go:2195 +0xc4
 created by testing.(*T).Run in goroutine 1
         $GOROOT/src/testing/testing.go:2260 +0x3b8
-FAIL    deployctl/pkg/clierr    0.461s
+FAIL    deployctl/pkg/clierr    0.464s
 FAIL

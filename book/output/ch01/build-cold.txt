@@ -1,1 +1,1 @@
-real 3.85s   user 16.41s   sys 3.04s
+real 3.46s   user 14.79s   sys 2.77s

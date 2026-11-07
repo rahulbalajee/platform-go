@@ -1,18 +1,18 @@
 ==================
 WARNING: DATA RACE
-Read at 0x… by goroutine 18:
+Read at 0x… by goroutine 17:
   deployctl/cmd/deployctl.rollout.func1.1()
       ~/broken/cmd/deployctl/deploy.go:79 +0x10c
 
-Previous write at 0x… by goroutine 17:
+Previous write at 0x… by goroutine 18:
   deployctl/cmd/deployctl.rollout.func1.1()
       ~/broken/cmd/deployctl/deploy.go:79 +0x11c
 
-Goroutine 18 (running) created at:
+Goroutine 17 (running) created at:
   sync.(*WaitGroup).Go()
       $GOROOT/src/sync/waitgroup.go:238 +0x6c
 
-Goroutine 17 (finished) created at:
+Goroutine 18 (finished) created at:
   sync.(*WaitGroup).Go()
       $GOROOT/src/sync/waitgroup.go:238 +0x6c
 ==================
@@ -27,5 +27,5 @@ Goroutine 17 (finished) created at:
           eu-west-1   failed   310ms
         2 deployed
 FAIL
-FAIL    deployctl/cmd/deployctl 1.483s
+FAIL    deployctl/cmd/deployctl 1.419s
 FAIL

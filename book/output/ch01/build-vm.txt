@@ -1,6 +1,6 @@
 $LAB/sweep-linux-amd64: go1.27.3
 	path	github.com/rahulbalajee/platform-go/cmd/sweep
-	mod	github.com/rahulbalajee/platform-go	v0.0.0-20261107103825-66c8845db087	
+	mod	github.com/rahulbalajee/platform-go	v0.0.0-20261107113006-1757c24d5b3d	
 	dep	golang.org/x/sync	v0.24.0	h1:iqiDrGoDgyuvAKrhLQthUEzU/R378N78gXbBjxed7oA=
 	dep	golang.org/x/time	v0.16.0	h1:vMb6ptszcQMkcwiRTAuNNU50gom6++Q/6gY2hDM6VDE=
 	build	-buildmode=exe
@@ -11,6 +11,6 @@ $LAB/sweep-linux-amd64: go1.27.3
 	build	GOOS=linux
 	build	GOAMD64=v1
 	build	vcs=git
-	build	vcs.revision=66c8845db087b46acbf127cdaeeab9996465b3c0
-	build	vcs.time=2026-11-07T10:38:25Z
+	build	vcs.revision=1757c24d5b3d53dd0e172f29c08708179eeceacc
+	build	vcs.time=2026-11-07T11:30:06Z
 	build	vcs.modified=false

@@ -1282,8 +1282,8 @@ reasons that apply to any large project in a shared repository.
   ("cd projects/watchtower && go list -m all | wc -l", "ch01/mod-count-wt.txt"),
 )
 
-The root module, which holds `sweep`, `plat` and the shared libraries, needs
-96. The operator needs 183, most of them Kubernetes and its transitive
+The root module, which holds `sweep`, `plat` and the shared libraries,
+needs 96. The operator needs 183, most of them Kubernetes and its transitive
 dependencies. In one module, a developer working on `sweep` would download
 them, every `go.mod` change would involve them, and MVS would apply
 Kubernetes' requirements to the CLI's build. Worse, Kubernetes libraries move
@@ -2145,7 +2145,9 @@ the `go` job and in every other job that lints. The first step after
 `setup-go` is `go mod tidy -diff`, which fails if `go.mod` or `go.sum` is out
 of date without modifying them. The other jobs repeat the pattern. The
 `watchtower` job adds a check that generated code is up to date, the CI half
-of Lab 5's `go generate` advice. The `examples` job runs the same steps in a
+of Lab 5's `go generate` advice, and the `proto` job makes the same check for
+the protocol buffers of Chapter 10, with code generators pinned in a tools
+module like yours. The `examples` job runs the same steps in a
 matrix over the nested modules, this chapter's tools module among them. The
 `workbook` job builds, lints and race-tests every lab and build step of the
 book, checks that every line of them is printed in the book, and checks that

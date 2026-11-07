@@ -1,1 +1,1 @@
-    run_test.go:81: err = load config: open /tmp/TestMissingConfigIsNotExist2114487513/001/nope.json: no such file or directory, want one that wraps fs.ErrNotExist
+    run_test.go:81: err = load config: open /tmp/TestMissingConfigIsNotExist1916749546/001/nope.json: no such file or directory, want one that wraps fs.ErrNotExist
