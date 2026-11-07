@@ -17,7 +17,7 @@ import (
 func main() {
 	cli.Main("plat", func(ios *cli.IOStreams) *cobra.Command {
 		return commands.NewRoot(factory.New(ios, buildinfo.Get().Version))
-	})
+	}, cli.WithPlugins())
 }
 
 // END main OMIT

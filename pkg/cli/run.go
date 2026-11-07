@@ -20,11 +20,23 @@ import (
 // the process's real streams, runs it with the command-line arguments, and
 // exits with the code clierr assigns to the outcome. SIGINT and SIGTERM
 // cancel the context passed to every command (a second signal kills).
-func Main(name string, newRoot func(*IOStreams) *cobra.Command) {
+func Main(name string, newRoot func(*IOStreams) *cobra.Command,
+	opts ...Option,
+) {
+	var o options
+	for _, opt := range opts {
+		opt(&o)
+	}
 	ios := System()
 	p := &clierr.Program{Name: name, Stderr: ios.ErrOut}
 	p.Main(func(ctx context.Context) error {
-		err := Execute(ctx, newRoot(ios), os.Args[1:])
+		root := newRoot(ios)
+		if o.plugins {
+			if pl, rest, ok := findPlugin(name, root, os.Args[1:]); ok {
+				return runPlugin(name, pl, rest)
+			}
+		}
+		err := Execute(ctx, root, os.Args[1:])
 		// Program reads JSON after this function returns, so a command
 		// that chose -o json gets its error reported as JSON as well.
 		p.JSON = ios.JSONErrors()

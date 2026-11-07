@@ -323,6 +323,27 @@ func currentLogin(ctx context.Context, f *factory.Factory,
 	return r, tok, err
 }
 
+// currentUser is who the pre-deploy checks see as request.user: the
+// logged-in identity, or "" when plat can't tell (PLAT_TOKEN, no login).
+func currentUser(ctx context.Context, f *factory.Factory) string {
+	if f.Getenv("PLAT_TOKEN") != "" {
+		return ""
+	}
+	r, tok, err := currentLogin(ctx, f)
+	if err != nil {
+		return ""
+	}
+	cfg, err := f.OAuth(ctx, r.Context)
+	if err != nil {
+		return ""
+	}
+	who, err := identity(ctx, f, r.Context, cfg, tok)
+	if err != nil {
+		return ""
+	}
+	return who
+}
+
 func notLoggedIn(why string) error {
 	return &clierr.Error{Code: clierr.ExitNoPerm, ID: "PLAT-LOGIN",
 		Message: "not logged in: " + why,

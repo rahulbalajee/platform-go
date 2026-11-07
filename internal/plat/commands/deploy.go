@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/rahulbalajee/platform-go/internal/plat/factory"
+	"github.com/rahulbalajee/platform-go/internal/plat/policy"
 	"github.com/rahulbalajee/platform-go/pkg/cli"
 	"github.com/rahulbalajee/platform-go/pkg/cli/output"
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
@@ -23,6 +24,9 @@ import (
 type deployOptions struct {
 	IO     *cli.IOStreams
 	Client func() (*platformapi.Client, error)
+	// Factory gives the pre-deploy checks and notifiers (Chapter 10)
+	// what they need: directories, the clock, the logged-in user.
+	Factory *factory.Factory
 
 	Service, Version, Env, Reason string
 	Wait                          bool
@@ -36,7 +40,7 @@ type deployOptions struct {
 func newDeployCmd(f *factory.Factory,
 	runF func(context.Context, *deployOptions) error,
 ) *cobra.Command {
-	opts := &deployOptions{IO: f.IO, Client: f.Client}
+	opts := &deployOptions{IO: f.IO, Client: f.Client, Factory: f}
 	var noWait bool
 	cmd := &cobra.Command{
 		Use:   "deploy SERVICE VERSION --env ENV",
@@ -46,7 +50,10 @@ until the rollout finishes. The deployment ID is printed to stdout, so
 scripts can capture it; progress goes to stderr.
 
 Interrupting the wait (Ctrl-C, or --timeout) does not stop the rollout,
-which continues on the platform. Stop it with 'plat deployments cancel'.`,
+which continues on the platform. Stop it with 'plat deployments cancel'.
+
+The pre-deploy checks ('plat policy list') run first: if any refuses,
+nothing is deployed and plat exits with status 1.`,
 		Example: `  plat deploy checkout v1.5.0 --env staging
   id=$(plat deploy checkout v1.5.0 --env prod --reason "INC-412 fix" --no-wait)
   plat deploy checkout v1.5.0 -e staging -o jsonpath='{.state}'`,
@@ -89,6 +96,9 @@ func runDeploy(ctx context.Context, opts *deployOptions) error {
 	if err != nil {
 		return err
 	}
+	if err := preflight(ctx, opts, client); err != nil {
+		return err
+	}
 	op, err := client.CreateDeployment(ctx, platformapi.CreateDeploymentRequest{
 		Service:     opts.Service,
 		Environment: opts.Env,
@@ -102,7 +112,12 @@ func runDeploy(ctx context.Context, opts *deployOptions) error {
 	fmt.Fprintf(opts.IO.ErrOut, "Deploying %s %s to %s as %s\n",
 		opts.Service, opts.Version, opts.Env, d.ID)
 	if opts.Wait {
-		if d, err = follow(ctx, client, op, opts, p); err != nil {
+		d, err = follow(ctx, client, op, opts, p)
+		if d != nil && d.State.Done() { // finished, well or badly: say so
+			report(opts.Factory, notify(context.WithoutCancel(ctx), opts.Factory,
+				eventOf(d, currentUser(ctx, opts.Factory), opts.Factory.Now())))
+		}
+		if err != nil {
 			return err
 		}
 	}
@@ -114,6 +129,37 @@ func runDeploy(ctx context.Context, opts *deployOptions) error {
 }
 
 // END run OMIT
+// START preflight OMIT
+
+// preflight runs the pre-deploy checks and returns the error that stops
+// the deploy if any refuses. Without checks it costs nothing: no input is
+// gathered and no request is made.
+func preflight(ctx context.Context, opts *deployOptions,
+	client *platformapi.Client,
+) error {
+	ch, err := loadChecks(ctx, opts.Factory)
+	if err != nil {
+		return err
+	}
+	defer ch.close(ctx)
+	if ch.len() == 0 {
+		return nil
+	}
+	in, err := checkInput(ctx, client, policy.Request{Service: opts.Service,
+		Environment: opts.Env, Version: opts.Version, Reason: opts.Reason,
+		User: currentUser(ctx, opts.Factory)}, opts.Factory)
+	if err != nil {
+		return err
+	}
+	results := ch.run(ctx, in)
+	if blocking := policy.Blocking(results); len(blocking) > 0 {
+		return refused(blocking)
+	}
+	fmt.Fprintln(opts.IO.ErrOut, summary(results))
+	return nil
+}
+
+// END preflight OMIT
 // START follow OMIT
 
 // follow reports progress until the rollout is done and returns the final

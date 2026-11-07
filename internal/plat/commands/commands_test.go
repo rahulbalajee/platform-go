@@ -58,6 +58,9 @@ func isolated(t *testing.T, f *factory.Factory, env map[string]string,
 	dir := t.TempDir()
 	f.Getenv = func(k string) string { return env[k] }
 	f.ConfigDir = func() (string, error) { return dir, nil }
+	cache, work := t.TempDir(), t.TempDir()
+	f.CacheDir = func() (string, error) { return cache, nil }
+	f.WorkDir = func() (string, error) { return work, nil }
 	store := &auth.Memory{}
 	f.Store = func() (auth.Store, error) { return store, nil }
 	return f

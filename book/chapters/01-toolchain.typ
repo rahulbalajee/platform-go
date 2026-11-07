@@ -492,14 +492,15 @@ needs at least Go 1.26.0", and `go get` manages it the way it manages
 `require` lines.
 
 #session(
-  ("go mod graph | grep ' go@'", "ch01/mod-go-graph.txt"),
+  ("go mod graph | awk '$2 ~ /^go@/ {print $2}' | sort -V | uniq -c", "ch01/mod-go-graph.txt"),
   ("go list -m go", "ch01/mod-go-list.txt"),
 )
 
-The minimums run from Go 1.21 (`go-cmp`) to 1.26.0 (Bubble Tea and the
-`golang.org/x` modules), and the root module asks for 1.27.0. MVS selects
-1.27.0, the maximum of the minimums, and
-that is the oldest toolchain that can build this module. The same rule
+The `awk` program keeps the edges that end in a `go` version, and `uniq -c`
+counts how many modules ask for each. The minimums run from Go 1.21 to
+1.26.0, and one module, the root, asks for 1.27.0. MVS selects 1.27.0, the
+maximum of the minimums, and that is the oldest toolchain that can build
+this module. The same rule
 explains the toolchain switch in Lab 1: when a dependency upgrade arrives with
 a higher `go` line, `go get` raises yours to match, and every developer's
 `go` command fetches the newer toolchain. MVS also never looks at what exists
@@ -1282,16 +1283,19 @@ reasons that apply to any large project in a shared repository.
 )
 
 The root module, which holds `sweep`, `plat` and the shared libraries, needs
-52.
-The operator needs 183, most of them Kubernetes and its transitive
+96. The operator needs 183, most of them Kubernetes and its transitive
 dependencies. In one module, a developer working on `sweep` would download
 them, every `go.mod` change would involve them, and MVS would apply
-Kubernetes' requirements to the CLI's build. The root module guards this on
-purpose: Chapter 9 needs one small package from `client-go`, and copies it
-rather than require a module that would add 42 more. Worse, Kubernetes libraries move
+Kubernetes' requirements to the CLI's build. Worse, Kubernetes libraries move
 in lockstep (`k8s.io/api`, `apimachinery` and `client-go` at matching minor
 versions), so a CLI dependency that drags `x/net` forward can force an
 operator upgrade nobody planned.
+
+The root module weighs every dependency this way. Chapter 9 needs one small
+package from `client-go` and copies it, because requiring `client-go` would
+add 37 modules for about 1,300 lines of code. Chapter 10 requires gRPC, CEL
+and a WebAssembly runtime, 44 modules between them, because there the
+dependency is the feature.
 
 *Release cadence.* Each module is versioned separately. Tags for a nested
 module carry its directory as a prefix, so a `watchtower` release would be

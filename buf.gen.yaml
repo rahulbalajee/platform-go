@@ -1,0 +1,11 @@
+# Generates the Go code for proto/ (see buf.yaml). The code generators are
+# tools of tools/proto/go.mod too, pinned with the runtime the root module
+# requires, so generated code and google.golang.org/protobuf agree.
+version: v2
+plugins:
+  - local: ["go", "tool", "-modfile=tools/proto/go.mod", "protoc-gen-go"]
+    out: .
+    opt: module=github.com/rahulbalajee/platform-go
+  - local: ["go", "tool", "-modfile=tools/proto/go.mod", "protoc-gen-go-grpc"]
+    out: .
+    opt: module=github.com/rahulbalajee/platform-go

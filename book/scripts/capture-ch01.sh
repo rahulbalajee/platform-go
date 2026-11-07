@@ -140,7 +140,7 @@ echo "== lab 2: minimal version selection"
   cd "$clone"
   cap mod-graph-count.txt 'go mod graph | wc -l'
   cap mod-graph-goleak.txt "go mod graph | grep '^go.uber.org/goleak'"
-  cap mod-go-graph.txt "go mod graph | grep ' go@'"
+  cap mod-go-graph.txt "go mod graph | awk '\$2 ~ /^go@/ {print \$2}' | sort -V | uniq -c"
   cap mod-go-list.txt 'go list -m go'
   cd projects/watchtower
   cap mod-xnet.txt "go mod graph | awk '\$2 ~ /^golang.org\\/x\\/net@/ {print \$2}' | sort -V | uniq -c"

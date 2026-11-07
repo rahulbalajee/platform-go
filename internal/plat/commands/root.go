@@ -51,6 +51,9 @@ Exit status: 0 success, 1 failure (a deploy failed), 2 usage error,
 		newWhoamiCmd(f),
 		newAuthCmd(f),
 		newConfigCmd(f),
+		newPluginCmd(f),
+		newPolicyCmd(f),
+		newNotifiersCmd(f),
 		newDocsCmd(),
 	)
 	root.SetIn(f.IO.In)

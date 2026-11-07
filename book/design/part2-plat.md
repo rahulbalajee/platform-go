@@ -70,9 +70,11 @@ Existing packages it builds on: `pkg/platformapi` (+ `platformapifake`),
 | sigs.k8s.io/yaml | v1.6.0 | config file, `-o yaml` |
 | charm.land/bubbletea/v2 | v2.1.1 | `plat deployments watch` TUI |
 | charm.land/lipgloss/v2 | v2.0.6 | TUI styling |
-| github.com/google/cel-go | v0.32.0 | deploy policies |
+| cel.dev/cel-go | v0.33.2 | deploy policies (moved from github.com/google/cel-go) |
 | github.com/tetratelabs/wazero | v1.12.0 | sandboxed WASM extensions |
-| github.com/hashicorp/go-plugin | v1.8.0 | gRPC plugins |
+| github.com/hashicorp/go-plugin | v1.8.0 | gRPC notifier plugins |
+| google.golang.org/grpc | v1.85.0 | plugin transport (via go-plugin) |
+| buf, protoc-gen-go, protoc-gen-go-grpc | v1.74.0, v1.36.12, v1.6.2 | codegen, tools/proto module |
 | github.com/sigstore/sigstore-go | v1.4.0 | verifying release signatures |
 | GoReleaser | v2.20.0 | releases (CI tool, not a Go dependency) |
 | cosign | v3.1.4 | keyless signing (CI tool) |
@@ -93,6 +95,15 @@ numbers are converted to `int64` first. Terminal UI: `charm.land/bubbletea/v2`
 v2.1.1 and `charm.land/lipgloss/v2` v2.0.6; table widths use
 `github.com/charmbracelet/x/ansi` (tabwriter counts escape-code bytes);
 pseudo-terminal tests use `github.com/creack/pty` v1.1.24.
+
+Chapter 10 weight, measured on the root build list (52 modules before):
+wazero +1 (no dependencies of its own), CEL +12, go-plugin with gRPC +31;
+96 after. buf is pinned in its own tools module (139 modules) so it never
+touches the root. buf v1.75.0 needs a pre-release protobuf, so v1.74.0,
+which uses the released v1.36.12 the root requires. Notifier plugins are
+named platnotify-*, never plat-*: that prefix is the executable-plugin
+namespace, and `plat plugin list` flagged plat-notifier-webhook as hidden
+by the `notifier` alias.
 
 ## The dev environment
 

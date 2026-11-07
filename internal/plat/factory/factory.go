@@ -16,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
@@ -57,6 +58,9 @@ type Factory struct {
 	GitHubAPI  string // the GitHub REST API, for GitHub logins
 
 	ConfigDir  func() (string, error)
+	CacheDir   func() (string, error) // compiled WASM checks (Ch 10)
+	WorkDir    func() (string, error) // where repository policies are looked for
+	Now        func() time.Time
 	Config     func() (*config.File, error) // loaded once per process
 	SaveConfig func(*config.File) error
 	Resolve    func() (config.Resolved, error)
@@ -86,6 +90,14 @@ func New(ios *cli.IOStreams, version string) *Factory {
 		}
 		return config.Dir("plat", f.Getenv)
 	}
+	f.CacheDir = func() (string, error) {
+		if d := f.Getenv("PLAT_CACHE_DIR"); d != "" {
+			return d, nil
+		}
+		d, err := os.UserCacheDir()
+		return filepath.Join(d, "plat"), err
+	}
+	f.WorkDir, f.Now = os.Getwd, time.Now
 	f.Config = sync.OnceValues(func() (*config.File, error) {
 		path, err := f.configPath()
 		if err != nil {

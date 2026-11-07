@@ -1,0 +1,13 @@
+# buf (https://buf.build) configuration for the protocol buffers in proto/.
+# Run buf through the tools module, so everyone gets the same version:
+#   go tool -modfile=tools/proto/go.mod buf lint
+#   go tool -modfile=tools/proto/go.mod buf generate
+version: v2
+modules:
+  - path: proto
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

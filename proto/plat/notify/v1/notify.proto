@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+// The protocol between plat and its notifier plugins (Chapter 10): when a
+// deployment finishes, plat calls Notify on every configured plugin.
+package plat.notify.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/rahulbalajee/platform-go/pkg/platnotify/notifyv1";
+
+// NotifierService is what a notifier plugin implements.
+service NotifierService {
+  // Notify tells the plugin about one deployment. plat waits at most ten
+  // seconds, and a failure is a warning: the deployment has happened.
+  rpc Notify(NotifyRequest) returns (NotifyResponse);
+}
+
+message NotifyRequest {
+  Deployment deployment = 1;
+}
+
+message NotifyResponse {
+  // What the plugin did, for plat to print: "posted to #deploys".
+  string detail = 1;
+}
+
+// Deployment is a finished deployment. Field numbers are the contract:
+// add fields with new numbers, never reuse or renumber one.
+message Deployment {
+  string id = 1;
+  string service = 2;
+  string environment = 3;
+  string version = 4;
+  // succeeded, failed or cancelled; "test" for `plat notifiers test`.
+  string state = 5;
+  string reason = 6;
+  string user = 7;
+  google.protobuf.Timestamp finished_at = 8;
+}
