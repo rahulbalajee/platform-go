@@ -21,10 +21,10 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 	"github.com/spf13/cobra"
-	"k8s.io/client-go/util/jsonpath"
 	"sigs.k8s.io/yaml"
 
 	"github.com/rahulbalajee/platform-go/pkg/cli"
+	"github.com/rahulbalajee/platform-go/third_party/forked/jsonpath"
 )
 
 // END imports OMIT

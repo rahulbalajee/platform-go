@@ -79,12 +79,15 @@ Existing packages it builds on: `pkg/platformapi` (+ `platformapifake`),
 | syft | v1.57.0 | SBOMs (CI tool) |
 | actions/attest-build-provenance | v4.2.2 | SLSA provenance (CI) |
 
-JSONPath (decided in Chapter 9): `k8s.io/client-go/util/jsonpath` v0.37.2,
-with `AllowMissingKeys(true)`. Readers already type kubectl's dialect
-(`{range}`, filters, `{"\n"}`), and the package pulls in only
-`k8s.io/client-go`'s module, not the API machinery. One trap, handled in
-`pkg/cli/output`: values decoded from JSON are all `float64`, and the
-package refuses to compare them with the integer literal in
+JSONPath (decided in Chapter 9): kubectl's dialect, from
+`k8s.io/client-go/util/jsonpath` v0.37.2, forked into
+`third_party/forked/` (see its README) with `AllowMissingKeys(true)`. Readers
+already type that dialect (`{range}`, filters, `{"\n"}`). Requiring
+client-go for ~1,300 stdlib-only lines took the root build list from 52 to
+94 modules, which is the weight Chapter 1 says keeps watchtower in its own
+module; the fork keeps upstream's tests and runs them in CI. One trap,
+handled in `pkg/cli/output`: values decoded from JSON are all `float64`,
+and the package refuses to compare them with the integer literal in
 `[?(@.replicas>3)]` ("incompatible types for comparison"), so whole
 numbers are converted to `int64` first. Terminal UI: `charm.land/bubbletea/v2`
 v2.1.1 and `charm.land/lipgloss/v2` v2.0.6; table widths use

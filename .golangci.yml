@@ -31,6 +31,9 @@ linters:
       excludes:
         - G104 # duplicate of errcheck
   exclusions:
+    # Copied code stays as close to upstream as possible; see its README.
+    paths:
+      - third_party/forked
     presets:
       - comments
       - std-error-handling
@@ -43,6 +46,9 @@ formatters:
   enable:
     - gofmt
     - goimports
+  exclusions:
+    paths:
+      - third_party/forked
   settings:
     goimports:
       local-prefixes:
