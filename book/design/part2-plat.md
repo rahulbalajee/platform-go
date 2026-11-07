@@ -79,9 +79,17 @@ Existing packages it builds on: `pkg/platformapi` (+ `platformapifake`),
 | syft | v1.57.0 | SBOMs (CI tool) |
 | actions/attest-build-provenance | v4.2.2 | SLSA provenance (CI) |
 
-JSONPath for `-o jsonpath=` is decided in Chapter 9 (k8s
-`client-go/util/jsonpath` for kubectl compatibility versus a dependency-free
-subset); write it down here when decided.
+JSONPath (decided in Chapter 9): `k8s.io/client-go/util/jsonpath` v0.37.2,
+with `AllowMissingKeys(true)`. Readers already type kubectl's dialect
+(`{range}`, filters, `{"\n"}`), and the package pulls in only
+`k8s.io/client-go`'s module, not the API machinery. One trap, handled in
+`pkg/cli/output`: values decoded from JSON are all `float64`, and the
+package refuses to compare them with the integer literal in
+`[?(@.replicas>3)]` ("incompatible types for comparison"), so whole
+numbers are converted to `int64` first. Terminal UI: `charm.land/bubbletea/v2`
+v2.1.1 and `charm.land/lipgloss/v2` v2.0.6; table widths use
+`github.com/charmbracelet/x/ansi` (tabwriter counts escape-code bytes);
+pseudo-terminal tests use `github.com/creack/pty` v1.1.24.
 
 ## The dev environment
 

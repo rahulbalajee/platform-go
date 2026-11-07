@@ -35,6 +35,7 @@ type IOStreams struct {
 	inTTY, outTTY, errTTY bool
 	colour                bool
 	neverPrompt           bool
+	jsonErrors            bool
 	width                 func() int
 }
 
@@ -155,5 +156,12 @@ func (s *IOStreams) SetNeverPrompt(v bool) { s.neverPrompt = v }
 
 // SetTerminalWidth fixes the width TerminalWidth reports (for tests).
 func (s *IOStreams) SetTerminalWidth(w int) { s.width = func() int { return w } }
+
+// SetJSONErrors asks for errors on stderr as one JSON object instead of
+// text; package output sets it for -o json.
+func (s *IOStreams) SetJSONErrors(v bool) { s.jsonErrors = v }
+
+// JSONErrors reports whether errors should be reported as JSON.
+func (s *IOStreams) JSONErrors() bool { return s.jsonErrors }
 
 // END setters OMIT

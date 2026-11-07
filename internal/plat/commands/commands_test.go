@@ -89,9 +89,9 @@ func TestServicesList(t *testing.T) {
 	if err := p.run("services", "list", "--team", "payments"); err != nil {
 		t.Fatal(err)
 	}
-	want := `NAME       TEAM       REPLICAS   REPO
-checkout   payments   4          github.com/acme/checkout
-ledger     payments   2          github.com/acme/ledger
+	want := `NAME      TEAM      REPLICAS
+checkout  payments  4
+ledger    payments  2
 `
 	if p.out.String() != want {
 		t.Errorf("stdout:\n%s\nwant:\n%s", p.out, want)

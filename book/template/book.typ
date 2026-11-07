@@ -133,9 +133,17 @@
   lines.join("\n")
 }
 
-#let src(path, region: none, lang: auto, caption: none) = {
+// head: show only the first N lines, then a comment saying how many follow
+// (counted at compile time, so it stays true as the file grows).
+#let src(path, region: none, lang: auto, caption: none, head: none) = {
   let code = read-source("/" + path, region: region)
   code = code.split("\n").map(_fold-marker).join("\n")
+  if head != none {
+    let all = code.trim("\n", at: end).split("\n")
+    if all.len() > head {
+      code = all.slice(0, head).join("\n") + "\n// … " + str(all.len() - head) + " more lines"
+    }
+  }
   let lang = if lang == auto { _lang-of(path) } else { lang }
   listing(file: path, caption: caption, lines: code.split("\n").len(), raw(code, lang: lang, block: true))
 }

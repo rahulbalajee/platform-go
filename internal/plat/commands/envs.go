@@ -4,13 +4,13 @@ package commands
 
 import (
 	"context"
-	"fmt"
-	"text/tabwriter"
+	"strconv"
 
 	"github.com/spf13/cobra"
 
 	"github.com/rahulbalajee/platform-go/internal/plat/factory"
 	"github.com/rahulbalajee/platform-go/pkg/cli"
+	"github.com/rahulbalajee/platform-go/pkg/cli/output"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 )
 
@@ -30,13 +30,14 @@ func newEnvsCmd(f *factory.Factory) *cobra.Command {
 type envsListOptions struct {
 	IO     *cli.IOStreams
 	Client func() (*platformapi.Client, error)
+	Output string
 }
 
 func newEnvsListCmd(f *factory.Factory,
 	runF func(context.Context, *envsListOptions) error,
 ) *cobra.Command {
 	opts := &envsListOptions{IO: f.IO, Client: f.Client}
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"ls"},
 		Short:   "List environments",
@@ -48,22 +49,34 @@ func newEnvsListCmd(f *factory.Factory,
 			return runEnvsList(c.Context(), opts)
 		},
 	}
+	output.AddFlag(cmd, &opts.Output)
+	return cmd
 }
 
 func runEnvsList(ctx context.Context, opts *envsListOptions) error {
+	p, err := output.New(opts.IO, opts.Output)
+	if err != nil {
+		return usage(err)
+	}
 	client, err := opts.Client()
 	if err != nil {
 		return err
 	}
-	tw := tabwriter.NewWriter(opts.IO.Out, 0, 0, 3, ' ', 0)
-	fmt.Fprintln(tw, "NAME\tREGION\tPROTECTED")
-	for e, err := range client.ListEnvironments(ctx) {
-		if err != nil {
-			return explain(err, "")
-		}
-		fmt.Fprintf(tw, "%s\t%s\t%t\n", e.Name, e.Region, e.Protected)
+	list, err := platformapi.Collect(client.ListEnvironments(ctx))
+	if err != nil {
+		return explain(err, "")
 	}
-	return tw.Flush()
+	if p.Machine() {
+		return p.Data(nonNil(list))
+	}
+	t := p.Table(output.Column{Name: "name"}, output.Column{Name: "region"},
+		output.Column{Name: "protected"},
+		output.Column{Name: "created", Wide: true})
+	for _, e := range list {
+		t.Row(e.Name, e.Region, strconv.FormatBool(e.Protected),
+			p.Time(e.CreatedAt))
+	}
+	return t.Flush()
 }
 
 // END envs OMIT

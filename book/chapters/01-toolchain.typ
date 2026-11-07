@@ -182,9 +182,11 @@ files with a longer import path, and a check in CI keeps them identical.
 
 #step(1, 10, "Lab 1: Which Go runs?", label: <sec-tc-toolchain>)
 
-Open the root `go.mod` of the repository you cloned:
+Open the root `go.mod` of the repository you cloned. It starts like this;
+the rest lists the modules that later parts of the book use, such as cobra
+for the command-line tools of Part II:
 
-#src("go.mod")
+#src("go.mod", head: 12)
 
 #goconcept(title: [The `go.mod` file])[
   A _module_ is a tree of packages that is versioned and released together,

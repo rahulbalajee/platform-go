@@ -13,7 +13,7 @@ import glob
 import re
 import sys
 
-SRC = re.compile(r'#src\("([^"]+)"(?:,\s*region:\s*"([^"]+)")?')
+SRC = re.compile(r'#src\("([^"]+)"(?:,\s*region:\s*"([^"]+)")?(?:,\s*head:\s*(\d+))?')
 
 
 def region_lines(path: str, region: str | None) -> list[tuple[int, str]]:
@@ -62,11 +62,14 @@ def main() -> int:
         glob.glob("book/appendix/**/*.typ", recursive=True))
     for chapter in sources:
         for m in SRC.finditer(open(chapter, encoding="utf-8").read()):
-            key = (m.group(1), m.group(2))
+            key = (m.group(1), m.group(2), m.group(3))
             if key in seen:
                 continue
             seen.add(key)
-            for n, raw_line in region_lines(m.group(1), m.group(2)):
+            lines = region_lines(m.group(1), m.group(2))
+            if m.group(3):  # head: N shows only the first N lines
+                lines = lines[: int(m.group(3))]
+            for n, raw_line in lines:
                 for line in fold_marker(raw_line, a.max):
                     width = len(line.expandtabs(4))
                     if width > a.max:

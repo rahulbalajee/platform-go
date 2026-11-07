@@ -24,7 +24,11 @@ func Main(name string, newRoot func(*IOStreams) *cobra.Command) {
 	ios := System()
 	p := &clierr.Program{Name: name, Stderr: ios.ErrOut}
 	p.Main(func(ctx context.Context) error {
-		return Execute(ctx, newRoot(ios), os.Args[1:])
+		err := Execute(ctx, newRoot(ios), os.Args[1:])
+		// Program reads JSON after this function returns, so a command
+		// that chose -o json gets its error reported as JSON as well.
+		p.JSON = ios.JSONErrors()
+		return err
 	})
 }
 

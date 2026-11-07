@@ -6,13 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"text/tabwriter"
-	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/rahulbalajee/platform-go/internal/plat/factory"
 	"github.com/rahulbalajee/platform-go/pkg/cli"
+	"github.com/rahulbalajee/platform-go/pkg/cli/output"
 	"github.com/rahulbalajee/platform-go/pkg/clierr"
 	"github.com/rahulbalajee/platform-go/pkg/platformapi"
 )
@@ -30,6 +29,7 @@ func newDeploymentsCmd(f *factory.Factory) *cobra.Command {
 		newDeploymentsListCmd(f, nil),
 		newDeploymentsGetCmd(f, nil),
 		newDeploymentsCancelCmd(f, nil),
+		newDeploymentsWatchCmd(f),
 	)
 	return cmd
 }
@@ -42,6 +42,7 @@ type deploymentsListOptions struct {
 	Client func() (*platformapi.Client, error)
 	Filter platformapi.DeploymentFilter
 	Limit  int
+	Output string
 }
 
 func newDeploymentsListCmd(f *factory.Factory,
@@ -53,7 +54,9 @@ func newDeploymentsListCmd(f *factory.Factory,
 		Use:     "list",
 		Aliases: []string{"ls"},
 		Short:   "List deployments, newest first",
-		Args:    cli.ExactArgs(),
+		Example: `  plat deployments list --service checkout --state failed
+  plat deployments list -o jsonpath='{[0].id}'   # the newest deployment's ID`,
+		Args: cli.ExactArgs(),
 		RunE: func(c *cobra.Command, _ []string) error {
 			opts.Filter.State = platformapi.DeploymentState(state)
 			if opts.Limit < 1 {
@@ -73,32 +76,48 @@ func newDeploymentsListCmd(f *factory.Factory,
 	fl.StringVar(&state, "state", "",
 		"only this `STATE` (pending, in_progress, succeeded, failed, cancelled)")
 	fl.IntVarP(&opts.Limit, "limit", "L", 20, "show at most `N` deployments")
+	output.AddFlag(cmd, &opts.Output)
 	_ = cmd.RegisterFlagCompletionFunc("service", completeServices(f))
 	_ = cmd.RegisterFlagCompletionFunc("env", completeEnvironments(f))
 	return cmd
 }
 
 // runDeploymentsList stops reading after Limit rows: breaking out of the
-// range loop stops the iterator, so no further pages are fetched.
+// range loop stops the iterator, so no further pages are fetched, and the
+// page size asks for no more than that in the first place.
 func runDeploymentsList(ctx context.Context, opts *deploymentsListOptions) error {
+	p, err := output.New(opts.IO, opts.Output)
+	if err != nil {
+		return usage(err)
+	}
 	client, err := opts.Client()
 	if err != nil {
 		return err
 	}
-	tw := tabwriter.NewWriter(opts.IO.Out, 0, 0, 3, ' ', 0)
-	fmt.Fprintln(tw, "ID\tSERVICE\tENV\tVERSION\tSTATE\tCREATED")
-	n := 0
-	for d, err := range client.ListDeployments(ctx, opts.Filter) {
+	list := []platformapi.Deployment{}
+	for d, err := range client.ListDeployments(ctx, opts.Filter,
+		platformapi.PageSize(min(opts.Limit, 100))) {
 		if err != nil {
 			return explain(err, "")
 		}
-		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", d.ID, d.Service,
-			d.Environment, d.Version, d.State, d.CreatedAt.Format(time.DateTime))
-		if n++; n == opts.Limit {
+		if list = append(list, d); len(list) == opts.Limit {
 			break
 		}
 	}
-	return tw.Flush()
+	if p.Machine() {
+		return p.Data(list)
+	}
+	t := p.Table(output.Column{Name: "id"}, output.Column{Name: "service"},
+		output.Column{Name: "env"}, output.Column{Name: "version"},
+		output.Column{Name: "state"}, output.Column{Name: "created"},
+		output.Column{Name: "replicas", Wide: true},
+		output.Column{Name: "reason", Wide: true})
+	for _, d := range list {
+		t.Row(d.ID, d.Service, d.Environment, d.Version, state(p, d.State),
+			p.Time(d.CreatedAt),
+			fmt.Sprintf("%d/%d", d.UpdatedReplicas, d.Replicas), d.Reason)
+	}
+	return t.Flush()
 }
 
 // END list OMIT
@@ -108,13 +127,14 @@ type deploymentOptions struct {
 	IO     *cli.IOStreams
 	Client func() (*platformapi.Client, error)
 	ID     string
+	Output string
 }
 
 func newDeploymentsGetCmd(f *factory.Factory,
 	runF func(context.Context, *deploymentOptions) error,
 ) *cobra.Command {
 	opts := &deploymentOptions{IO: f.IO, Client: f.Client}
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "get DEPLOYMENT",
 		Short: "Show one deployment",
 		Args:  cli.ExactArgs("DEPLOYMENT"),
@@ -126,9 +146,15 @@ func newDeploymentsGetCmd(f *factory.Factory,
 			return runDeploymentsGet(c.Context(), opts)
 		},
 	}
+	output.AddFlag(cmd, &opts.Output)
+	return cmd
 }
 
 func runDeploymentsGet(ctx context.Context, opts *deploymentOptions) error {
+	p, err := output.New(opts.IO, opts.Output)
+	if err != nil {
+		return usage(err)
+	}
 	client, err := opts.Client()
 	if err != nil {
 		return err
@@ -137,19 +163,24 @@ func runDeploymentsGet(ctx context.Context, opts *deploymentOptions) error {
 	if err != nil {
 		return explain(err, fmt.Sprintf("deployment %q", opts.ID))
 	}
-	return printDeployment(opts.IO, d)
+	return printDeployment(p, d)
 }
 
-func printDeployment(ios *cli.IOStreams, d *platformapi.Deployment) error {
-	tw := tabwriter.NewWriter(ios.Out, 0, 0, 2, ' ', 0)
-	fmt.Fprintf(tw, "ID:\t%s\nService:\t%s\nEnvironment:\t%s\nVersion:\t%s\n",
-		d.ID, d.Service, d.Environment, d.Version)
-	fmt.Fprintf(tw, "State:\t%s\nReplicas:\t%d/%d updated\nCreated:\t%s\n",
-		d.State, d.UpdatedReplicas, d.Replicas, d.CreatedAt.Format(time.RFC3339))
-	if d.Reason != "" {
-		fmt.Fprintf(tw, "Reason:\t%s\n", d.Reason)
+// printDeployment shows one deployment: the object itself for programs,
+// labelled fields for people.
+func printDeployment(p *output.Printer, d *platformapi.Deployment) error {
+	if p.Machine() {
+		return p.Data(d)
 	}
-	return tw.Flush()
+	pairs := []string{"ID", d.ID, "Service", d.Service,
+		"Environment", d.Environment, "Version", d.Version,
+		"State", state(p, d.State),
+		"Replicas", fmt.Sprintf("%d/%d updated", d.UpdatedReplicas, d.Replicas),
+		"Created", p.Time(d.CreatedAt)}
+	if d.Reason != "" {
+		pairs = append(pairs, "Reason", d.Reason)
+	}
+	return fields(p.IO, pairs...)
 }
 
 // END get OMIT
