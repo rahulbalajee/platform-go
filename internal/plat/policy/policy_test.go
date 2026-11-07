@@ -148,20 +148,24 @@ func TestLoadErrors(t *testing.T) {
 }
 
 // A rule that would take too long is stopped by the cost limit and
-// reported as an error, which blocks the deployment.
+// reported as an error, which blocks the deployment. CEL charges for work,
+// not time: joining two 10 KB strings costs about 2,000 units, so this rule
+// reaches the limit of a million within a few hundred joins, on any
+// machine, long before the one-second time limit could stop it instead.
 func TestCostLimit(t *testing.T) {
 	s := load(t, `policies:
   - name: expensive
     rule: >-
-      history.all(a, history.all(b, history.all(c,
-        a.version + b.version + c.version != "")))
+      history.all(a, history.all(b, (a.version + b.version).size() > 0))
 `)
 	in := input("prod", "v1", "", friday)
-	for i := range 200 {
-		in.History = append(in.History,
-			policy.Deployment{ID: "d", Version: string(rune('a' + i%26))})
+	long := strings.Repeat("v", 10_000)
+	for range 200 {
+		in.History = append(in.History, policy.Deployment{ID: "d", Version: long})
 	}
+	start := time.Now()
 	rs := s.Check(context.Background(), in)
+	t.Logf("stopped after %v", time.Since(start))
 	if rs[0].Status != policy.Error ||
 		!strings.Contains(rs[0].Message, "cost limit") {
 		t.Errorf("got %+v, want an error for the cost limit", rs[0])
